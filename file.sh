@@ -1,3 +1,4 @@
+
 function timer_start {
   timer=${timer:-$SECONDS}
 }
