@@ -2,6 +2,7 @@
 # Designed on https://scriptim.github.io/bash-prompt-generator/
 export PS1='\[\e[0m\]\[\e[0;38;5;28;48;5;236m\]╭─ (\[\e[0;38;5;40;48;5;236m\]\t\[\e[0;38;5;28;48;5;236m\]) \[\e[0;38;5;44;48;5;236m\]\u\[\e[0;38;5;44;48;5;236m\]@\[\e[0;38;5;44;48;5;236m\]\h\[\e[0;38;5;28;48;5;236m\] \[\e[0;38;5;39;48;5;236m\]\w\[\e[0;48;5;236m\] \[\e[0;38;5;69;48;5;236m\]$(git branch 2>/dev/null | grep '"'"'^*'"'"' | colrm 1 2)\[\e[m\]\n\[\e[0;38;5;28;48;5;236m\]╰> \[\e[0;38;5;28;48;5;236m\]\$\[\e[0m\] \[\e0'
 
+
 # Aliases
 alias ll="ls -alh --color=auto"
 command -v ls > /dev/null && alias ls='ls --color=auto'
