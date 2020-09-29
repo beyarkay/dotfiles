@@ -1,4 +1,4 @@
-set backspace=indent,eol,start
+set backspace=indent,eol,start 
 set history=1000
 set hlsearch	
 set autoindent
