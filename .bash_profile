@@ -62,6 +62,9 @@ alias ll="ls -alh --color=auto"
 command -v ls > /dev/null && alias ls='ls --color=auto'
 command -v grep > /dev/null && alias grep='grep --color=auto'
 command -v diff > /dev/null && alias diff='diff --color=auto'
+export EDITOR=vim
+export VISUAL=vim
+export PATH=$PATH:~/drivers/chromedriver
 
 
 
