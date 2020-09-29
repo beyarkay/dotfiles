@@ -1,27 +1,39 @@
+# Only execute if running interactively
+[ -z "$PS1" ] && return
+
 # Command Prompt
+# Use a timer for the previous command
 
+function timer_now {
+    date +%s%N
+}
 function timer_start {
-  timer=${timer:-$SECONDS}
+    timer_start=${timer_start:-$(timer_now)}
 }
-
 function timer_stop {
-  timer_show=$(($SECONDS - $timer))
-  unset timer
+    # From https://stackoverflow.com/questions/1862510/how-can-the-last-commands-wall-time-be-put-in-the-bash-prompt
+    local delta_us=$((($(timer_now) - $timer_start) / 1000))
+    local us=$((delta_us % 1000))
+    local ms=$(((delta_us / 1000) % 1000))
+    local s=$(((delta_us / 1000000) % 60))
+    local m=$(((delta_us / 60000000) % 60))
+    local h=$((delta_us / 3600000000))
+    # Goal: always show around 3 digits of accuracy
+    if ((h > 0)); then timer_show=${h}h${m}m
+    elif ((m > 0)); then timer_show=${m}m${s}s
+    elif ((s >= 10)); then timer_show=${s}.$((ms / 100))s
+    elif ((s > 0)); then timer_show=${s}.$(printf %03d $ms)s
+    elif ((ms >= 100)); then timer_show=${ms}ms
+    elif ((ms > 0)); then timer_show=${ms}.$((us / 100))ms
+    else timer_show=${us}us
+    fi
+    unset timer_start
 }
-
-trap 'timer_start' DEBUG
-
-if [ "$PROMPT_COMMAND" == "" ]; then
-  PROMPT_COMMAND="timer_stop"
-else
-  PROMPT_COMMAND="$PROMPT_COMMAND; timer_stop"
-fi
 
 # Designed on https://scriptim.github.io/bash-prompt-generator/
-export PS1='\[\e[0m\]\[\e[0;38;5;244;48;5;236m\]╭─ \[\e[0;38;5;40;48;5;236m\]\t\[\e[0;3;38;5;244;48;5;236m\] (${timer_show}s) | \[\e[0;38;5;44;48;5;236m\]\u\[\e[0;38;5;44;48;5;236m\]@\[\e[0;38;5;44;48;5;236m\]\h\[\e[0;3;38;5;244;48;5;236m\] | git \[\e[0;38;5;38;48;5;236m\]$(git branch 2>/dev/null | grep '"'"'^*'"'"' | colrm 1 2)\[\e[0;38;5;38;48;5;236m\]$(if [[ $(git diff HEAD --name-only | wc -l) -ne 0 ]]; then echo "*"; fi)\[\e[0;3;38;5;244;48;5;236m\] | cd \[\e[0;38;5;33;48;5;236m\]\w\[\e[m\]\n\[\e[0;38;5;244;48;5;236m\]╰> \[\e[0;38;5;244;48;5;236m\]\$\[\e[0m\] \[\e0'
+export PS1='\[\e[0m\]\[\e[0;38;5;244;48;5;236m\]╭─ \[\e[0;38;5;40;48;5;236m\]\t\[\e[0;3;38;5;244;48;5;236m\] (${timer_show}) | \[\e[0;38;5;44;48;5;236m\]\u\[\e[0;38;5;44;48;5;236m\]@\[\e[0;38;5;44;48;5;236m\]\h\[\e[0;3;38;5;244;48;5;236m\]$([ -d .git ] && echo " | git ")\[\e[0;38;5;38;48;5;236m\]$(git branch 2>/dev/null | grep '"'"'^*'"'"' | colrm 1 2)\[\e[0;38;5;38;48;5;236m\]$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)\[\e[0;3;38;5;244;48;5;236m\] | cd \[\e[0;38;5;33;48;5;236m\]\w\[\e[m\]\n\[\e[0;38;5;244;48;5;236m\]╰> \[\e[0;38;5;244;48;5;236m\]\$\[\e[0m\] \[\e0'
 
 export PS2='\[\e[0;38;5;244;48;5;236m\]    \[\e[0m\] \[\e0'
-# export PS1='\[\e[0m\]\[\e[0;38;5;28;48;5;236m\]╭─ (\[\e[0;38;5;40;48;5;236m\]\t\[\e[0;38;5;28;48;5;236m\]) \[\e[0;38;5;44;48;5;236m\]\u\[\e[0;38;5;44;48;5;236m\]@\[\e[0;38;5;44;48;5;236m\]\h\[\e[0;38;5;28;48;5;236m\] \[\e[0;38;5;39;48;5;236m\]\w\[\e[0;48;5;236m\] \[\e[0;38;5;69;48;5;236m\]$(git branch 2>/dev/null | grep '"'"'^*'"'"' | colrm 1 2)\[\e[m\]\n\[\e[0;38;5;28;48;5;236m\]╰> \[\e[0;38;5;28;48;5;236m\]\$\[\e[0m\] \[\e0'
 
 
 # Aliases
@@ -40,5 +52,22 @@ export LESS_TERMCAP_se=$'\e[0m'
 export LESS_TERMCAP_so=$'\e[01;33m'
 export LESS_TERMCAP_ue=$'\e[0m'
 export LESS_TERMCAP_us=$'\e[1;4;31m'
+
+# Advanced directory creation
+function mkcd {
+  if [ ! -n "$1" ]; then
+    echo "No directory name given"
+  elif [ -d $1 ]; then
+    echo "Directory '$1' already exists"
+  else
+    mkdir $1 && cd $1
+  fi
+}
+
+
+# ls after a cd
+function cd() {
+ builtin cd "$*" && ls -a
+}
 
 
