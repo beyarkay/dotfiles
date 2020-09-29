@@ -11,6 +11,7 @@ function timer_start {
     timer_start=${timer_start:-$(timer_now)}
 }
 function timer_stop {
+#    EXIT="$?" # MUST come first
     # From https://stackoverflow.com/questions/1862510/how-can-the-last-commands-wall-time-be-put-in-the-bash-prompt
     local delta_us=$((($(timer_now) - $timer_start) / 1000))
     local us=$((delta_us % 1000))
@@ -29,9 +30,29 @@ function timer_stop {
     fi
     unset timer_start
 }
+set_prompt () {
+    # Designed on https://scriptim.github.io/bash-prompt-generator/
+    EXIT=$?
+    timer_stop
+    PS1='\[\e[0m\]\[\e[0;38;5;244;48;5;236m\]╭─ \[\e[0;38;5;40;48;5;236m\]\t\[\e[0;3;38;5;244;48;5;236m\]'
+    PS1+=' ${timer_show} '
+    if [[ $EXIT -gt 0 ]]; then
+        PS1+="\[\e[0;38;5;197;48;5;236m\]✘\[\e0${EXIT}" # red x with error status
+        #PS1+="\e[1;41m ✘ ${EXIT}" # red x with error status
+    else
+        PS1+="\[\e[0;38;5;40;48;5;236m\]✔\[\e0" # green tick
+    fi
+    PS1+='\[\e[0;3;38;5;244;48;5;236m\] | ssh \[\e[0;38;5;44;48;5;236m\]\u\[\e[0;38;5;44;48;5;236m\]@\[\e[0;38;5;44;48;5;236m\]\h\[\e[0;3;38;5;244;48;5;236m\]'
+    PS1+='$([ -d .git ] && echo " | git ")\[\e[0;38;5;38;48;5;236m\]$(git branch 2>/dev/null | grep '"'"'^*'"'"' | colrm 1 2)'
+    PS1+='\[\e[0;38;5;38;48;5;236m\]'
+    PS1+='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
+    PS1+='\[\e[0;3;38;5;244;48;5;236m\] | cd \[\e[0;38;5;33;48;5;236m\]\w\[\e[m\]\n\[\e[0;38;5;244;48;5;236m\]╰> \[\e[0;38;5;244;48;5;236m\]\$\[\e[0m\] \[\e0'
+}
+trap 'timer_start' DEBUG
+PROMPT_COMMAND='set_prompt'
 
-# Designed on https://scriptim.github.io/bash-prompt-generator/
-export PS1='\[\e[0m\]\[\e[0;38;5;244;48;5;236m\]╭─ \[\e[0;38;5;40;48;5;236m\]\t\[\e[0;3;38;5;244;48;5;236m\] (${timer_show}) | \[\e[0;38;5;44;48;5;236m\]\u\[\e[0;38;5;44;48;5;236m\]@\[\e[0;38;5;44;48;5;236m\]\h\[\e[0;3;38;5;244;48;5;236m\]$([ -d .git ] && echo " | git ")\[\e[0;38;5;38;48;5;236m\]$(git branch 2>/dev/null | grep '"'"'^*'"'"' | colrm 1 2)\[\e[0;38;5;38;48;5;236m\]$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)\[\e[0;3;38;5;244;48;5;236m\] | cd \[\e[0;38;5;33;48;5;236m\]\w\[\e[m\]\n\[\e[0;38;5;244;48;5;236m\]╰> \[\e[0;38;5;244;48;5;236m\]\$\[\e[0m\] \[\e0'
+# export PS1
+# export PS1='\[\e[0m\]\[\e[0;38;5;244;48;5;236m\]╭─ \[\e[0;38;5;40;48;5;236m\]\t\[\e[0;3;38;5;244;48;5;236m\] (${timer_show}) | \[\e[0;38;5;44;48;5;236m\]\u\[\e[0;38;5;44;48;5;236m\]@\[\e[0;38;5;44;48;5;236m\]\h\[\e[0;3;38;5;244;48;5;236m\]$([ -d .git ] && echo " | git ")\[\e[0;38;5;38;48;5;236m\]$(git branch 2>/dev/null | grep '"'"'^*'"'"' | colrm 1 2)\[\e[0;38;5;38;48;5;236m\]$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)\[\e[0;3;38;5;244;48;5;236m\] | cd \[\e[0;38;5;33;48;5;236m\]\w\[\e[m\]\n\[\e[0;38;5;244;48;5;236m\]╰> \[\e[0;38;5;244;48;5;236m\]\$\[\e[0m\] \[\e0'
 
 export PS2='\[\e[0;38;5;244;48;5;236m\]    \[\e[0m\] \[\e0'
 
