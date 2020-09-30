@@ -37,8 +37,7 @@ set_prompt () {
     PS1='\[\e[0m\]\[\e[0;38;5;244;48;5;236m\]╭─ \[\e[0;38;5;40;48;5;236m\]\t\[\e[0;3;38;5;244;48;5;236m\]'
     PS1+=' ${timer_show} '
     if [[ $EXIT -gt 0 ]]; then
-        PS1+="\[\e[0;38;5;197;48;5;236m\]✘\[\e0${EXIT}" # red x with error status
-        #PS1+="\e[1;41m ✘ ${EXIT}" # red x with error status
+        PS1+="\[\e[0;38;5;197;48;5;236m\]✘ \[\e0${EXIT}" # red x with error status
     else
         PS1+="\[\e[0;38;5;40;48;5;236m\]✔\[\e0" # green tick
     fi

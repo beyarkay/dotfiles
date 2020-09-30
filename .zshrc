@@ -44,8 +44,7 @@ function cd() {
 local time='%*'
 local host_machine='%n@%M'
 local delta='_._ms'
-local error_code='✔'
-local git_branch='$(git branch 2>/dev/null | colrm 1 2)'
+local git_branch="$(git branch 2>/dev/null | colrm 1 2)"
 local git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
 local curr_dir='%~' 
 local BG_GREY='236'
@@ -56,7 +55,9 @@ local FG_TURQUOISE='39'
 local FG_DEEPBLUE='27'
 local NO_BG='234'
 local WHITE='255'
+local FG_RED='196'
+local errors='$(code=$?; if [[ $code -gt 0 ]]; then echo "%F{${FG_RED}}✘ $code"; else echo "✔"; fi)'
 
-PROMPT="%K{${BG_GREY}}%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time} %F{${FG_GREY}}${delta}%F{${FG_GREEN}} ${error_code} %F{${FG_GREY}}| ssh %F{${FG_CYAN}}${host_machine} %F{${FG_GREY}}| git %F{${FG_TURQUOISE}}${git_branch}${git_changes} %F{${FG_GREY}}| cd %F{${FG_DEEPBLUE}}${curr_dir}%F{${FG_GREY}}"$'\n'"╰>%K{NO_BG}%F{WHITE} "
+PROMPT="%K{${BG_GREY}}%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time} %F{${FG_GREY}}${delta}%F{${FG_GREEN}} ${errors} %F{${FG_GREY}}| ssh %F{${FG_CYAN}}${host_machine} %F{${FG_GREY}}| git %F{${FG_TURQUOISE}}${git_branch}${git_changes} %F{${FG_GREY}}| cd %F{${FG_DEEPBLUE}}${curr_dir}%F{${FG_GREY}}"$'\n'"╰>%K{NO_BG}%F{WHITE} "
 setopt promptsubst
 
