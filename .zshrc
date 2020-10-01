@@ -3,6 +3,9 @@ export CLICOLOR=1
 # Use linux-style colors
 export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
 
+# Don't put duplicated lines, or lines starting with a space ' ' into the history
+HISTCONTROL=ignoreboth
+
 
 # Aliases
 alias ll="ls -alhGF"

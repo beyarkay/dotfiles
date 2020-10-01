@@ -1,6 +1,10 @@
 # Only execute if running interactively
 [ -z "$PS1" ] && return
 
+# Don't put duplicated lines, or lines starting with a space ' ' into the history
+HISTCONTROL=ignoreboth
+
+
 # Command Prompt
 # Use a timer for the previous command
 
