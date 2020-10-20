@@ -1,6 +1,10 @@
 # Only execute if running interactively
 [ -z "$PS1" ] && return
 
+# Don't put duplicated lines, or lines starting with a space ' ' into the history
+HISTCONTROL=ignoreboth
+
+
 # Command Prompt
 # Use a timer for the previous command
 
@@ -37,8 +41,7 @@ set_prompt () {
     PS1='\[\e[0m\]\[\e[0;38;5;244;48;5;236m\]╭─ \[\e[0;38;5;40;48;5;236m\]\t\[\e[0;3;38;5;244;48;5;236m\]'
     PS1+=' ${timer_show} '
     if [[ $EXIT -gt 0 ]]; then
-        PS1+="\[\e[0;38;5;197;48;5;236m\]✘\[\e0${EXIT}" # red x with error status
-        #PS1+="\e[1;41m ✘ ${EXIT}" # red x with error status
+        PS1+="\[\e[0;38;5;197;48;5;236m\]✘ \[\e0${EXIT}" # red x with error status
     else
         PS1+="\[\e[0;38;5;40;48;5;236m\]✔\[\e0" # green tick
     fi
@@ -58,8 +61,8 @@ export PS2='\[\e[0;38;5;244;48;5;236m\]    \[\e[0m\] \[\e0'
 
 
 # Aliases
-alias ll="ls -alGhF --color=auto"
-command -v ls > /dev/null && alias ls='ls --color=auto'
+alias ll="ls -alhGF"
+command -v ls > /dev/null && alias ls='ls -aGFh'
 command -v grep > /dev/null && alias grep='grep --color=auto'
 command -v diff > /dev/null && alias diff='diff --color=auto'
 export EDITOR=vim
