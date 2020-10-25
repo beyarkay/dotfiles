@@ -61,10 +61,10 @@ export PS2='\[\e[0;38;5;244;48;5;236m\]    \[\e[0m\] \[\e0'
 
 
 # Aliases
-alias ll="ls -alhGF"
+alias ll="ls -alhGF --color=auto"
 alias vims="vim -S"
-alias clear="clear && ls -a"
-command -v ls > /dev/null && alias ls='ls -aGFh'
+alias clear="clear && ls -a --color=auto"
+command -v ls > /dev/null && alias ls='ls -aGFh --color=auto'
 command -v grep > /dev/null && alias grep='grep --color=auto'
 command -v diff > /dev/null && alias diff='diff --color=auto'
 export EDITOR=vim
