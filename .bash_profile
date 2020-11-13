@@ -65,7 +65,7 @@ alias ll="ls -alhGF --color=auto"
 alias vims="vim -S"
 alias clear="clear && ls -a --color=auto"
 command -v ls > /dev/null && alias ls='ls -aGFh --color=auto'
-command -v grep > /dev/null && alias grep='grep --color=auto'
+command -v grep > /dev/null && alias grep='grep -n --color=auto'
 command -v diff > /dev/null && alias diff='diff --color=auto'
 export EDITOR=vim
 export VISUAL=vim
