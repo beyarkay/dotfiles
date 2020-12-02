@@ -8,12 +8,11 @@ HISTCONTROL=ignoreboth
 
 
 # Aliases
-alias ll="ls -alhGF"
+alias ll="ls -atlhGF"
 alias vims="vim -S"
 alias clear="clear && ls -a"
-command -v ls > /dev/null && alias ls='ls -aGFh'
-command -v grep > /dev/null && alias grep='grep -n --color=auto'
-command -v diff > /dev/null && alias diff='diff --color=auto'
+alias grep='grep -n --color=auto'
+alias diff='diff --color=auto'
 export EDITOR=vim
 export VISUAL=vim
 export PATH=$PATH:~/drivers/chromedriver
