@@ -1,20 +1,20 @@
-TO_COPY=".bash_profile .gitconfig .gitmessage .vimrc .zshrc "
+TO_COPY=".ssh .bash_profile .gitconfig .gitmessage .vimrc .zshrc "
 TO_SOURCE=".bash_profile .zshrc"
 for f in $TO_COPY 
 do 
-    echo "$f"
+    echo "COPYING: $f"
     if [[ -f "~/$f" ]]; then
-       echo "Moving existing filoe ~/$f to ~/old_$f"
+       echo "Moving existing file ~/$f to ~/old_$f"
        mv ~/$f "~/old_$f"
     fi
-    cp $f ~/$f
+    cp -r $f ~/$f
 done
 
 # Now Source the relevant files
 for f in $TO_SOURCE 
 do 
     cd ~
-    echo "$f"
+    echo "SOURCING: $f"
     if [[ -f "~/$f" ]]; then
        echo "Sourcing ~/$f"
        source $f
