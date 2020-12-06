@@ -1,4 +1,5 @@
 set relativenumber
+set incsearch
 set timeoutlen=200
 set backspace=indent,eol,start
 set history=1000
