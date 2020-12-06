@@ -13,9 +13,11 @@ done
 # Now Source the relevant files
 for f in $TO_SOURCE 
 do 
+    cd ~
     echo "$f"
     if [[ -f "~/$f" ]]; then
        echo "Sourcing ~/$f"
-       source ~/$f
+       source $f
     fi
+    cd ~/.dotfiles
 done
