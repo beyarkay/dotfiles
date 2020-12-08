@@ -1,5 +1,5 @@
 set autoindent
-set autowrite
+set autowriteall
 set background=dark
 set backspace=indent,eol,start
 set cursorline
