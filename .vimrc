@@ -1,4 +1,5 @@
 set autoindent
+set autowrite
 set background=dark
 set backspace=indent,eol,start
 set cursorline
@@ -19,7 +20,6 @@ set shiftwidth=4
 set sidescrolloff=5
 set smartcase
 set tabstop=4
-set textwidth=72
 set timeoutlen=200
 set title
 syntax on
