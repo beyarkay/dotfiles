@@ -8,6 +8,7 @@ HISTCONTROL=ignoreboth
 
 
 # Aliases
+alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 alias ll="ls -atlhGF"
 alias vims="vim -S"
 alias clear="clear && ls -a"
