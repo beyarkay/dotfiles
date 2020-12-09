@@ -47,15 +47,6 @@ function cd() {
 local time='%*'
 local host_machine='%n@%M'
 local delta='_._ms'
-local git_branch=''
-local git_changes=''
-local git_string='| no git '
-if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)"=="true" ]; then
-    git_branch="$(git branch 2>/dev/null | colrm 1 2)"
-    git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
-    git_string='| git '
-    
-fi
 local curr_dir='%~' 
 local BG_GREY='236'
 local FG_GREY='244'
@@ -88,8 +79,19 @@ function precmd() {
     export RPROMPT="%F{${FG_GREY}}${s}${s_unit}${ms}${ms_unit}%F{${FG_GREEN}} ${errors} %F{${FG_GREY}}%{$reset_color%}"
     unset timer
   fi
+
+  local git_branch=''
+  local git_changes=''
+  local git_string=''
+  if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
+      git_branch="$(git branch 2>/dev/null | colrm 1 2)"
+      git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
+      git_string='| git '
+      
+  fi
+  PROMPT="%K{${BG_GREY}}%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time} %F{${FG_GREY}}| ssh %F{${FG_CYAN}}${host_machine}%F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes} %F{${FG_GREY}}| cd %F{${FG_DEEPBLUE}}${curr_dir}%F{${FG_GREY}}"$'\n'"╰>%K{NO_BG}%F{WHITE} "
 }
 
-PROMPT="%K{${BG_GREY}}%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time} %F{${FG_GREY}}| ssh %F{${FG_CYAN}}${host_machine} %F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes} %F{${FG_GREY}}| cd %F{${FG_DEEPBLUE}}${curr_dir}%F{${FG_GREY}}"$'\n'"╰>%K{NO_BG}%F{WHITE} "
+PROMPT="%K{${BG_GREY}}%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time} %F{${FG_GREY}}| ssh %F{${FG_CYAN}}${host_machine}%F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes} %F{${FG_GREY}}| cd %F{${FG_DEEPBLUE}}${curr_dir}%F{${FG_GREY}}"$'\n'"╰>%K{NO_BG}%F{WHITE} "
 setopt promptsubst
 
