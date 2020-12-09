@@ -6,8 +6,8 @@ export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
 # Don't put duplicated lines, or lines starting with a space ' ' into the history
 HISTCONTROL=ignoreboth
 
-
 # Aliases
+alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 alias ll="ls -atlhGF"
 alias vims="vim -S"
 alias clear="clear && ls -a"
@@ -95,3 +95,5 @@ function precmd() {
 PROMPT="%K{${BG_GREY}}%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time} %F{${FG_GREY}}| ssh %F{${FG_CYAN}}${host_machine}%F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes} %F{${FG_GREY}}| cd %F{${FG_DEEPBLUE}}${curr_dir}%F{${FG_GREY}}"$'\n'"╰>%K{NO_BG}%F{WHITE} "
 setopt promptsubst
 
+# Enable zsh Autosuggestions
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
