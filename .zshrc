@@ -17,7 +17,6 @@ export EDITOR=vim
 export VISUAL=vim
 export PATH=$PATH:~/drivers/chromedriver
 
-
 # Colour the man pages
 export LESS_TERMCAP_mb=$'\e[1;32m'
 export LESS_TERMCAP_md=$'\e[1;32m'
@@ -48,9 +47,15 @@ function cd() {
 local time='%*'
 local host_machine='%n@%M'
 local delta='_._ms'
-local git_branch="$(git branch 2>/dev/null | colrm 1 2)"
-local git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
-local git_string="$(if [[ -d .git ]]; then echo 'git exists'; else echo 'no git'; fi)"
+local git_branch=''
+local git_changes=''
+local git_string='| no git '
+if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)"=="true" ]; then
+    git_branch="$(git branch 2>/dev/null | colrm 1 2)"
+    git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
+    git_string='| git '
+    
+fi
 local curr_dir='%~' 
 local BG_GREY='236'
 local FG_GREY='244'
@@ -63,6 +68,28 @@ local WHITE='255'
 local FG_RED='196'
 local errors='$(code=$?; if [[ $code -gt 0 ]]; then echo "%F{${FG_RED}}✘ $code"; else echo "✔"; fi)'
 
-PROMPT="%K{${BG_GREY}}%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time} %F{${FG_GREY}}${delta}%F{${FG_GREEN}} ${errors} %F{${FG_GREY}}| ssh %F{${FG_CYAN}}${host_machine} %F{${FG_GREY}}| git ${git_string} %F{${FG_TURQUOISE}}${git_branch}${git_changes} %F{${FG_GREY}}| cd %F{${FG_DEEPBLUE}}${curr_dir}%F{${FG_GREY}}"$'\n'"╰>%K{NO_BG}%F{WHITE} "
+function preexec() {
+  timer=$(($(date +%s%0N)/1000000))
+}
+
+function precmd() {
+  if [ $timer ]; then
+    now=$(($(date +%s%0N)/1000000))
+    s=''
+    ms=$(($now-$timer))
+    s_unit=''
+    ms_unit='ms'
+    if [ $ms -gt 999 ]; then
+        s=$(($ms/1000))
+        ms=$(($ms%1000))
+        s_unit='s '
+    fi
+
+    export RPROMPT="%F{${FG_GREY}}${s}${s_unit}${ms}${ms_unit}%F{${FG_GREEN}} ${errors} %F{${FG_GREY}}%{$reset_color%}"
+    unset timer
+  fi
+}
+
+PROMPT="%K{${BG_GREY}}%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time} %F{${FG_GREY}}| ssh %F{${FG_CYAN}}${host_machine} %F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes} %F{${FG_GREY}}| cd %F{${FG_DEEPBLUE}}${curr_dir}%F{${FG_GREY}}"$'\n'"╰>%K{NO_BG}%F{WHITE} "
 setopt promptsubst
 
