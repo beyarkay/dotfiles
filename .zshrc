@@ -1,3 +1,26 @@
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$PATH:~/.toolbox/bin
+# Path to your oh-my-zsh installation.
+export ZSH="/Users/boydkane/.oh-my-zsh"
+
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(
+  git
+  iterm2
+  macports
+  man
+  osx
+  python
+  composer
+  zsh-syntax-highlighting
+  zsh-autosuggestions
+)
+source $ZSH/oh-my-zsh.sh
 # Enable colours for macOS
 export CLICOLOR=1
 # Use linux-style colors
@@ -12,6 +35,9 @@ alias ll="ls -atlhGF"
 alias vims="vim -S"
 alias clear="clear && ls -a"
 alias grep='grep -n --color=auto'
+alias df='df -h'            # Disk free, in gigabytes, not bytes
+alias du='du -h -c'         # Calculate total disk usage for a folder
+alias ping='ping -c 5'      # Pings with 5 packets, not unlimited
 alias diff='diff --color=auto'
 export EDITOR=vim
 export VISUAL=vim
