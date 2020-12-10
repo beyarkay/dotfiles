@@ -5,6 +5,11 @@ export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
 
 # Don't put duplicated lines, or lines starting with a space ' ' into the history
 HISTCONTROL=ignoreboth
+# Use ESC to edit the current command line:
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '\033' edit-command-line
+
 
 # Aliases
 alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
@@ -60,12 +65,12 @@ local FG_RED='196'
 local errors='$(code=$?; if [[ $code -gt 0 ]]; then echo "%F{${FG_RED}}✘ $code"; else echo "✔"; fi)'
 
 function preexec() {
-  timer=$(($(date +%s%0N)/1000000))
+  timer=$(($(\date +%s%0N)/1000000))
 }
 
 function precmd() {
   if [ $timer ]; then
-    now=$(($(date +%s%0N)/1000000))
+    now=$(($(\date +%s%0N)/1000000))
     s=''
     ms=$(($now-$timer))
     s_unit=''
