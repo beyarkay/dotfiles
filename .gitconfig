@@ -2,7 +2,11 @@
 	name = beyarkay
 	email = boydrkane@gmail.com
 [color]
-    ui = auto
+	ui = auto
+[push]
+	default = simple
+[core]
+    pager = less -FMRiX
 [core]
     pager = less -FMRiX
 [alias]
@@ -12,3 +16,5 @@
         last          = log -1 HEAD
 [commit]
 	template = /Users/boydkane/.gitmessage
+[pull]
+	rebase = false
