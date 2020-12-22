@@ -8,6 +8,7 @@ set foldlevel=99
 set foldmethod=indent
 set history=1000
 set hlsearch	
+set ignorecase
 set incsearch
 set laststatus=2
 set linebreak
@@ -18,6 +19,7 @@ set scrolloff=5
 set shiftround
 set shiftwidth=4
 set sidescrolloff=5
+set smartcase
 set smartcase
 set tabstop=4
 set timeoutlen=200

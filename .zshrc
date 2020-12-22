@@ -23,16 +23,17 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 # Enable colours for macOS
 export CLICOLOR=1
+
 # Use linux-style colors
 export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
 
 # Don't put duplicated lines, or lines starting with a space ' ' into the history
 HISTCONTROL=ignoreboth
+
 # Use ESC to edit the current command line:
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '\033' edit-command-line
-
 
 # Aliases
 # brew install coreutils # - will install gdate (required to get ms precision on MacOS)
