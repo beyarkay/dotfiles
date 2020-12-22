@@ -137,6 +137,19 @@ function precmd() {
   prompt="%K{${BG_GREY}}"
   local time='%*'
   prompt+="%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time}"
+
+  prompt+="%F{${FG_GREY}}"
+  
+  jobscount() {
+    local stopped=$(jobs -sp | wc -l)
+    local running=$(jobs -rp | wc -l)
+    ((running)) && echo -n " ${running}r"
+    ((stopped)) && echo -n " ${stopped}s"
+  }
+
+  prompt+='$(jobscount)'
+
+  # prompt+='`if [ -n "$(jobs -p)" ]; then echo " (\j) "; fi`'
   local host_machine='%n@%M'
   prompt+="%F{${FG_GREY}} ⎮ ssh %F{${FG_CYAN}}${host_machine}"
   local git_branch=''
@@ -160,4 +173,5 @@ function precmd() {
 setopt promptsubst
 
 # Enable zsh Autosuggestions
+# git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
