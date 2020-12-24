@@ -44,7 +44,7 @@ else
 fi
 alias bb="brazil-build"
 alias bbr="brazil-build release"
-alias ll="ls -atlhGF"
+alias ll="ls -alhGF"
 alias vims="vim -S"
 alias clear="clear && ls -a"
 alias grep='grep -n --color=auto'
