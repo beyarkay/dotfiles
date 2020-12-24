@@ -51,7 +51,7 @@ alias grep='grep -n --color=auto'
 alias df='df -h'            # Disk free, in gigabytes, not bytes
 alias du='du -h -c'         # Calculate total disk usage for a folder
 alias ping='ping -c 5'      # Pings with 5 packets, not unlimited
-alias diff='diff --color=auto'
+# alias diff='diff --color=auto'
 export EDITOR=vim
 export VISUAL=vim
 export PATH=$PATH:~/drivers/chromedriver
@@ -84,6 +84,7 @@ function cd() {
 
 # Setup the prompt
 local BG_GREY='236'
+local FG_RED='160'
 local FG_GREY='244'
 local FG_GREEN='46'
 local FG_CYAN='51'
@@ -138,6 +139,10 @@ function precmd() {
   fi
 
   prompt="%K{${BG_GREY}}"
+  prompt+="%F{${FG_RED}}"
+  NEWLINE=$'\n'
+  prompt+=$(ps aux | awk 'NR==2{if($3>=60.0) print "kill " $2 " (" $3 "%% " $11 ")${NEWLINE}"}')
+  prompt+="%K{${BG_GREY}}"
   local time='%*'
   prompt+="%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time}"
 
