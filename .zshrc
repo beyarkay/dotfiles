@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH=$PATH:~/.toolbox/bin
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/boydkane/.oh-my-zsh"
+# export ZSH="/Users/boydkane/.oh-my-zsh"
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
@@ -43,6 +43,7 @@ else
   alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 fi
 alias plz="sudo"            # For a wholesome experience
+alias brc="brazil-recursive-cmd"
 alias bb="brazil-build"
 alias bbr="brazil-build release"
 alias ll="ls -alhGF"
@@ -204,32 +205,6 @@ function precmd() {
     prompt+=" %F{${FG_GREY}}"$'\n'"╰→"
     prompt+="%K{NO_BG}%F{WHITE} "
   
-  jobscount() {
-    local stopped=$(jobs -sp | wc -l)
-    local running=$(jobs -rp | wc -l)
-    ((running)) && echo -n " ${running}r"
-    ((stopped)) && echo -n " ${stopped}s"
-  }
-
-  prompt+='$(jobscount)'
-
-  # prompt+='`if [ -n "$(jobs -p)" ]; then echo " (\j) "; fi`'
-  local host_machine='%n@%M'
-  prompt+="%F{${FG_GREY}} ⎮ ssh %F{${FG_CYAN}}${host_machine}"
-  local git_branch=''
-  local git_changes=''
-  local git_string=''
-  if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
-      git_branch="$(git branch --show-current 2>/dev/null)"
-      git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
-      git_string=' ⎮ git co '
-  fi
-  prompt+="%F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes}"
-  local curr_dir='%~' 
-  prompt+="%F{${FG_GREY}} ⎮ cd %F{${FG_DEEPBLUE}}${curr_dir}"
-  prompt+=" %F{${FG_GREY}}"$'\n'"╰→"
-  prompt+="%K{NO_BG}%F{WHITE} "
-
   export PROMPT=$prompt
 }
 
