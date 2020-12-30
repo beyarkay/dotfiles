@@ -15,10 +15,11 @@ set linebreak
 set noerrorbells
 set number
 set relativenumber
-set scrolloff=5
+set scrolloff=5                             ; Make vim start scrolling {scrolloff} characters before the end of the screen
 set shiftround
 set shiftwidth=4
-set sidescrolloff=5
+set sidescroll=1                            ; Make vim horizontal scroll one char at a time, instead of jumping 100 characters
+set sidescrolloff=10                        ; Make vim start horizontal scrolling {sidescrolloff} characters before the edge of the screen
 set smartcase
 set smartcase
 set tabstop=4
