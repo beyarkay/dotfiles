@@ -61,6 +61,7 @@ export PS2='\[\e[0;38;5;244;48;5;236m\]    \[\e[0m\] \[\e0'
 
 
 # Aliases
+alias plz="sudo"            # For a wholesome experience
 alias ll="ls -alhGF --color=auto"
 alias vims="vim -S"
 alias clear="clear && ls -a --color=auto"

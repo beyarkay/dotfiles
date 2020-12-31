@@ -42,6 +42,7 @@ if [ -x "$(command -v gdate)" ]; then
 else
   alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 fi
+alias plz="sudo"            # For a wholesome experience
 alias ll="ls -atlhGF"
 alias vims="vim -S"
 alias clear="clear && ls -a"
