@@ -43,7 +43,9 @@ else
   alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 fi
 alias plz="sudo"            # For a wholesome experience
-alias ll="ls -atlhGF"
+alias bb="brazil-build"
+alias bbr="brazil-build release"
+alias ll="ls -alhGF"
 alias vims="vim -S"
 alias clear="clear && ls -a"
 alias grep='grep -n --color=auto'
@@ -88,7 +90,7 @@ local FG_GREY='244'
 local FG_GREEN='46'
 local FG_CYAN='51'
 local FG_TURQUOISE='39'
-local FG_DEEPBLUE='27'
+local FG_DEEPBLUE='75'
 local NO_BG='234'
 local WHITE='255'
 local FG_RED='196'
@@ -163,7 +165,7 @@ function precmd() {
   local git_changes=''
   local git_string=''
   if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
-      git_branch="$(git branch 2>/dev/null | colrm 1 2)"
+      git_branch="$(git branch --show-current 2>/dev/null)"
       git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
       git_string=' ⎮ git '
   fi
