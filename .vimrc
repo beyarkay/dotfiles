@@ -1,3 +1,5 @@
+autocmd BufNewFile,BufRead *.md set filetype=markdown   " Make sure ViM knows what markdown is
+autocmd Filetype markdown set foldmethod=manual     " Use manual folding for *.md files
 set autoindent
 set autowriteall
 set background=dark
@@ -15,11 +17,11 @@ set linebreak
 set noerrorbells
 set number
 set relativenumber
-set scrolloff=5                             ; Make vim start scrolling {scrolloff} characters before the end of the screen
+set scrolloff=5                                 " Make vim start scrolling {scrolloff} characters before the end of the screen
 set shiftround
 set shiftwidth=4
-set sidescroll=1                            ; Make vim horizontal scroll one char at a time, instead of jumping 100 characters
-set sidescrolloff=10                        ; Make vim start horizontal scrolling {sidescrolloff} characters before the edge of the screen
+set sidescroll=1                                " Make vim horizontal scroll one char at a time, instead of jumping 100 characters
+set sidescrolloff=10                            " Make vim start horizontal scrolling {sidescrolloff} characters before the edge of the screen
 set smartcase
 set smartcase
 set tabstop=4
