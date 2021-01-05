@@ -20,7 +20,7 @@ plugins=(
   zsh-syntax-highlighting
   zsh-autosuggestions
 )
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
 # Enable colours for macOS
 export CLICOLOR=1
 
@@ -95,88 +95,118 @@ local NO_BG='234'
 local WHITE='255'
 local FG_RED='196'
 
+
+function here {
+  paths=(${(s:/:)PWD})
+
+  cur_path='/'
+  cur_short_path='/'
+  for directory in ${paths[@]}
+  do
+    cur_dir=''
+    for (( i=0; i<${#directory}; i++ )); do
+      cur_dir+="${directory:$i:1}"
+      matching=("$cur_path"/"$cur_dir"*/)
+      if [[ ${#matching[@]} -eq 1 ]] && [ $i -ge 4 ]; then
+        break
+      fi
+    done
+    cur_short_path+="${cur_dir}*/"
+    cur_path+="$directory/"
+  done
+
+  printf "${cur_short_path: : -1}"
+  echo
+}
+
+
 function preexec() {
-  if [ -x "$(command -v gdate)" ]; then
-    timer=$(($(\gdate +%s%0N)/1000000))
-  else
-    timer=$(($(\date +%s%0N)/1000000))
-  fi
+    if [ -x "$(command -v gdate)" ]; then
+        timer=$(($(\gdate +%s%0N)/1000000))
+    else
+        timer=$(($(\date +%s%0N)/1000000))
+            fi
 }
 
 function precmd() {
-  local errors='$(code=$?; if [[ $code -gt 0 ]]; then echo "%F{${FG_RED}}✘ $code"; else echo "✔"; fi)'
-  if [ $timer ]; then
-    if [ -x "$(command -v gdate)" ]; then
-      now=$(($(\gdate +%s%0N)/1000000))
-    else
-      now=$(($(\date +%s%0N)/1000000))
+    local errors='$(code=$?; if [[ $code -gt 0 ]]; then echo "%F{${FG_RED}}✘ $code"; else echo "✔"; fi)'
+    if [ $timer ]; then
+      if [ -x "$(command -v gdate)" ]; then
+        now=$(($(\gdate +%s%0N)/1000000))
+      else
+        now=$(($(\date +%s%0N)/1000000))
+      fi
+      m=''
+      s=''
+      ms=$(($now-$timer))
+      m_unit=''
+      s_unit=''
+      ms_unit='ms'
+      if [ $ms -ge 1000 ]; then
+          s=$(($ms/1000))
+          ms=$(($ms%1000))
+          s_unit='s '
+      fi
+      if [ $s -ge 60 2>/dev/null ]; then
+          m=$(($s/60))
+          s=$(($s%60))
+          m_unit='m '
+      fi
+      rprompt="%F{${FG_GREY}}"
+      rprompt+="${m}${m_unit}"
+      rprompt+="${s}${s_unit}"
+      rprompt+="${ms}${ms_unit}"
+      rprompt+="%F{${FG_GREEN}} ${errors}"
+      rprompt+="%F{${FG_GREY}}"
+      rprompt+="%{$reset_color%}"
+      
+      export RPROMPT=$rprompt
+      unset timer
     fi
-    m=''
-    s=''
-    ms=$(($now-$timer))
-    m_unit=''
-    s_unit=''
-    ms_unit='ms'
-    if [ $ms -ge 1000 ]; then
-        s=$(($ms/1000))
-        ms=$(($ms%1000))
-        s_unit='s '
-    fi
-    if [ $s -ge 60 2>/dev/null ]; then
-        m=$(($s/60))
-        s=$(($s%60))
-        m_unit='m '
-    fi
-    rprompt="%F{${FG_GREY}}"
-    rprompt+="${m}${m_unit}"
-    rprompt+="${s}${s_unit}"
-    rprompt+="${ms}${ms_unit}"
-    rprompt+="%F{${FG_GREEN}} ${errors}"
-    rprompt+="%F{${FG_GREY}}"
-    rprompt+="%{$reset_color%}"
-    
-    export RPROMPT=$rprompt
-    unset timer
-  fi
-
-  prompt="%K{${BG_GREY}}"
-  prompt+="%F{${FG_RED}}"
-  NEWLINE=$'\n'
-  prompt+=$(ps aux | awk 'NR==2{if($3>=60.0) print "kill " $2 " (" $3 "%% " $11 ")${NEWLINE}"}')
-  prompt+="%K{${BG_GREY}}"
-  local time='%*'
-  prompt+="%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time}"
-
-  prompt+="%F{${FG_GREY}}"
   
-  jobscount() {
-    local stopped=$(jobs -sp | wc -l)
-    local running=$(jobs -rp | wc -l)
-    ((running)) && echo -n " ${running}r"
-    ((stopped)) && echo -n " ${stopped}s"
-  }
-
-  prompt+='$(jobscount)'
-
-  # prompt+='`if [ -n "$(jobs -p)" ]; then echo " (\j) "; fi`'
-  local host_machine='%n@%M'
-  prompt+="%F{${FG_GREY}} ⎮ ssh %F{${FG_CYAN}}${host_machine}"
-  local git_branch=''
-  local git_changes=''
-  local git_string=''
-  if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
-      git_branch="$(git branch --show-current 2>/dev/null)"
-      git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
-      git_string=' ⎮ git '
-  fi
-  prompt+="%F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes}"
-  local curr_dir='%~' 
-  prompt+="%F{${FG_GREY}} ⎮ cd %F{${FG_DEEPBLUE}}${curr_dir}"
-  prompt+=" %F{${FG_GREY}}"$'\n'"╰→"
-  prompt+="%K{NO_BG}%F{WHITE} "
-
-  export PROMPT=$prompt
+    prompt="%K{${BG_GREY}}"
+    prompt+="%F{${FG_RED}}"
+    NEWLINE=$'\n'
+    prompt+=$(ps aux | awk 'NR==2{if($3>=60.0) print "kill " $2 " (" $3 "%% " $11 ")${NEWLINE}"}')
+    prompt+="%K{${BG_GREY}}"
+    local time='%*'
+    prompt+="%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time}"
+  
+    prompt+="%F{${FG_GREY}}"
+    
+    jobscount() {
+      local stopped=$(jobs -sp | wc -l)
+      local running=$(jobs -rp | wc -l)
+      ((running)) && echo -n " ${running}r"
+      ((stopped)) && echo -n " ${stopped}s"
+    }
+  
+    prompt+='$(jobscount)'
+  
+    # prompt+='`if [ -n "$(jobs -p)" ]; then echo " (\j) "; fi`'
+    local host_machine='%n@%M'
+    prompt+="%F{${FG_GREY}} ⎮ ssh %F{${FG_CYAN}}${host_machine}"
+    local git_branch=''
+    local git_changes=''
+    local git_string=''
+    if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
+        git_branch="$(git branch --show-current 2>/dev/null)"
+        git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
+        git_string=' ⎮ git '
+    fi
+    prompt+="%F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes}"
+    local curr_dir='%~' 
+    pwdir=$(pwd)
+    if [ "${#pwdir}" -gt 32 ]; then
+        curr_dir=$(here)
+    fi
+    prompt+="%F{${FG_GREY}} ⎮ cd %F{${FG_DEEPBLUE}}${curr_dir}"
+    prompt+=" %F{${FG_GREY}}"$'\n'"╰→"
+    prompt+="%K{NO_BG}%F{WHITE} "
+  
+    export PROMPT=$prompt
 }
+
 
 # PROMPT="%K{${BG_GREY}}%F{${FG_GREY}}╭─ %F{${FG_GREEN}}${time} %F{${FG_GREY}}| ssh %F{${FG_CYAN}}${host_machine}%F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes} %F{${FG_GREY}}| cd %F{${FG_DEEPBLUE}}${curr_dir}%F{${FG_GREY}}"$'\n'"╰>%K{NO_BG}%F{WHITE} "
 setopt promptsubst
