@@ -1,5 +1,26 @@
 autocmd BufNewFile,BufRead *.md set filetype=markdown   " Make sure ViM knows what markdown is
 autocmd Filetype markdown set foldmethod=manual     " Use manual folding for *.md files
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+" Run PlugInstall if there are missing plugins
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \| PlugInstall --sync | source $MYVIMRC
+\| endif
+call plug#begin('~/.vim/plugged')
+" OneHalfDark Theme
+Plug 'sonph/onehalf', { 'rtp': 'vim' }
+call plug#end()
+
+
+autocmd BufNewFile,BufRead *.md set filetype=markdown   " Make sure ViM knows what markdown is
+autocmd Filetype markdown set foldmethod=manual     " Use manual folding for *.md files
+
+set t_Co=256
+colorscheme onehalfdark
+
 set autoindent
 set autowriteall
 set background=dark
