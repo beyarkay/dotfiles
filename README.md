@@ -6,6 +6,7 @@ I've kept dependencies or required installs to an absolute minimum as I'm often 
 My favorite is probably automatically `ls` after a `cd`, that or the prompt will include a line like `kill 3947 (86.3% /Applications/Google Chrome.app)` if any application starts using more than 75% CPU or so.
 
 ## TODO
+* Maybe add a timer option, where `timer 10` would start a timer in the background for 10 seconds and then add a readout of the timer progress to PROMPT?
 * Maybe shorten very long `pwd` lines by using glob expansion like:
     * `cd ~/p*/genghis_s*/g*` for `cd ~/public_html/genghis_server/games`
 * Maybe use colours to convey data, instead of just adding more and more characters?
