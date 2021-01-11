@@ -1,4 +1,4 @@
-TO_COPY=".ssh .bash_profile .gitconfig .gitmessage .vimrc .zshrc "
+TO_COPY=".ssh .bash_profile .gitmessage .vimrc .zshrc "
 TO_SOURCE=".bash_profile .zshrc"
 for f in $TO_COPY 
 do 
