@@ -85,6 +85,7 @@ function cd() {
 }
 
 # Setup the prompt
+local pipe_char='&&'
 local BG_GREY='236'
 local FG_RED='160'
 local FG_GREY='244'
@@ -183,25 +184,27 @@ function precmd() {
     }
   
     prompt+='$(jobscount)'
-  
+
     # prompt+='`if [ -n "$(jobs -p)" ]; then echo " (\j) "; fi`'
     local host_machine='%n@%M'
-    prompt+="%F{${FG_GREY}} ⎮ ssh %F{${FG_CYAN}}${host_machine}"
+    prompt+="%F{${FG_GREY}} ${pipe_char} ssh %F{${FG_CYAN}}${host_machine}"
+
+    local curr_dir='%~' 
+    pwdir=$(pwd)
+    if [ "${#pwdir}" -gt 32 ]; then
+        curr_dir=$(here)
+    fi
+    prompt+="%F{${FG_GREY}} ${pipe_char} cd %F{${FG_DEEPBLUE}}${curr_dir}"
+  
     local git_branch=''
     local git_changes=''
     local git_string=''
     if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
         git_branch="$(git branch --show-current 2>/dev/null)"
         git_changes='$(if [[ $(git diff HEAD --name-only 2> /dev/null | wc -l) -ne 0 ]]; then echo "*"; fi)'
-        git_string=' ⎮ git '
+        git_string=' ${pipe_char} git co '
     fi
     prompt+="%F{${FG_GREY}}${git_string}%F{${FG_TURQUOISE}}${git_branch}${git_changes}"
-    local curr_dir='%~' 
-    pwdir=$(pwd)
-    if [ "${#pwdir}" -gt 32 ]; then
-        curr_dir=$(here)
-    fi
-    prompt+="%F{${FG_GREY}} ⎮ cd %F{${FG_DEEPBLUE}}${curr_dir}"
     prompt+=" %F{${FG_GREY}}"$'\n'"╰→"
     prompt+="%K{NO_BG}%F{WHITE} "
   
