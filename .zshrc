@@ -42,6 +42,8 @@ if [ -x "$(command -v gdate)" ]; then
 else
   alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 fi
+alias watch="watch -d"      # Highlight changes
+alias free="free -h"        # Use human-readable number formats
 alias plz="sudo"            # For a wholesome experience
 alias brc="brazil-recursive-cmd"
 alias bb="brazil-build"
