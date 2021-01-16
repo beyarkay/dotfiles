@@ -1,15 +1,12 @@
 [user]
-	name = boydkane
-	email = boydkane@amazon.com
+	name = beyarkay
+	email = boydrkane@gmail.com
 
 [color]
 	ui = auto
 
 [push]
 	default = simple
-
-[core]
-    pager = less -FMRiX
 
 [core]
     pager = less -FMRiX
