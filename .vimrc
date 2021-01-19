@@ -1,5 +1,6 @@
 autocmd BufNewFile,BufRead *.md set filetype=markdown   " Make sure ViM knows what markdown is
 autocmd Filetype markdown set foldmethod=manual     " Use manual folding for *.md files
+autocmd Filetype ruby set foldmethod=manual     " Use manual folding for *.md files
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
