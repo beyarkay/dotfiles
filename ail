@@ -1,0 +1,1 @@
+# A script similar to `tail`, but it updates just the last -n lines every -s seconds
