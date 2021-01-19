@@ -42,8 +42,6 @@ if [ -x "$(command -v gdate)" ]; then
 else
   alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 fi
-alias watch="watch -d"      # Highlight changes
-alias free="free -h"        # Use human-readable number formats
 alias plz="sudo"            # For a wholesome experience
 alias brc="brazil-recursive-cmd"
 alias bb="brazil-build"
@@ -107,15 +105,23 @@ function here {
   cur_short_path='/'
   for directory in ${paths[@]}
   do
-    cur_dir=''
-    for (( i=0; i<${#directory}; i++ )); do
-      cur_dir+="${directory:$i:1}"
-      matching=("$cur_path"/"$cur_dir"*/)
-      if [[ ${#matching[@]} -eq 1 ]] && [ $i -ge 4 ]; then
-        break
-      fi
-    done
-    cur_short_path+="${cur_dir}*/"
+    if [ $directory = ${paths[-1]} ]; then
+        cur_short_path+="${directory}/"
+    else 
+        cur_dir=''
+        for (( i=0; i<${#directory}; i++ )); do
+            cur_dir+="${directory:$i:1}"
+            matching=("$cur_path"/"$cur_dir"*/)
+            if [[ ${#matching[@]} -eq 1 ]] && [ $i -gt 3 ]; then
+                break
+            fi
+        done
+        if [ ${#cur_dir} -gt 3 ]; then
+            cur_short_path+="${cur_dir}*/"
+        else
+            cur_short_path+="${cur_dir}/"
+        fi
+    fi
     cur_path+="$directory/"
   done
 
