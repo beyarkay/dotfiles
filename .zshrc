@@ -42,6 +42,7 @@ if [ -x "$(command -v gdate)" ]; then
 else
   alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 fi
+alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
 alias plz="sudo"            # For a wholesome experience
 alias brc="brazil-recursive-cmd"
 alias bb="brazil-build"
