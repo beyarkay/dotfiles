@@ -1,6 +1,7 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH=$PATH:~/.toolbox/bin
+export PATH="/apollo/env/envImprovement/bin:$PATH"
 # Path to your oh-my-zsh installation.
 # export ZSH="/Users/boydkane/.oh-my-zsh"
 
