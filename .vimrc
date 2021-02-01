@@ -1,6 +1,6 @@
 autocmd BufNewFile,BufRead *.md set filetype=markdown   " Make sure ViM knows what markdown is
 autocmd Filetype markdown set foldmethod=manual     " Use manual folding for *.md files
-autocmd Filetype ruby set foldmethod=manual     " Use manual folding for *.md files
+
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -11,6 +11,10 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
   \| PlugInstall --sync | source $MYVIMRC
 \| endif
 call plug#begin('~/.vim/plugged')
+" Git gutter for git diffs
+Plug 'mhinz/vim-signify'
+" default updatetime 4000ms is not good for async update
+set updatetime=100
 " OneHalfDark Theme
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 call plug#end()
