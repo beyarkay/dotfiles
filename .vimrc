@@ -1,5 +1,16 @@
-autocmd BufNewFile,BufRead *.md set filetype=markdown   " Make sure ViM knows what markdown is
-autocmd Filetype markdown set foldmethod=manual     " Use manual folding for *.md files
+" Setup proper folding for markdown files
+function MarkdownLevel()
+    let h = matchstr(getline(v:lnum), '^#\+')
+    if empty(h)
+        return "="
+    else
+        return ">" . len(h)
+    endif
+endfunction
+au BufEnter *.md setlocal foldexpr=MarkdownLevel()
+au BufEnter *.md setlocal foldmethod=expr
+
+autocmd Filetype ruby set foldmethod=syntax     " Use manual folding for *.md files
 
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -35,7 +46,7 @@ set expandtab
 set foldlevel=99
 set foldmethod=indent
 set history=1000
-set hlsearch	
+set hlsearch
 set ignorecase
 set incsearch
 set laststatus=2
@@ -53,4 +64,5 @@ set smartcase
 set tabstop=4
 set timeoutlen=200
 set title
+set wildmenu
 syntax on
