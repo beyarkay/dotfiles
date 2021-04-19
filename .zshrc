@@ -45,6 +45,7 @@ else
 fi
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
 alias plz="sudo"            # For a wholesome experience
+alias tmus="tmux"           # For fat fingers
 alias brc="brazil-recursive-cmd"
 alias bb="brazil-build"
 alias bbr="brazil-build release"
