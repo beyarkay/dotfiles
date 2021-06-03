@@ -91,6 +91,7 @@ function cd() {
 local pipe_char='&&'
 local BG_GREY='236'
 local FG_RED='160'
+local FG_ORANGE='208'
 local FG_GREY='244'
 local FG_GREEN='46'
 local FG_CYAN='51'
@@ -180,6 +181,8 @@ function precmd() {
     prompt="%K{${BG_GREY}}"
     prompt+="%F{${FG_RED}}"
     NEWLINE=$'\n'
+    prompt+=$(ps aux | awk 'NR==2{if($3>=80.0) print "kill " $2 " (" $3 "%% " $11 ")${NEWLINE}"}')
+    prompt+="%F{${FG_ORANGE}}"
     prompt+=$(ps aux | awk 'NR==2{if($3>=60.0) print "kill " $2 " (" $3 "%% " $11 ")${NEWLINE}"}')
     prompt+="%K{${BG_GREY}}"
     local time='%*'
