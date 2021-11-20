@@ -73,17 +73,18 @@ set updatetime=100
 " OneHalfDark Theme
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
-" Autocomplete style snippit engine
-Plug 'SirVer/ultisnips'
-" Snippet trigger configuration.
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+if has('python')
+    " Autocomplete style snippit engine
+    Plug 'SirVer/ultisnips'
+    " Snippet trigger configuration.
+    let g:UltiSnipsExpandTrigger="<tab>"
+    let g:UltiSnipsJumpForwardTrigger="<tab>"
+    let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
-" Typeing :UltiSnipsEdit will edit the current filetype's snippets, in a
-" window split dependant on context
-"let g:UltiSnipsEditSplit="context"
-
+    " Typeing :UltiSnipsEdit will edit the current filetype's snippets, in a    
+    " window split dependant on context
+    "let g:UltiSnipsEditSplit="context"
+endif
 call plug#end()
 
 " Esc in insert mode
