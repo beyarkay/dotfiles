@@ -6,6 +6,9 @@ echo -e "$RESET[D] Setting up git and github$RED"
 ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
 ln -s ~/.dotfiles/.gitmessage ~/.gitmessage
 echo -e "$RESET"
+echo -e "$RESET[D] Setting up projects directory$RED"
+mkdir ~/projects
+echo -e "$RESET"
 echo -e "$RESET[D] Setting up bash_profile$RED"
 ln -s ~/.dotfiles/.bash_profile ~/.bash_profile
 echo -e "$RESET"
