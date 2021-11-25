@@ -101,3 +101,4 @@ function cd() {
 }
 
 
+PATH=/opt/local/bin:$PATH
