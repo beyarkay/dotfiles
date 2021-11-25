@@ -12,6 +12,13 @@ echo -e "$RESET"
 echo -e "$RESET[D] Setting up bash_profile$RED"
 ln -s ~/.dotfiles/.bash_profile ~/.bash_profile
 echo -e "$RESET"
+echo -e "$RESET[D] Setting up vimrc$RED"
+ln -s ~/.dotfiles/.vimrc ~/.vimrc
+echo -e "$RESET"
+
+echo -e "$RESET[D] Installing rust lang,  cargo, etc$RED"
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+echo -e "$RESET"
 
 echo -e "$BOLD[I] Figuring out which OS we're on, OS TYPE is '$OSTYPE'$RESET"
 # Figure out which OS we're in, and perform OS-specific setup scripts
