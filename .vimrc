@@ -1,4 +1,3 @@
-
 " ------------------------------------------
 "               WRITING THINGS
 " ------------------------------------------
@@ -81,15 +80,11 @@ if has('python')
     let g:UltiSnipsJumpForwardTrigger="<tab>"
     let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
-    " Typeing :UltiSnipsEdit will edit the current filetype's snippets, in a    
+    " Typeing :UltiSnipsEdit will edit the current filetype's snippets, in a
     " window split dependant on context
     "let g:UltiSnipsEditSplit="context"
 endif
 call plug#end()
-
-" Esc in insert mode
-inoremap kj <esc>
-
 
 autocmd BufNewFile,BufRead *.md set filetype=markdown   " Make sure ViM knows what markdown is
 autocmd Filetype markdown set foldmethod=manual     " Use manual folding for *.md files
@@ -101,7 +96,8 @@ set autoindent
 set autowriteall
 set background=dark
 set backspace=indent,eol,start
-set clipboard=unnamed               " Copy to the MacOS Clipboard
+" Copy to the MacOS Clipboard
+set clipboard=unnamed
 set cursorline
 set expandtab
 set foldlevel=99
@@ -114,11 +110,14 @@ set linebreak
 set noerrorbells
 set number
 set relativenumber
-set scrolloff=5                                 " Make vim start scrolling {scrolloff} characters before the end of the screen
+" Make vim start scrolling {scrolloff} characters before the end of the screen
+set scrolloff=2
 set shiftround
 set shiftwidth=4
-set sidescroll=1                                " Make vim horizontal scroll one char at a time, instead of jumping 100 characters
-set sidescrolloff=10                            " Make vim start horizontal scrolling {sidescrolloff} characters before the edge of the screen
+" Make vim horizontal scroll one char at a time, instead of jumping 100 characters
+set sidescroll=1
+" Make vim start horizontal scrolling {sidescrolloff} characters before the edge of the screen
+set sidescrolloff=10
 set smartcase
 set smartcase
 set tabstop=4
