@@ -9,6 +9,9 @@
 # parts or tools as I like, and I can always pipe `yes` to the script if
 # needed.  Each of the different tools asks if it should be installed, and then
 # `sudo` commands are preceded by an explanatory `echo` statement.
+#
+# TODO:
+# 
 # =============================================================================
 
 # ============================================
@@ -107,7 +110,14 @@ echo -e "$RED$BOLD # Set all MacOS preferences not implemented yet"
 # 		- Dock hiding
 # 		- Firefox as default browser
 
-
+echo -ne "$BOLD Install font Iosevka? (y/n): $RESET"
+read -p " " install_iosevka
+if [[ $install_iosevka == [yY] ]]; then
+	echo -e "$RESET$BOLD Installing Iosevka$RESET"
+    brew tap homebrew/cask-fonts
+    brew install --cask font-iosevka
+	echo -e "$BOLD Iosevka installation finished$RESET"
+fi
 
 # ============================
 # Reset colours back to normal
