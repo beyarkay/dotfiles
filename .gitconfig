@@ -33,3 +33,5 @@
 
 [difftool "vimdiff"]
 	cmd = vimdiff \"$LOCAL\" \"$REMOTE\"
+[init]
+    defaultBranch = main
