@@ -1,7 +1,7 @@
 # =============================
 # Zshrc - configuration for zsh
 # =============================
-source define_colours.sh
+source ~/.dotfiles/define_colours.sh
 
 # Enable colours for macOS
 export CLICOLOR=1
@@ -38,7 +38,7 @@ alias brc="brazil-recursive-cmd"
 alias bb="brazil-build"
 alias bbr="brazil-build release"
 # List-long: ls with colours, long format, human readable, all files
-alias ll="ls -alhGF"
+alias ll="ls -AlhGF"
 # Clear the terminal and ls files in the current directory, excluding the . and
 # .. directories
 alias clear="clear && ls -A"
@@ -93,6 +93,7 @@ function cd() {
 local BG_GREY='236'
 local FG_RED='160'
 local FG_ORANGE='208'
+local FG_YELLOW='226'
 local FG_GREY='244'
 local FG_GREEN='46'
 local FG_CYAN='51'
@@ -212,24 +213,28 @@ function precmd() {
         host_machine+="{%F{${FG_CYAN}}$(hostname)}"
     fi
 
-    local git_colour=''
-    local git_diff_remote="$(git diff --numstat HEAD origin 2>/dev/null)"
-    local git_diff_changes="$(git diff --numstat 2>/dev/null)"
-    if [[ "$(echo $git_diff_changes | wc -l | xargs)" != "0" ]]; then
-        # Check if there are changes that need to be committed
-        git_colour+="%F{${FG_RED}}"
-    elif [[ "$(echo $git_diff_remote | wc -l | xargs)" != "0" ]]; then
-        # Check if there are commits that need to be pushed
-        git_colour+="%F{${FG_ORANGE}}"
-    else
-        git_colour+="%F{${FG_GREY}}"
-    fi
-    # ========================================
-    # Add the current git branch to the prompt
-    # ========================================
     local git_branch=''
     if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
-        git_branch=" ($git_colour$(git branch --show-current 2>/dev/null)"
+        local git_colour=''
+        local git_unstaged=$(git diff --numstat 2>/dev/null | wc -l | xargs)
+        local git_uncommitted=$(git diff --numstat --staged 2>/dev/null | wc -l | xargs)
+        local git_unpushed=$(git log @{push}.. --oneline 2>/dev/null | wc -l | xargs)
+        # Check for unstaged changes, fixed by `git add ...`
+        if [[ $git_unstaged -gt 0 ]]; then
+            git_colour+="%F{${FG_YELLOW}}a$git_unstaged"
+        fi
+        # Check for uncommitted changes, fixed by `git commit`
+        if [[ $git_uncommitted -gt 0 ]]; then
+            git_colour+="%F{${FG_ORANGE}}c$git_uncommitted"
+        fi
+        # Check for unpushed commits, fixed by `git push`
+        if [[ $git_unpushed -gt 0 ]]; then
+            git_colour+="%F{${FG_RED}}p$git_unpushed"
+        fi
+        # ========================================
+        # Add the current git branch to the prompt
+        # ========================================
+        git_branch=" ($git_colour %F{$FG_GREY}$(git branch --show-current 2>/dev/null)"
         git_branch+="%F{$FG_GREY})"
     fi
 
@@ -242,7 +247,7 @@ function precmd() {
     prompt+=" ${host_machine}"
     prompt+=" $(short_pwd)"
     prompt+="${git_branch}"
-    prompt+=" %F{${FG_GREY}}"$'\n'"╰→"
+    prompt+="%F{${FG_GREY}}"$'\n'"╰→"
     prompt+="%K{NO_BG}%F{WHITE} "
     export PROMPT=$prompt
 }
