@@ -11,13 +11,28 @@
 # `sudo` commands are preceded by an explanatory `echo` statement.
 #
 # TODO:
-# 
+# - Install Alfred
+# - Install Rectangle.app
+# - brew install coreutils in order to get unix-compliant versions of commands
 # =============================================================================
 
 # ============================================
 # Load in the colours used for echo statements
 # ============================================
 source ~/.dotfiles/define_colours.sh
+
+# ==================================
+# Setup zsh and nice-to-have plugins
+# MacOS already has zsh installed
+# ==================================
+# Change zsh to be the default shell
+echo -e "$RESET[D] Sudo-ing to make zsh default shell$RESET$RED"
+sudo sh -c "echo $(which zsh) >> /etc/shells" && chsh -s $(which zsh)
+
+echo -e "$RESET[D] Installing zsh plugins$RESET$RED"
+# Install zsh-autosuggestionns
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+
 
 # =====================
 # Build vim from source
