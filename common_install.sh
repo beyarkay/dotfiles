@@ -2,11 +2,12 @@
 # TODO:
 # - remap caps-lock to ctrl
 # - install nmap
+# - Link dotgitignore to ~/.gitignore
 
 # -----------------------------------------------------------------------------
 # Source a colours definition file to avoid having to use ANSI escape sequences
 # -----------------------------------------------------------------------------
-source define_colours.sh
+source ~/.dotfiles/define_colours.sh
 
 echo -e "$BOLD[I] Installing and setting up OS-generic tools$RESET$RED"
 
