@@ -1,6 +1,7 @@
 #!/bin/bash
 # TODO:
 # - remap caps-lock to ctrl
+# - install nmap
 
 # -----------------------------------------------------------------------------
 # Source a colours definition file to avoid having to use ANSI escape sequences

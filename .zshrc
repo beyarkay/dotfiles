@@ -215,11 +215,11 @@ function precmd() {
     local git_colour=''
     local git_diff_remote="$(git diff --numstat HEAD origin 2>/dev/null)"
     local git_diff_changes="$(git diff --numstat 2>/dev/null)"
-    if [[ "$(echo $git_diff_remote | wc -l | xargs)" != "0" ]]; then
-        # Check if there are commits that need to be pushed
-        git_colour+="%F{${FG_RED}}"
-    elif [[ "$(echo $git_diff_changes | wc -l | xargs)" != "0" ]]; then
+    if [[ "$(echo $git_diff_changes | wc -l | xargs)" != "0" ]]; then
         # Check if there are changes that need to be committed
+        git_colour+="%F{${FG_RED}}"
+    elif [[ "$(echo $git_diff_remote | wc -l | xargs)" != "0" ]]; then
+        # Check if there are commits that need to be pushed
         git_colour+="%F{${FG_ORANGE}}"
     else
         git_colour+="%F{${FG_GREY}}"
