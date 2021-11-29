@@ -18,6 +18,7 @@ echo -e "$BOLD[I] Installing and setting up OS-generic tools$RESET$RED"
 echo -e "$RESET[D] Setting up gitconfig, gitmessage$RED"
 ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
 ln -s ~/.dotfiles/.gitmessage ~/.gitmessage
+ln -s ~/.dotfiles/dotgitignore ~/.gitignore
 echo -e "$RESET"
 echo -e "$RESET[D] Setting up bash_profile$RED"
 ln -s ~/.dotfiles/.bash_profile ~/.bash_profile
