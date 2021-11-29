@@ -213,6 +213,9 @@ function precmd() {
         host_machine+="{%F{${FG_CYAN}}$(hostname)}"
     fi
 
+    # ======================================================
+    # If we are inside a git repo, then show git branch info
+    # ======================================================
     local git_branch=''
     if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
         local git_colour=''
@@ -231,10 +234,15 @@ function precmd() {
         if [[ $git_unpushed -gt 0 ]]; then
             git_colour+="%F{${FG_RED}}p$git_unpushed"
         fi
+        # Only add trailing white space if we've actually got something in
+        # `git_colour`
+        if [[ ${#git_colour} -gt 0 ]]; then
+            git_colour="$git_colour "
+        fi
         # ========================================
         # Add the current git branch to the prompt
         # ========================================
-        git_branch=" ($git_colour %F{$FG_GREY}$(git branch --show-current 2>/dev/null)"
+        git_branch=" ($git_colour%F{$FG_GREY}$(git branch --show-current 2>/dev/null)"
         git_branch+="%F{$FG_GREY})"
     fi
 
