@@ -212,12 +212,25 @@ function precmd() {
         host_machine+="{%F{${FG_CYAN}}$(hostname)}"
     fi
 
+    local git_colour=''
+    local git_diff_remote="$(git diff --numstat HEAD origin 2>/dev/null)"
+    local git_diff_changes="$(git diff --numstat 2>/dev/null)"
+    if [[ "$(echo $git_diff_remote | wc -l | xargs)" != "0" ]]; then
+        # Check if there are commits that need to be pushed
+        git_colour+="%F{${FG_RED}}"
+    elif [[ "$(echo $git_diff_changes | wc -l | xargs)" != "0" ]]; then
+        # Check if there are changes that need to be committed
+        git_colour+="%F{${FG_ORANGE}}"
+    else
+        git_colour+="%F{${FG_GREY}}"
+    fi
     # ========================================
     # Add the current git branch to the prompt
     # ========================================
     local git_branch=''
     if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
-        git_branch=" ($(git branch --show-current 2>/dev/null))"
+        git_branch=" ($git_colour$(git branch --show-current 2>/dev/null)"
+        git_branch+="%F{$FG_GREY})"
     fi
 
     # ===========================================================================
