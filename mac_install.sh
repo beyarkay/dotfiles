@@ -82,6 +82,18 @@ if [[ $install_github_cli == [yY] ]]; then
 fi
 
 # ============
+# Install git
+# ============
+echo -ne "$BOLD Install git via homebrew? (y/n): $RESET"
+read -p " " install_git
+if [[ $install_git == [yY] ]]; then
+	echo -e "$RESET$BOLD Installing git$RESET"
+	brew install git
+	echo -e "$BOLD git installation finished$RESET"
+fi
+
+
+# ============
 # Install tmux
 # ============
 echo -ne "$BOLD Install tmux? (y/n): $RESET"
@@ -111,7 +123,6 @@ fi
 # Install rectangle.app
 # =====================
 echo -e "$RED$BOLD # Install rectangle.app not implemented yet"
-
 
 # ==================
 # Install Alfred.app
