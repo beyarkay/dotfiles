@@ -209,8 +209,10 @@ function precmd() {
     local host_machine=''
     if [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MBP" ]]; then
         host_machine+='{mbp}'
+    elif [[ "$(hostname)" == "3c22fbbbc8c1.ant.amazon.com" ]]; then
+        host_machine+="{%F{${FG_GREEN}}aws%F{$FG_GREY}}"
     else 
-        host_machine+="{%F{${FG_CYAN}}$(hostname)}"
+        host_machine+="{%F{${FG_CYAN}}$(hostname)%F{$FG_GREY}}"
     fi
 
     # ======================================================
