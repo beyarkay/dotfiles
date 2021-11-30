@@ -94,7 +94,9 @@ local BG_GREY='236'
 local FG_RED='160'
 local FG_ORANGE='208'
 local FG_YELLOW='226'
+local FG_LIGHTGREY='251'
 local FG_GREY='244'
+local FG_DARKGREY='238'
 local FG_GREEN='46'
 local FG_CYAN='51'
 local FG_TURQUOISE='39'
@@ -116,15 +118,14 @@ function short_pwd {
     do
         if [ $directory = ${directories[-1]} ]; then
             # The final directory in the path should be left as-is, unshortened
-            shortened_path+="${directory}"
+            shortened_path+="%F{$FG_LIGHTGREY}${directory}%F{$FG_GREY}"
         else 
             # Set the shortened path to be just the first character of the
             # current directory
             shortened_path+="${directory:0:1}/"
         fi
     done
-    printf "${shortened_path}"
-    echo
+    echo "${shortened_path}"
 }
 
 
