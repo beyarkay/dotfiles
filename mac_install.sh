@@ -12,6 +12,8 @@
 #
 # TODO:
 # - Install Alfred
+# - Only attempt to install tmux and friends if homebrew was successfully installed
+# - Always ask if zsh should be installed and changed to default shell
 # - Install Rectangle.app
 # - brew install coreutils in order to get unix-compliant versions of commands
 # =============================================================================
