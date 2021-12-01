@@ -31,9 +31,13 @@ fi
 
 # Search for all TODOs / FIXMEs from the current directory
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
-# ====================
-# AWS-specific aliases
-# ====================
+# =================================================
+# AWS-specific aliases and related exports
+# TODO these should only be loaded for AWS machines
+# =================================================
+export PATH=$PATH:~/.toolbox/bin
+export PATH="/apollo/env/envImprovement/bin:$PATH"
+export JAVA_HOME=$(/usr/libexec/java_home)
 alias brc="brazil-recursive-cmd"
 alias bb="brazil-build"
 alias bbr="brazil-build release"
@@ -275,9 +279,6 @@ source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # ===========================
 # Setup the PATH env variable
 # ===========================
-# TODO these should only be loaded for AWS machines
-export PATH=$PATH:~/.toolbox/bin
-export PATH="/apollo/env/envImprovement/bin:$PATH"
 # vim is installed to /opt/local/bin
 export PATH="/opt/local/bin:$PATH"
 export PATH=$PATH:~/drivers/chromedriver
