@@ -101,6 +101,7 @@ local FG_YELLOW='226'
 local FG_LIGHTGREY='251'
 local FG_GREY='244'
 local FG_DARKGREY='238'
+local FG_AWS_CLOUD_BLUE='123'
 local FG_AWS_GREEN='40'
 local FG_GREEN='46'
 local FG_CYAN='51'
@@ -215,8 +216,10 @@ function precmd() {
     local host_machine=''
     if [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MBP" ]]; then
         host_machine+='{mbp}'
-    elif [[ "$(hostname)" == "3c22fbbbc8c1.ant.amazon.com" ]]; then
+    elif [[ "$(hostname)" == *".ant.amazon.com" ]]; then
         host_machine+="{%F{${FG_AWS_GREEN}}aws%F{$FG_GREY}}"
+    elif [[ "$(hostname)" == "dev-dsk-boydkane-"* ]]; then
+        host_machine+="{%F{${FG_AWS_CLOUD_BLUE}}dev-dsk%F{$FG_GREY}}"
     else 
         host_machine+="{%F{${FG_CYAN}}$(hostname)%F{$FG_GREY}}"
     fi
