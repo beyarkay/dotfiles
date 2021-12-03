@@ -107,10 +107,10 @@ local FG_RED='196'
 function short_pwd {
     directories=(${(s:/:)PWD})
 
-    shortened_path="/"
-    for directory in ${directories[@]}
-    do
-        if [ $directory = ${directories[-1]} ]; then
+    shortened_path=""
+    for ((i = 0; i <= ${#directories[@]}; ++i)); do
+        directory=${directories[$i]}
+        if [ $i = ${#directories} ]; then
             # The final directory in the path should be left as-is, unshortened
             shortened_path+="%F{$FG_LIGHTGREY}${directory}%F{$FG_GREY}"
         else 
