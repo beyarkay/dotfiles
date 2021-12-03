@@ -31,16 +31,6 @@ fi
 
 # Search for all TODOs / FIXMEs from the current directory
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
-# =================================================
-# AWS-specific aliases and related exports
-# TODO these should only be loaded for AWS machines
-# =================================================
-export PATH=$PATH:~/.toolbox/bin
-export PATH="/apollo/env/envImprovement/bin:$PATH"
-export JAVA_HOME=$(/usr/libexec/java_home)
-alias brc="brazil-recursive-cmd"
-alias bb="brazil-build"
-alias bbr="brazil-build release"
 # List-long: ls with colours, long format, human readable, all files
 alias ll="ls -AlhGF"
 # Clear the terminal and ls files in the current directory, excluding the . and
@@ -101,8 +91,6 @@ local FG_YELLOW='226'
 local FG_LIGHTGREY='251'
 local FG_GREY='244'
 local FG_DARKGREY='238'
-local FG_AWS_CLOUD_BLUE='195'
-local FG_AWS_GREEN='40'
 local FG_GREEN='46'
 local FG_CYAN='51'
 local FG_TURQUOISE='39'
@@ -213,15 +201,17 @@ function precmd() {
     # ============================================================
     # Add some identification of the current machine to the prompt
     # ============================================================
-    local host_machine=''
+    local host_machine="{%F{${FG_CYAN}}$(hostname)%F{$FG_GREY}}"
+    local need_kinit=''
+    local need_mwinit=''
     if [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MBP" ]]; then
         host_machine+='{mbp}'
-    elif [[ "$(hostname)" == *".ant.amazon.com" ]]; then
-        host_machine+="{%F{${FG_AWS_GREEN}}aws%F{$FG_GREY}}"
-    elif [[ "$(hostname)" == "dev-dsk-boydkane-"* ]]; then
-        host_machine+="{%F{${FG_AWS_CLOUD_BLUE}}dev-dsk%F{$FG_GREY}}"
     else 
-        host_machine+="{%F{${FG_CYAN}}$(hostname)%F{$FG_GREY}}"
+        # Probably an aws machine
+        AWS_FILE="$HOME/.dotfiles/aws_setup"
+        if [ -f $AWS_FILE ]; then
+            source ~/.dotfiles/aws_setup.sh
+        fi
     fi
 
     # ======================================================
@@ -264,6 +254,12 @@ function precmd() {
     prompt+="╭ ${curr_time}"
     prompt+="${job_string}"
     prompt+=" ${host_machine}"
+    if [[ ${#need_mwinit} -gt 0 ]]; then
+        prompt+=" ${need_mwinit}"
+    fi
+    if [[ ${#need_kinit} -gt 0 ]]; then
+        prompt+=" ${need_kinit}"
+    fi
     prompt+=" $(short_pwd)"
     prompt+="${git_branch}"
     prompt+="%F{${FG_GREY}}"$'\n'"╰→"
