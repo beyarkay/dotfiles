@@ -3,6 +3,7 @@
 # - remap caps-lock to ctrl
 # - install nmap
 # - Link dotgitignore to ~/.gitignore
+# - Link ssh/config to ~/.ssh/config
 
 # -----------------------------------------------------------------------------
 # Source a colours definition file to avoid having to use ANSI escape sequences
@@ -19,15 +20,14 @@ echo -e "$RESET[D] Setting up gitconfig, gitmessage$RED"
 ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
 ln -s ~/.dotfiles/.gitmessage ~/.gitmessage
 ln -s ~/.dotfiles/dotgitignore ~/.gitignore
-echo -e "$RESET"
 echo -e "$RESET[D] Setting up bash_profile$RED"
 ln -s ~/.dotfiles/.bash_profile ~/.bash_profile
-echo -e "$RESET"
 echo -e "$RESET[D] Setting up zshrc$RED"
 ln -s ~/.dotfiles/.zshrc ~/.zshrc
-echo -e "$RESET"
 echo -e "$RESET[D] Setting up vimrc$RED"
 ln -s ~/.dotfiles/.vimrc ~/.vimrc
+echo -e "$RESET[D] Setting up tmux config$RED"
+ln -s ~/.dotfiles/.tmux.conf ~/.tmux.conf
 echo -e "$RESET"
 
 # ========================================
