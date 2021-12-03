@@ -79,7 +79,7 @@ export LESS_TERMCAP_us=$'\e[1;4;31m'
 # them all which can be annoying if you're often changing in and out of it
 # -----------------------------------------------------------------------------
 function cd() {
-    builtin cd "$*" && ls -a
+    builtin cd "$*" && ls -A
 }
 
 
