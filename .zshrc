@@ -208,7 +208,7 @@ function precmd() {
         host_machine+='{mbp}'
     else 
         # Probably an aws machine
-        AWS_FILE="$HOME/.dotfiles/aws_setup"
+        AWS_FILE="$HOME/.dotfiles/aws_setup.sh"
         if [ -f $AWS_FILE ]; then
             source ~/.dotfiles/aws_setup.sh
         fi
