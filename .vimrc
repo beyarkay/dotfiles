@@ -79,6 +79,14 @@ call plug#end()
 set t_Co=256
 colorscheme onehalfdark
 
+" When searching, center the result
+nnoremap n nzz
+nnoremap N Nzz
+" When going to the next/prior location, center the result
+nnoremap <C-o> <C-o>zz
+nnoremap <C-i> <C-i>zz
+
+
 set autoindent
 set autowriteall
 set background=dark
