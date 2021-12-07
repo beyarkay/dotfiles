@@ -15,7 +15,7 @@
 
 setlocal spell
 set spelllang=en_gb
-" Pressing Ctrl+L will fix spelling errors
+" Pressing Ctrl+l will fix spelling errors
 inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 
 " ------------------------------------------
@@ -30,27 +30,6 @@ autocmd FileType tex setlocal tw=79
 autocmd FileType tex setlocal spell
 
 
-" ------------------------------------------
-"               MARKDOWN THINGS
-" ------------------------------------------
-" Setup proper folding for markdown files
-function MarkdownLevel()
-    let h = matchstr(getline(v:lnum), '^#\+')
-    if empty(h)
-        return "="
-    else
-        return ">" . len(h)
-    endif
-endfunction
-au BufEnter *.md setlocal foldexpr=MarkdownLevel()
-au BufEnter *.md setlocal foldmethod=expr
-au BufEnter *.md setlocal tw=79
-au BufEnter *.md setlocal spell
-
-" ------------------------------------------
-"               RUBY THINGS
-" ------------------------------------------
-autocmd Filetype ruby set foldmethod=syntax
 
 " ------------------------------------------
 "               PLUGIN THINGS
@@ -97,9 +76,6 @@ if has('python')
 endif
 call plug#end()
 
-autocmd BufNewFile,BufRead *.md set filetype=markdown   " Make sure ViM knows what markdown is
-autocmd Filetype markdown set foldmethod=manual     " Use manual folding for *.md files
-
 set t_Co=256
 colorscheme onehalfdark
 
@@ -135,4 +111,20 @@ set tabstop=4
 set timeoutlen=200
 set title
 set wildmenu
-syntax on
+
+" =======================================
+" Setup proper folding for markdown files
+" =======================================
+function MdLevel()
+    let h = matchstr(getline(v:lnum), '^#\+')
+    if empty(h)
+        return "="
+    else
+        return ">" . len(h)
+    endif
+endfunction
+au BufEnter *.md setlocal foldexpr=MdLevel()
+au BufEnter *.md setlocal foldmethod=expr
+au BufEnter *.md setlocal tw=79
+au BufEnter *.md setlocal spell
+
