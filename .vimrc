@@ -62,7 +62,7 @@ set updatetime=100
 " OneHalfDark Theme
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
-if has('python')
+if has('python3')
     " Autocomplete style snippit engine
     Plug 'SirVer/ultisnips'
     " Snippet trigger configuration.
