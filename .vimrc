@@ -79,6 +79,10 @@ call plug#end()
 set t_Co=256
 colorscheme onehalfdark
 
+" Press `-` to open file explorer in a horizontal split
+" https://stackoverflow.com/a/739661
+nnoremap - :Sexplore<cr>
+
 " When searching, center the result
 nnoremap n nzz
 nnoremap N Nzz
