@@ -26,7 +26,6 @@ inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 " type in \ref{fig: and press <C-n> you will automatically cycle through
 " all the figure labels. Very useful!
 autocmd FileType tex setlocal iskeyword+=:
-autocmd FileType tex setlocal tw=79
 autocmd FileType tex setlocal spell
 
 
@@ -117,10 +116,13 @@ set scrolloff=2
 set shiftround
 " Make vim horizontal scroll one char at a time, instead of jumping 100 characters
 set sidescroll=1
-" Make vim start horizontal scrolling {sidescrolloff} characters before the edge of the screen
+" Make vim start horizontal scrolling {sidescrolloff} characters before the
+" edge of the screen
 set sidescrolloff=10
 set smartcase
 set smartcase
+" Hardwrap the text at 79 characters
+set textwidth=79
 set timeoutlen=200
 set title
 set wildmenu
@@ -138,7 +140,6 @@ function MdLevel()
 endfunction
 au BufEnter *.md setlocal foldexpr=MdLevel()
 au BufEnter *.md setlocal foldmethod=expr
-au BufEnter *.md setlocal tw=79
 au BufEnter *.md setlocal spell
 
 " ====================================
