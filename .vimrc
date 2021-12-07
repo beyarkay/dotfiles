@@ -95,6 +95,7 @@ set backspace=indent,eol,start
 set clipboard=unnamed
 set cursorline
 set expandtab
+set foldmethod=indent
 set foldlevel=99
 set history=1000
 set hlsearch
@@ -102,6 +103,8 @@ set ignorecase
 set incsearch
 set laststatus=2
 set linebreak
+" Enable mouse support
+set mouse=a
 set noerrorbells
 set number
 set relativenumber
