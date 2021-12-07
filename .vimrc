@@ -1,3 +1,14 @@
+" ------------------
+" Boyd Kane's .vimrc
+" ------------------
+"
+" TODO:
+" - Add syntax highlighting for trailing whitespace
+"   (Or just remove it automatically on save)
+" - A general tidy up is needed
+" - Move over to nvim
+
+
 " ------------------------------------------
 "               WRITING THINGS
 " ------------------------------------------
