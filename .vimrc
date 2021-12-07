@@ -111,14 +111,12 @@ set relativenumber
 " Make vim start scrolling {scrolloff} characters before the end of the screen
 set scrolloff=2
 set shiftround
-set shiftwidth=4
 " Make vim horizontal scroll one char at a time, instead of jumping 100 characters
 set sidescroll=1
 " Make vim start horizontal scrolling {sidescrolloff} characters before the edge of the screen
 set sidescrolloff=10
 set smartcase
 set smartcase
-set tabstop=4
 set timeoutlen=200
 set title
 set wildmenu
@@ -138,4 +136,18 @@ au BufEnter *.md setlocal foldexpr=MdLevel()
 au BufEnter *.md setlocal foldmethod=expr
 au BufEnter *.md setlocal tw=79
 au BufEnter *.md setlocal spell
+
+" ====================================
+" Set whitespace based on filetype
+" https://stackoverflow.com/a/30114038
+" ====================================
+" By default, use 4 spaces
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+" For some file types, use 2 spaces
+autocmd FileType html setlocal ts=2 sts=2 sw=2 et
+autocmd FileType ruby setlocal ts=2 sts=2 sw=2 et
+autocmd FileType javascript setlocal ts=2 sts=2 sw=2 et
+autocmd FileType typescript setlocal ts=2 sts=2 sw=2 et
 
