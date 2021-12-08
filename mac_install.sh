@@ -131,6 +131,16 @@ if [ -x "$(command -v brew)" ]; then
         echo -e "$BOLD Iosevka installation finished$RESET"
     fi
 
+    # ===============
+    # Install ripgrep
+    # ===============
+    echo -ne "$BOLD Install ripgrep? (y/n): $RESET"
+    read -p " " install_ripgrep
+    if [[ $install_ripgrep == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing ripgrep$RESET"
+        brew install ripgrep
+        echo -e "$BOLD ripgrep installation finished$RESET"
+    fi
 
 fi
 
