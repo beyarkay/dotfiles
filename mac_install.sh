@@ -142,6 +142,16 @@ if [ -x "$(command -v brew)" ]; then
         echo -e "$BOLD ripgrep installation finished$RESET"
     fi
 
+    # ===============
+    # Install tree
+    # ===============
+    echo -ne "$BOLD Install tree? (y/n): $RESET"
+    read -p " " install_tree
+    if [[ $install_tree == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing tree$RESET"
+        brew install tree
+        echo -e "$BOLD tree installation finished$RESET"
+    fi
 fi
 
 
