@@ -68,55 +68,73 @@ if [[ $install_homebrew == [yY] ]]; then
 	echo -e "$RESET$BOLD Installing homebrew$RESET"
 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	echo -e "$BOLD Homebrew installation finished$RESET"
+fi 
+
+# Only install brew dependencies if homebrew is installed
+if [ -x "$(command -v brew)" ]; then
+    # =================
+    # Install gh client
+    # =================
+    echo -ne "$BOLD Install github cli? (y/n): $RESET"
+    read -p " " install_github_cli
+    if [[ $install_github_cli == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing github cli$RESET"
+        brew install gh
+        echo -e "$BOLD Github CLI installation finished$RESET"
+    fi
+
+    # ============
+    # Install git
+    # ============
+    echo -ne "$BOLD Install git via homebrew? (y/n): $RESET"
+    read -p " " install_git
+    if [[ $install_git == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing git$RESET"
+        brew install git
+        echo -e "$BOLD git installation finished$RESET"
+    fi
+
+
+    # ============
+    # Install tmux
+    # ============
+    echo -ne "$BOLD Install tmux? (y/n): $RESET"
+    read -p " " install_tmux
+    if [[ $install_tmux == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing tmux$RESET"
+        brew install tmux
+        echo -e "$RESET$BOLD Setting up tmux config$RESET$RED"
+        ln -s ~/.dotfiles/.tmux.config ~/.tmux.config
+        echo -e "$BOLD Tmux installation finished$RESET"
+    fi
+
+    # ==============
+    # Install iTerm2
+    # ==============
+    echo -ne "$BOLD Install iTerm? (y/n): $RESET"
+    read -p " " install_iTerm
+    if [[ $install_iTerm == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing iTerm2$RESET"
+        brew install --cask iterm2
+        echo -e "$BOLD Tmux installation finished$RESET"
+    fi
+
+    # ====================
+    # Install font Iosevka
+    # ====================
+    echo -ne "$BOLD Install font Iosevka? (y/n): $RESET"
+    read -p " " install_iosevka
+    if [[ $install_iosevka == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing Iosevka$RESET"
+        brew tap homebrew/cask-fonts
+        brew install --cask font-iosevka
+        echo -e "$BOLD Iosevka installation finished$RESET"
+    fi
+
+
 fi
 
-# =================
-# Install gh client
-# =================
-echo -ne "$BOLD Install github cli? (y/n): $RESET"
-read -p " " install_github_cli
-if [[ $install_github_cli == [yY] ]]; then
-	echo -e "$RESET$BOLD Installing github cli$RESET"
-	brew install gh
-	echo -e "$BOLD Github CLI installation finished$RESET"
-fi
 
-# ============
-# Install git
-# ============
-echo -ne "$BOLD Install git via homebrew? (y/n): $RESET"
-read -p " " install_git
-if [[ $install_git == [yY] ]]; then
-	echo -e "$RESET$BOLD Installing git$RESET"
-	brew install git
-	echo -e "$BOLD git installation finished$RESET"
-fi
-
-
-# ============
-# Install tmux
-# ============
-echo -ne "$BOLD Install tmux? (y/n): $RESET"
-read -p " " install_tmux
-if [[ $install_tmux == [yY] ]]; then
-	echo -e "$RESET$BOLD Installing tmux$RESET"
-	brew install tmux
-	echo -e "$RESET$BOLD Setting up tmux config$RESET$RED"
-	ln -s ~/.dotfiles/.tmux.config ~/.tmux.config
-	echo -e "$BOLD Tmux installation finished$RESET"
-fi
-
-
-# ==============
-# Install iTerm2
-# ==============
-echo -ne "$BOLD Install iTerm? (y/n): $RESET"
-read -p " " install_iTerm
-if [[ $install_iTerm == [yY] ]]; then
-	echo -e "$RESET$BOLD Installing iTerm2$RESET"
-	brew install --cask iterm2
-	echo -e "$BOLD Tmux installation finished$RESET"
-fi
 
 
 # =====================
@@ -137,15 +155,6 @@ echo -e "$RED$BOLD # Set all MacOS preferences not implemented yet"
 # 		- dark mode
 # 		- Dock hiding
 # 		- Firefox as default browser
-
-echo -ne "$BOLD Install font Iosevka? (y/n): $RESET"
-read -p " " install_iosevka
-if [[ $install_iosevka == [yY] ]]; then
-	echo -e "$RESET$BOLD Installing Iosevka$RESET"
-    brew tap homebrew/cask-fonts
-    brew install --cask font-iosevka
-	echo -e "$BOLD Iosevka installation finished$RESET"
-fi
 
 # ============================
 # Reset colours back to normal
