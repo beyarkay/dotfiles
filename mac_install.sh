@@ -152,6 +152,18 @@ if [ -x "$(command -v brew)" ]; then
         brew install tree
         echo -e "$BOLD tree installation finished$RESET"
     fi
+
+    # ===============
+    # Install nvim
+    # ===============
+    echo -ne "$BOLD Install nvim? (y/n): $RESET"
+    read -p " " install_nvim
+    if [[ $install_nvim == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing nvim$RESET"
+        brew install nvim
+        echo -e "$RED$BOLD nvim is not configured yet to use vimrc."
+        echo -e "$BOLD nvim installation finished$RESET"
+    fi
 fi
 
 

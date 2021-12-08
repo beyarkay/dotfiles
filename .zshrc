@@ -43,11 +43,12 @@ alias df='df -h'
 # Calculate total disk usage for a folder, in human readable numbers
 alias du='du -h -c'
 
-# ================================
-# Set the default editor to be vim
-# ================================
-export EDITOR=vim
-export VISUAL=vim
+# =================================
+# Set the default editor to be nvim
+# =================================
+export EDITOR=nvim
+export VISUAL=nvim
+alias nv=nvim
 
 # =================================
 # Add colours to the less/man pages
@@ -280,4 +281,6 @@ source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # ===========================
 # vim is installed to /opt/local/bin
 export PATH="/opt/local/bin:$PATH"
+# Need to include node in our path
+export PATH="/usr/local/opt/node@14/bin:$PATH"
 export PATH=$PATH:~/drivers/chromedriver

@@ -4,6 +4,7 @@
 # - install nmap
 # - Link dotgitignore to ~/.gitignore
 # - Link ssh/config to ~/.ssh/config
+# - Move lots of the mac_install scripts to common install.
 
 # -----------------------------------------------------------------------------
 # Source a colours definition file to avoid having to use ANSI escape sequences
