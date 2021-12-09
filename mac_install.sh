@@ -142,9 +142,9 @@ if [ -x "$(command -v brew)" ]; then
         echo -e "$BOLD ripgrep installation finished$RESET"
     fi
 
-    # ===============
+    # ============
     # Install tree
-    # ===============
+    # ============
     echo -ne "$BOLD Install tree? (y/n): $RESET"
     read -p " " install_tree
     if [[ $install_tree == [yY] ]]; then
@@ -153,9 +153,9 @@ if [ -x "$(command -v brew)" ]; then
         echo -e "$BOLD tree installation finished$RESET"
     fi
 
-    # ===============
+    # ============
     # Install nvim
-    # ===============
+    # ============
     echo -ne "$BOLD Install nvim? (y/n): $RESET"
     read -p " " install_nvim
     if [[ $install_nvim == [yY] ]]; then
@@ -163,6 +163,18 @@ if [ -x "$(command -v brew)" ]; then
         brew install nvim
         echo -e "$RED$BOLD nvim is not configured yet to use vimrc."
         echo -e "$BOLD nvim installation finished$RESET"
+    fi
+
+    # ===========
+    # Install fzf
+    # ===========
+    echo -ne "$BOLD Install fzf? (y/n): $RESET"
+    read -p " " install_fzf
+    if [[ $install_fzf == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing fzf$RESET"
+        brew install fzf
+        $(brew --prefix)/opt/fzf/install
+        echo -e "$BOLD fzf installation finished$RESET"
     fi
 fi
 

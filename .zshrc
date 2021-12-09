@@ -277,6 +277,15 @@ setopt promptsubst
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # ===========================
+# Fzf options and preferences
+# ===========================
+# Default options to use with fzf
+export FZF_COMPLETION_OPTS='--height 40% --multi --border'
+# Default source for fzf to search through should be ripgrep
+export FZF_DEFAULT_COMMAND='rg --files'
+
+
+# ===========================
 # Setup the PATH env variable
 # ===========================
 # vim is installed to /opt/local/bin
@@ -284,3 +293,5 @@ export PATH="/opt/local/bin:$PATH"
 # Need to include node in our path
 export PATH="/usr/local/opt/node@14/bin:$PATH"
 export PATH=$PATH:~/drivers/chromedriver
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
