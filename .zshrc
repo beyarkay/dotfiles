@@ -280,9 +280,9 @@ source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Fzf options and preferences
 # ===========================
 # Default options to use with fzf
-export FZF_COMPLETION_OPTS='--height 40% --multi --border'
-# Default source for fzf to search through should be ripgrep
+export FZF_COMPLETION_OPTS="--reverse --height 40% --multi --border"
 export FZF_DEFAULT_COMMAND='rg --files'
+alias fz="fzf --layout=reverse --height 40% --multi --border --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
 
 
 # ===========================
