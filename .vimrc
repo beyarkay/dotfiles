@@ -85,6 +85,8 @@ nnoremap - :Sexplore<cr>
 " When searching, center the result
 nnoremap n nzz
 nnoremap N Nzz
+nnoremap * *zz
+nnoremap # #zz
 " When going to the next/prior location, center the result
 nnoremap <C-o> <C-o>zz
 nnoremap <C-i> <C-i>zz
