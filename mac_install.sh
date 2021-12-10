@@ -176,6 +176,19 @@ if [ -x "$(command -v brew)" ]; then
         $(brew --prefix)/opt/fzf/install
         echo -e "$BOLD fzf installation finished$RESET"
     fi
+
+    # ===========
+    # Install bat
+    # ===========
+    echo -ne "$BOLD Install bat? (y/n): $RESET"
+    read -p " " install_bat
+    if [[ $install_bat == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing bat$RESET"
+        brew install bat
+        # TODO: Check if there's any default `bat` preferences that should be
+        # set
+        echo -e "$BOLD bat installation finished$RESET"
+    fi
 fi
 
 
