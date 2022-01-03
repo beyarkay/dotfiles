@@ -29,6 +29,19 @@ else
     alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 fi
 
+# TODO These history related commands might only work for zsh
+# Immediately append commands to the history file, to allow for easier history
+# searching
+setopt inc_append_history
+# Include the timestamp in the history file
+export HISTTIMEFORMAT="[%F %T] "
+# Don't include duplicated lines in the history file
+setopt HIST_IGNORE_ALL_DUPS
+# There's no reason to have a limit to the history size
+export HISTFILESIZE=100000
+export HISTSIZE=100000
+
+
 # Search for all TODOs / FIXMEs from the current directory
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
 # List-long: ls with colours, long format, human readable, all files
