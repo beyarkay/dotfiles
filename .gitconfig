@@ -32,5 +32,16 @@
 
 [difftool "vimdiff"]
 	cmd = vimdiff \"$LOCAL\" \"$REMOTE\"
+
 [init]
     defaultBranch = main
+
+[merge]
+	tool = vimdiff
+
+[mergetool]
+	keepBackup = false
+	prompt = false
+
+[mergetool "vimdiff"]
+	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
