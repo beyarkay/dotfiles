@@ -91,6 +91,8 @@ nnoremap # #zz
 nnoremap <C-o> <C-o>zz
 nnoremap <C-i> <C-i>zz
 
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cmap w!! w !sudo tee > /dev/null %
 
 set autoindent
 set autowriteall
