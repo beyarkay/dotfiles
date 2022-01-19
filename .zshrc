@@ -234,9 +234,14 @@ function precmd() {
     local git_branch=''
     if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
         local git_colour=''
+        local git_untracked=$(git ls-files --others --exclude-standard 2>/dev/null | wc -l | xargs)
         local git_unstaged=$(git diff --numstat 2>/dev/null | wc -l | xargs)
         local git_uncommitted=$(git diff --numstat --staged 2>/dev/null | wc -l | xargs)
         local git_unpushed=$(git log @{push}.. --oneline 2>/dev/null | wc -l | xargs)
+        # Check for untracked files
+        if [[ $git_untracked -gt 0 ]]; then
+            git_colour+="%F{${FG_LIGHTGREY}}t$git_untracked"
+        fi
         # Check for unstaged changes, fixed by `git add ...`
         if [[ $git_unstaged -gt 0 ]]; then
             git_colour+="%F{${FG_YELLOW}}a$git_unstaged"
