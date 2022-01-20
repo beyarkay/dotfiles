@@ -293,6 +293,9 @@ setopt promptsubst
 # Enable zsh Autosuggestions
 # ==========================
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# First look for history items, then look for zsh-completion items
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+bindkey '^n' autosuggest-accept
 
 # ===========================
 # Fzf options and preferences
