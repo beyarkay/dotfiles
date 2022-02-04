@@ -30,6 +30,8 @@
 
 [diff]
 	tool = vimdiff
+    # Better, more concise diffs for functions with curly braces
+    algorithm = patience
 
 [difftool]
 	prompt = false
