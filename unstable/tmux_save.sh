@@ -11,27 +11,34 @@
 TMUX_SAVE_FILE="/Users/boydkane/restore_tmux.sh"
 
 # Loop over all tmux sessions
-while IFS= read -r curr_sess; do
+while IFS= read -r curr_sess_id; do
+    curr_sess_name=$(tmux list-sessions -F "#{session_id} #{session_name}" | \grep \'$curr_sess_id\' | cut -d' ' -f 2)
     echo "# ===================================="
-    echo "# Create new session called $curr_sess"
+    echo "# Create new session called $curr_sess_name"
     echo "# ===================================="
-    echo "tmux new-session $curr_sess -d"
+    echo "tmux new-session $curr_sess_name -d"
 
     # For each tmux session, loop over each window
-    echo ""
-    echo "# -------------------------------------------"
-    echo "# Creating new windows for session $curr_sess"
-    echo "# -------------------------------------------"
-    while IFS= read -r curr_wind; do
-        echo "tmux -t $curr_sess new-window $curr_wind -d"
+    # echo ""
+    # echo "# -------------------------------------------"
+    # echo "# Creating new windows for session $curr_sess_name"
+    # echo "# -------------------------------------------"
+    # while IFS= read -r curr_wind_id; do
+    #     curr_wind_name=$( tmux display-message -t $curr_wind_id -p "#{window_name}" )
 
-        # For each tmux window, loop over each pane
-        echo ""
-        echo "# Creating new panes for window $curr_wind, session $curr_sess"
-        while IFS= read -r curr_pane; do
-            echo "Create pane somehow:  $curr_pane"
-        done < <(tmux list-panes -t $curr_wind)
-        echo ""
-    done < <(tmux list-windows -t $curr_sess -F "#{window_name}")
-    echo ""
-done < <(tmux list-sessions -F "#{session_name}")
+    #     echo "tmux -t $curr_sess_id new-window $curr_wind_id -d"
+
+    #     # For each tmux window, loop over each pane
+    #     echo ""
+    #     echo "# Creating new panes for window $curr_wind_id, session $curr_sess_id"
+    #     while IFS= read -r curr_pane; do
+    #         echo "tmux split-window -t $curr_wind_id"
+    #     done < <(tmux list-panes -t $curr_sess_id:$curr_wind_id -F "#{pane_id}" )
+
+    #     layout=$( tmux display-message -t $curr_wind_id -p "#{window_layout}" )
+    #     echo "tmux select-layout $layout"
+    #     echo ""
+    # done < <(tmux list-windows -t $curr_sess_id -F "#{window_id}")
+    # echo ""
+done < <(tmux list-sessions -F "#{session_id}")
+
