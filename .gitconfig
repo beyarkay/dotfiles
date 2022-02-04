@@ -24,6 +24,10 @@
 [pull]
 	rebase = true
 
+[rebase]
+    # Make the rebase command stashes before running, and pops after running
+    autoStash = true
+
 [diff]
 	tool = vimdiff
 
