@@ -201,6 +201,9 @@ if [ -x "$(command -v brew)" ]; then
         brew install --cask rectangle
         echo -e "$BOLD rectangle installation finished, view
         https://github.com/rxhanson/Rectangle for details.$RESET"
+        # Copy Rectangle preferences to proper location
+        cp ~/.dotfiles/rectanglePreferences.plist ~/Library/Preferences/com.knollsoft.Rectangle.plist
+
     fi
 fi
 
