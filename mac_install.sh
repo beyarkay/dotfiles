@@ -189,15 +189,21 @@ if [ -x "$(command -v brew)" ]; then
         # set
         echo -e "$BOLD bat installation finished$RESET"
     fi
+
+
+    # ===========
+    # Install rectangle
+    # ===========
+    echo -ne "$BOLD Install rectangle? (y/n): $RESET"
+    read -p " " install_rectangle
+    if [[ $install_rectangle == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing rectangle$RESET"
+        brew install --cask rectangle
+        echo -e "$BOLD rectangle installation finished, view
+        https://github.com/rxhanson/Rectangle for details.$RESET"
+    fi
 fi
 
-
-
-
-# =====================
-# Install rectangle.app
-# =====================
-echo -e "$RED$BOLD # Install rectangle.app not implemented yet"
 
 # ==================
 # Install Alfred.app
