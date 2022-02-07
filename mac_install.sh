@@ -203,7 +203,17 @@ if [ -x "$(command -v brew)" ]; then
         https://github.com/rxhanson/Rectangle for details.$RESET"
         # Copy Rectangle preferences to proper location
         cp ~/.dotfiles/rectanglePreferences.plist ~/Library/Preferences/com.knollsoft.Rectangle.plist
+    fi 
 
+    # ==============
+    # Install pandoc
+    # ==============
+    echo -ne "$BOLD Install pandoc? (y/n): $RESET"
+    read -p " " install_pandoc
+    if [[ $install_pandoc == [yY] ]]; then
+        echo -e "$RESET$BOLD Installing pandoc$RESET"
+        brew install pandoc
+        echo -e "$BOLD pandoc installation finished$RESET"
     fi
 fi
 
