@@ -219,7 +219,11 @@ function precmd() {
     local need_kinit=''
     local need_mwinit=''
     if [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MBP" ]]; then
-        host_machine+='{mbp}'
+        # Probably a personal macbook pro
+        host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
+    elif [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MacBook-Pro.local" ]]; then
+        # Probably a personal macbook pro
+        host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
     else 
         # Probably an aws machine
         AWS_FILE="$HOME/.dotfiles/aws_setup.sh"
