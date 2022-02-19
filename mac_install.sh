@@ -28,12 +28,22 @@ source ~/.dotfiles/define_colours.sh
 # MacOS already has zsh installed
 # ==================================
 # Change zsh to be the default shell
-echo -e "$RESET[D] Sudo-ing to make zsh default shell$RESET$RED"
-sudo sh -c "echo $(which zsh) >> /etc/shells" && chsh -s $(which zsh)
+echo -ne "$BOLD Set zsh to default shell? (y/n): $RESET"
+read -p " " set_zsh
+if [[ $set_zsh == [yY] ]]; then
+    echo -e "$RESET[D] Sudo-ing to make zsh default shell$RESET$RED"
+    sudo sh -c "echo $(which zsh) >> /etc/shells" && chsh -s $(which zsh)
+    echo -e "$RESET"
+fi
 
-echo -e "$RESET[D] Installing zsh plugins$RESET$RED"
-# Install zsh-autosuggestionns
-git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+echo -ne "$BOLD Install zsh plugins? (y/n): $RESET"
+read -p " " set_zsh
+if [[ $set_zsh == [yY] ]]; then
+    echo -e "$RESET[D] Installing zsh plugins$RESET$RED"
+    git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+    echo -e "$RESET"
+fi
+
 
 
 # =====================
@@ -72,152 +82,120 @@ fi
 
 # Only install brew dependencies if homebrew is installed
 if [ -x "$(command -v brew)" ]; then
-    # =================
-    # Install gh client
-    # =================
-    echo -ne "$BOLD Install github cli? (y/n): $RESET"
-    read -p " " install_github_cli
-    if [[ $install_github_cli == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing github cli$RESET"
-        brew install gh
-        echo -e "$BOLD Github CLI installation finished$RESET"
-    fi
+    echo "homebrew exists, installing things via brew"
+    # This is a Vim macro to convert a brew command to brew command +
+    # description. The cursor can start anywhere on a line containing only the
+    # command which should be preceeded by some whitespace:
+    #
+    #       0wveyA			# €ýa:r !brew desc "kJdf:xj0
+    #
+    # For example: `    gh` -> `    gh     # GitHub command-line tool`
+    brewable=( 
+        bat         # Clone of cat(1) with syntax highlighting and Git integration
+        fzf         # Command-line fuzzy finder written in Go
+        gh          # GitHub command-line tool
+        git         # Distributed revision control system
+        nvim        # Ambitious Vim-fork focused on extensibility and agility
+        pandoc      # Swiss-army knife of markup format conversion
+        ripgrep     # Search tool like grep and The Silver Searcher
+        tmux        # Terminal multiplexer
+        tree        # Display directories as trees (with optional color/HTML output)
+    )
+    # For each brew installable item:
+    for b in "${brewable[@]}"
+    do
+        # Check if it's already installed
+        if [ -x "$(command -v $b)" ]; then
+            # Ask if it should be re-installed
+            echo -ne "$b is already installed. Would you like to re-install?"
+            read -p " " should_install
+            if [[ $should_install == [yY] ]]; then
+                echo -ne "First uninstalling $b..."
+                brew uninstall $b
+            fi
+        else
+            # Ask if the command should be installed from scratch
+            echo -ne "Would you like to install $BOLD$(brew desc $b)$RESET? (y/n): "
+            read -p " " should_install
+        fi
+        if [[ $should_install == [yY] ]]; then
+            echo -e "$RESET Installing $BOLD$b$RESET..."
+            brew install $b
+            exit_status=$?
+            [ $exit_status -eq 0 ] && echo "$BOLD$GREEN$b installation has finished$RESET" || echo "$BOLD $b installation has$RED failed $RESET"
+            echo -e "See $BOLD$(brew info $b | egrep '^http')$RESET for details about $b"
+        fi
+    done
 
-    # ============
-    # Install git
-    # ============
-    echo -ne "$BOLD Install git via homebrew? (y/n): $RESET"
-    read -p " " install_git
-    if [[ $install_git == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing git$RESET"
-        brew install git
-        echo -e "$BOLD git installation finished$RESET"
-    fi
 
 
-    # ============
-    # Install tmux
-    # ============
-    echo -ne "$BOLD Install tmux? (y/n): $RESET"
-    read -p " " install_tmux
-    if [[ $install_tmux == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing tmux$RESET"
-        brew install tmux
+    # ==================================================================
+    # Some commands are installed with `brew install --cask $cask_name`.
+    # Install those packages now.
+    # ==================================================================
+    caskable=(
+        iterm2
+        font-iosevka
+        rectangle
+    )
+    for c in "${caskable[@]}"
+    do
+        # Check if it's already installed
+        if [ -x "$(command -v $c)" ]; then
+            # Ask if it should be re-installed
+            echo -ne "$c is already installed. Would you like to re-install?"
+            read -p " " should_install
+            if [[ $should_install == [yY] ]]; then
+                echo -ne "First uninstalling $c..."
+                brew uninstall $c
+            fi
+        else
+            # Ask if the command should be installed from scratch
+            echo -ne "Would you like to install $BOLD$c$RESET? (y/n): "
+            read -p " " should_install
+        fi
+        if [[ $should_install == [yY] ]]; then
+            echo -e "$RESET Installing $BOLD$c$RESET..."
+            # TODO this equality checking might not work
+            if [[ $c == "font-iosevka" ]]; then
+                brew tap homebrew/cask-fonts
+            fi
+            brew install --cask $c
+            exit_status=$?
+            [ $exit_status -eq 0 ] && echo "$BOLD$GREEN$c installation has finished$RESET" || echo "$BOLD $c installation has$RED failed $RESET"
+            echo -e "See $BOLD$(brew info $c | egrep '^http')$RESET for details about $c"
+        fi
+    done
+
+    # =======================================================================
+    # Some commands require custom setup / config. If they're installed, then
+    # do that custom setup.
+    # =======================================================================
+
+    # Link ~/.dotfiles/.tmux.config
+    if [ -x "$(command -v tmux)" ]; then
         echo -e "$RESET$BOLD Setting up tmux config$RESET$RED"
         ln -s ~/.dotfiles/.tmux.config ~/.tmux.config
-        echo -e "$BOLD Tmux installation finished$RESET"
+        exit_status=$?
+        [ $exit_status -eq 0 ] && echo "$BOLD Tmux config setup finished$RESET" || echo "$BOLD Tmux config setup has$RED failed $RESET"
     fi
 
-    # ==============
-    # Install iTerm2
-    # ==============
-    echo -ne "$BOLD Install iTerm? (y/n): $RESET"
-    read -p " " install_iTerm
-    if [[ $install_iTerm == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing iTerm2$RESET"
-        brew install --cask iterm2
-        echo -e "$BOLD Tmux installation finished$RESET"
-    fi
-
-    # ====================
-    # Install font Iosevka
-    # ====================
-    echo -ne "$BOLD Install font Iosevka? (y/n): $RESET"
-    read -p " " install_iosevka
-    if [[ $install_iosevka == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing Iosevka$RESET"
-        brew tap homebrew/cask-fonts
-        brew install --cask font-iosevka
-        echo -e "$BOLD Iosevka installation finished$RESET"
-    fi
-
-    # ===============
-    # Install ripgrep
-    # ===============
-    echo -ne "$BOLD Install ripgrep? (y/n): $RESET"
-    read -p " " install_ripgrep
-    if [[ $install_ripgrep == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing ripgrep$RESET"
-        brew install ripgrep
-        echo -e "$BOLD ripgrep installation finished$RESET"
-    fi
-
-    # ============
-    # Install tree
-    # ============
-    echo -ne "$BOLD Install tree? (y/n): $RESET"
-    read -p " " install_tree
-    if [[ $install_tree == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing tree$RESET"
-        brew install tree
-        echo -e "$BOLD tree installation finished$RESET"
-    fi
-
-    # ============
-    # Install nvim
-    # ============
-    echo -ne "$BOLD Install nvim? (y/n): $RESET"
-    read -p " " install_nvim
-    if [[ $install_nvim == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing nvim$RESET"
-        brew install nvim
-        echo -e "$RED$BOLD nvim is not configured yet to use vimrc."
-        echo -e "$BOLD nvim installation finished$RESET"
-    fi
-
-    # ===========
-    # Install fzf
-    # ===========
-    echo -ne "$BOLD Install fzf? (y/n): $RESET"
-    read -p " " install_fzf
-    if [[ $install_fzf == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing fzf$RESET"
-        brew install fzf
+    # fzf requires an installation script
+    if [ -x "$(command -v fzf)" ]; then
+        echo -e "$RESET$BOLD Setting up fzf shortcuts$RESET$RED"
         $(brew --prefix)/opt/fzf/install
-        echo -e "$BOLD fzf installation finished$RESET"
+        exit_status=$?
+        [ $exit_status -eq 0 ] && echo "$BOLD fzf config setup finished$RESET" || echo "$BOLD fzf config setup has$RED failed $RESET"
     fi
 
-    # ===========
-    # Install bat
-    # ===========
-    echo -ne "$BOLD Install bat? (y/n): $RESET"
-    read -p " " install_bat
-    if [[ $install_bat == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing bat$RESET"
-        brew install bat
-        # TODO: Check if there's any default `bat` preferences that should be
-        # set
-        echo -e "$BOLD bat installation finished$RESET"
-    fi
-
-
-    # ===========
-    # Install rectangle
-    # ===========
-    echo -ne "$BOLD Install rectangle? (y/n): $RESET"
-    read -p " " install_rectangle
-    if [[ $install_rectangle == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing rectangle$RESET"
-        brew install --cask rectangle
-        echo -e "$BOLD rectangle installation finished, view
-        https://github.com/rxhanson/Rectangle for details.$RESET"
-        # Copy Rectangle preferences to proper location
+    # Rectangle has some custom preferences that can automatically setup
+    if [ -x "$(command -v rectangle)" ]; then
+        echo -e "$RESET$BOLD Setting up rectangle preferences$RESET$RED"
         cp ~/.dotfiles/rectanglePreferences.plist ~/Library/Preferences/com.knollsoft.Rectangle.plist
-    fi 
-
-    # ==============
-    # Install pandoc
-    # ==============
-    echo -ne "$BOLD Install pandoc? (y/n): $RESET"
-    read -p " " install_pandoc
-    if [[ $install_pandoc == [yY] ]]; then
-        echo -e "$RESET$BOLD Installing pandoc$RESET"
-        brew install pandoc
-        echo -e "$BOLD pandoc installation finished$RESET"
+        exit_status=$?
+        [ $exit_status -eq 0 ] && echo "$BOLD rectangle config setup finished$RESET" || echo "$BOLD rectangle config setup has$RED failed $RESET"
     fi
 fi
-
-
 # ==================
 # Install Alfred.app
 # ==================
@@ -232,7 +210,5 @@ echo -e "$RED$BOLD # Set all MacOS preferences not implemented yet"
 # 		- Dock hiding
 # 		- Firefox as default browser
 
-# ============================
 # Reset colours back to normal
-# ============================
 echo -e "$RESET"
