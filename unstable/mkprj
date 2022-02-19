@@ -1,0 +1,8 @@
+# mkprj
+# Interactively creates a project structure with
+# - git
+# - the language structure of your choice (and a python venv)
+# - readme
+# - licence
+# - link to github
+
