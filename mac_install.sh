@@ -134,10 +134,12 @@ if [ -x "$(command -v brew)" ]; then
     # Install those packages now.
     # ==================================================================
     caskable=(
+        alfred
+        freecad
         iterm2
         font-iosevka
         rectangle
-        arduino
+        firefox
     )
     for c in "${caskable[@]}"
     do
@@ -197,19 +199,16 @@ if [ -x "$(command -v brew)" ]; then
         [ $exit_status -eq 0 ] && echo "$BOLD rectangle config setup finished$RESET" || echo "$BOLD rectangle config setup has$RED failed $RESET"
     fi
 fi
-# ==================
-# Install Alfred.app
-# ==================
-echo -e "$RED$BOLD # Install alfred not implemented yet"
-
 # =========================
 # Set all MacOS preferences
 # =========================
 echo -e "$RED$BOLD # Set all MacOS preferences not implemented yet"
 # 		- mouse sensitivity
-# 		- dark mode
-# 		- Dock hiding
+# 		- Dock hiding and not having permanent icons
 # 		- Firefox as default browser
+#       - menu bar being better
+#       - caps lock -> ctrl
 
+# Save and restore Alfred preferences
 # Reset colours back to normal
 echo -e "$RESET"
