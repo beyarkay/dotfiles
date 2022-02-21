@@ -137,6 +137,7 @@ if [ -x "$(command -v brew)" ]; then
         iterm2
         font-iosevka
         rectangle
+        arduino
     )
     for c in "${caskable[@]}"
     do
