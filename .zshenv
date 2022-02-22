@@ -6,6 +6,7 @@
 # ===========================
 # vim is installed to /opt/local/bin
 export PATH="/opt/local/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
 # Need to include node in our path
 export PATH="/usr/local/opt/node@14/bin:$PATH"
 export PATH=$PATH:~/drivers/chromedriver
