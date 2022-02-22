@@ -56,12 +56,6 @@ alias df='df -h'
 # Calculate total disk usage for a folder, in human readable numbers
 alias du='du -h -c'
 
-# =================================
-# Set the default editor to be nvim
-# =================================
-export EDITOR=nvim
-export VISUAL=nvim
-alias nv=nvim
 
 # =================================
 # Add colours to the less/man pages
@@ -73,18 +67,6 @@ export LESS_TERMCAP_se=$'\e[0m'
 export LESS_TERMCAP_so=$'\e[01;33m'
 export LESS_TERMCAP_ue=$'\e[0m'
 export LESS_TERMCAP_us=$'\e[1;4;31m'
-
-# I never ended up using this shortcut, delete me after 2022-01-01
-# # Advanced directory creation
-# function mkcd {
-#   if [ ! -n "$1" ]; then
-#     echo "No directory name given"
-#   elif [ -d $1 ]; then
-#     echo "Directory '$1' already exists"
-#   else
-#     mkdir $1 && cd $1
-#   fi
-# }
 
 
 # -----------------------------------------------------------------------------
@@ -309,14 +291,5 @@ export FZF_COMPLETION_OPTS="--reverse --height 40% --multi --border"
 export FZF_DEFAULT_COMMAND='rg --files'
 alias fz="fzf --layout=reverse --height 40% --multi --border --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
 
-
-# ===========================
-# Setup the PATH env variable
-# ===========================
-# vim is installed to /opt/local/bin
-export PATH="/opt/local/bin:$PATH"
-# Need to include node in our path
-export PATH="/usr/local/opt/node@14/bin:$PATH"
-export PATH=$PATH:~/drivers/chromedriver
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

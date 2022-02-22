@@ -23,8 +23,9 @@ ln -s ~/.dotfiles/.gitmessage ~/.gitmessage
 ln -s ~/.dotfiles/dotgitignore ~/.gitignore
 echo -e "$RESET[D] Setting up bash_profile$RED"
 ln -s ~/.dotfiles/.bash_profile ~/.bash_profile
-echo -e "$RESET[D] Setting up zshrc$RED"
+echo -e "$RESET[D] Setting up zshrc, zshenv$RED"
 ln -s ~/.dotfiles/.zshrc ~/.zshrc
+ln -s ~/.dotfiles/.zshenv ~/.zshenv
 echo -e "$RESET[D] Setting up vimrc$RED"
 ln -s ~/.dotfiles/.vimrc ~/.vimrc
 echo -e "$RESET[D] Setting up tmux config$RED"
