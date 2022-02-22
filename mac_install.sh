@@ -138,6 +138,7 @@ if [ -x "$(command -v brew)" ]; then
         freecad
         iterm2
         font-iosevka
+        spotify
         rectangle
         firefox
     )
