@@ -135,12 +135,12 @@ if [ -x "$(command -v brew)" ]; then
     # ==================================================================
     caskable=(
         alfred
+        firefox
+        font-iosevka
         freecad
         iterm2
-        font-iosevka
-        spotify
         rectangle
-        firefox
+        spotify
     )
     for c in "${caskable[@]}"
     do
