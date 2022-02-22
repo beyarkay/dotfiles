@@ -198,6 +198,15 @@ if [ -x "$(command -v brew)" ]; then
         exit_status=$?
         [ $exit_status -eq 0 ] && echo "$BOLD rectangle config setup finished$RESET" || echo "$BOLD rectangle config setup has$RED failed $RESET"
     fi
+
+    # nvim needs an init.vim in order for it to load the regular .vimrc
+    if [ -x "$(command -v nvim)" ]; then
+        echo -e "$RESET$BOLD Setting up nvim shortcuts$RESET$RED"
+        ln -s ~/.dotfiles/init.vim ~/.config/nvim/init.vim
+        exit_status=$?
+        [ $exit_status -eq 0 ] && echo "$BOLD nvim config setup finished$RESET" || echo "$BOLD nvim config setup has$RED failed $RESET"
+    fi
+
 fi
 # =========================
 # Set all MacOS preferences
