@@ -228,7 +228,9 @@ if [ -x "$(command -v brew)" ]; then
         fzf         # Command-line fuzzy finder written in Go
         gh          # GitHub command-line tool
         git         # Distributed revision control system
+        jupyterlab  # Interactive environments for writing and running code
         nvim        # Ambitious Vim-fork focused on extensibility and agility
+        node        # Platform built on V8 to build network applications
         pandoc      # Swiss-army knife of markup format conversion
         ripgrep     # Search tool like grep and The Silver Searcher
         tmux        # Terminal multiplexer
