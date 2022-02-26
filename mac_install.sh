@@ -269,13 +269,14 @@ if [ -x "$(command -v brew)" ]; then
     # Install those packages now.
     # ==================================================================
     caskable=(
-        alfred
-        firefox
-        font-iosevka
-        freecad
-        iterm2
-        rectangle
-        spotify
+        alfred          # Productivity manager
+        firefox         # Web browser
+        font-iosevka    # Monospace font with really nice ligatures
+        freecad         # FOSS CAD software for 3D printing
+        google-chrome   # Backup web browser for web scraping
+        iterm2          # Better Terminal.app replacement
+        rectangle       # MacOS window tiling manager
+        spotify         # Music player
     )
     for c in "${caskable[@]}"
     do
