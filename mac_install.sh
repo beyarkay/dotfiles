@@ -220,7 +220,7 @@ if [ -x "$(command -v brew)" ]; then
     # description. The cursor can start anywhere on a line containing only the
     # command which should be preceeded by some whitespace:
     #
-    #       0wveyA			# €ýa:r !brew desc "kJdf:xj0
+    #       0wveyA			# €:r !brew desc "kJdf:xj0
     #
     # For example: `    gh` -> `    gh     # GitHub command-line tool`
     brewable=( 
