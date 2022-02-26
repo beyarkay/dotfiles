@@ -47,9 +47,6 @@ sudo nvram SystemAudioVolume=" "
 # Disable Notification Center and remove the menu bar icon
 launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
 
-# Stop iTunes from responding to the keyboard media keys
-launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2> /dev/null
-
 # Restart automatically if the computer freezes
 sudo systemsetup -setrestartfreeze on
 
@@ -157,6 +154,7 @@ for app in "cfprefsd" \
 	"Terminal" \
 	"iCal"; do
 	killall "${app}" &> /dev/null
+done
 
 # ==================================
 # Setup zsh and nice-to-have plugins
