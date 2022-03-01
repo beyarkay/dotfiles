@@ -10,6 +10,8 @@ call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
+" Coc config
+
 " Install Coc language extensions
 let g:coc_global_extensions = [
   \ 'coc-clangd',
@@ -22,6 +24,7 @@ let g:coc_global_extensions = [
   \ 'coc-markdown-preview-enhanced',
   \ 'coc-marketplace',
   \ 'coc-pyright',
+  \ 'coc-rust-analyzer',
   \ 'coc-sh',
   \ 'coc-webview',
   \ 'coc-yaml',
