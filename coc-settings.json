@@ -1,0 +1,11 @@
+{
+  "coc.preferences.extensionUpdateCheck": "daily",
+  "ltex.language": "en-ZA",
+  "ltex.disabledRules": {
+      "en-ZA": [
+          "MISSING_HYPHEN",
+          "WHITESPACE_RULE",
+          "UPPERCASE_SENTENCE_START"
+      ]
+  }
+}

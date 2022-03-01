@@ -33,7 +33,7 @@ source ~/.dotfiles/define_colours.sh
 sudo -v
 
 # Close any open System Preferences panes, to prevent them from overriding
-# settings we¿re about to change
+# settings we're about to change
 osascript -e 'tell application "System Preferences" to quit'
 
 # Trackpad: enable tap to click for this user and for the login screen
@@ -102,11 +102,11 @@ defaults write com.apple.dock tilesize -int 36
 # Change minimize/maximize window effect
 defaults write com.apple.dock mineffect -string "scale"
 
-# Minimize windows into their application¿s icon
+# Minimize windows into their application's icon
 defaults write com.apple.dock minimize-to-application -bool true
 
 # Wipe all (default) app icons from the Dock
-# This is only really useful when setting up a new Mac, or if you don¿t use
+# This is only really useful when setting up a new Mac, or if you don't use
 # the Dock to launch apps.
 defaults write com.apple.dock persistent-apps -array
 
@@ -340,6 +340,9 @@ if [ -x "$(command -v brew)" ]; then
     if [ -x "$(command -v nvim)" ]; then
         echo -e "$RESET$BOLD Setting up nvim shortcuts$RESET$RED"
         ln -s ~/.dotfiles/init.vim ~/.config/nvim/init.vim
+        # Also link the coc-settings
+        mkdir -p ~/.config/nvim/
+        ln -s ~/.dotfiles/coc-settings.json ~/.config/nvim/coc-settings.json
         exit_status=$?
         [ $exit_status -eq 0 ] && echo "$BOLD nvim config setup finished$RESET" || echo "$BOLD nvim config setup has$RED failed $RESET"
     fi
