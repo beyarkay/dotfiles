@@ -270,6 +270,7 @@ if [ -x "$(command -v brew)" ]; then
     # ==================================================================
     caskable=(
         alfred          # Productivity manager
+        arduino         # Arduino.cc platform
         firefox         # Web browser
         font-iosevka    # Monospace font with really nice ligatures
         freecad         # FOSS CAD software for 3D printing
