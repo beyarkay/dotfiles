@@ -278,6 +278,7 @@ if [ -x "$(command -v brew)" ]; then
         iterm2          # Better Terminal.app replacement
         rectangle       # MacOS window tiling manager
         spotify         # Music player
+        vlc             # Video player
     )
     for c in "${caskable[@]}"
     do
