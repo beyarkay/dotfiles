@@ -1,6 +1,14 @@
 {
   "coc.preferences.extensionUpdateCheck": "daily",
   "ltex.language": "en-ZA",
+  "ltex.dictionary": {
+      "en-ZA": [
+          "Flexion",
+          "flexion",
+          "Palmar",
+          "palmar"
+      ]
+  },
   "ltex.disabledRules": {
       "en-ZA": [
           "MISSING_HYPHEN",
