@@ -279,6 +279,7 @@ if [ -x "$(command -v brew)" ]; then
         rectangle       # MacOS window tiling manager
         spotify         # Music player
         vlc             # Video player
+        whatsapp        # Instant messaging
     )
     for c in "${caskable[@]}"
     do
