@@ -8,8 +8,32 @@ source ~/.vimrc
 call plug#begin()
 " Install Coc: https://github.com/neoclide/coc.nvim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" Setup fzf for vim
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+
 call plug#end()
 
+" Customising fzf:
+" Most commands support CTRL-T / CTRL-X / CTRL-V key bindings to open in a new
+" tab, a new split, or in a new vertical split. Bang-versions of the commands
+" (e.g. Ag!) will open fzf in fullscreen.
+
+" Faster Rg search via :RG
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+" Remap ctrl-p to :Files search for fzf
+nnoremap <C-q> :Files<CR>
+" Remap ctrl-f to :Files search for fzf
+nnoremap <C-g> :RG<CR>
 " Coc config
 
 " Install Coc language extensions
