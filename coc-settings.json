@@ -14,7 +14,8 @@
           "MISSING_HYPHEN",
           "WHITESPACE_RULE",
           "UPPERCASE_SENTENCE_START",
-          "AGREEMENT_SENT_START"
+          "AGREEMENT_SENT_START",
+          "WHETHER"
       ]
   }
 }
