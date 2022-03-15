@@ -342,9 +342,9 @@ if [ -x "$(command -v brew)" ]; then
     # nvim needs an init.vim in order for it to load the regular .vimrc
     if [ -x "$(command -v nvim)" ]; then
         echo -e "$RESET$BOLD Setting up nvim shortcuts$RESET$RED"
+        mkdir -p ~/.config/nvim/
         ln -s ~/.dotfiles/init.vim ~/.config/nvim/init.vim
         # Also link the coc-settings
-        mkdir -p ~/.config/nvim/
         ln -s ~/.dotfiles/coc-settings.json ~/.config/nvim/coc-settings.json
         exit_status=$?
         [ $exit_status -eq 0 ] && echo "$BOLD nvim config setup finished$RESET" || echo "$BOLD nvim config setup has$RED failed $RESET"
