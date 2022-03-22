@@ -200,9 +200,9 @@ function precmd() {
     local host_machine="{%F{${FG_CYAN}}$(hostname)%F{$FG_GREY}}"
     local need_kinit=''
     local need_mwinit=''
-    if [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MBP" ]]; then
+    if [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MacBook-Pro-2012.local" ]]; then
         # Probably a personal macbook pro
-        host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
+        host_machine="{%F{${FG_CYAN}}mbp2012%F{$FG_GREY}}"
     elif [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MacBook-Pro.local" ]]; then
         # Probably a personal macbook pro
         host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
