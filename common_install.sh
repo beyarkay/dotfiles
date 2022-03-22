@@ -17,10 +17,10 @@ echo -e "$BOLD[I] Installing and setting up OS-generic tools$RESET$RED"
 # Create a soft link to various dotfiles
 # ======================================
 # Soft link for .gitconfig, .gitmessage
-echo -e "$RESET[D] Setting up gitconfig, gitmessage$RED"
+echo -e "$RESET[D] Setting up gitconfig, gitmessage, gitignore_global$RED"
 ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
 ln -s ~/.dotfiles/.gitmessage ~/.gitmessage
-ln -s ~/.dotfiles/dotgitignore ~/.gitignore
+ln -s ~/.dotfiles/.gitignore_global ~/.gitignore_global
 echo -e "$RESET[D] Setting up bash_profile$RED"
 ln -s ~/.dotfiles/.bash_profile ~/.bash_profile
 echo -e "$RESET[D] Setting up zshrc, zshenv$RED"
