@@ -160,3 +160,16 @@ autocmd FileType ruby setlocal ts=2 sts=2 sw=2 et
 autocmd FileType javascript setlocal ts=2 sts=2 sw=2 et
 autocmd FileType typescript setlocal ts=2 sts=2 sw=2 et
 
+
+" ===================
+" Format code on save
+" ===================
+
+" For java, cpp, use [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
+function! Formatonsave()
+    " Might require `python3 -m pip install --user --upgrade pynvim`
+    " from https://stackoverflow.com/a/67360265/14555505
+    let l:formatdiff = 1
+    py3f /usr/local/Cellar/clang-format/13.0.1/share/clang/clang-format.py
+endfunction
+autocmd BufWritePre *.java,*.h,*.cc,*.cpp call Formatonsave()
