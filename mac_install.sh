@@ -280,6 +280,7 @@ if [ -x "$(command -v brew)" ]; then
         spotify                # Music player
         vlc                    # Video player
         whatsapp               # Instant messaging
+        android-file-transfer  # MacOS <-> Android file sharing
     )
     for c in "${caskable[@]}"
     do
