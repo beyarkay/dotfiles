@@ -170,6 +170,10 @@ function! Formatonsave()
     " Might require `python3 -m pip install --user --upgrade pynvim`
     " from https://stackoverflow.com/a/67360265/14555505
     let l:formatdiff = 1
-    py3f /usr/local/Cellar/clang-format/13.0.1/share/clang/clang-format.py
+    try
+        py3f /usr/local/Cellar/clang-format/13.0.1/share/clang/clang-format.py
+    catch
+        py3f /opt/homebrew/Cellar/clang-format/14.0.0/share/clang/clang-format.py
+    endtry
 endfunction
 autocmd BufWritePre *.java,*.h,*.cc,*.cpp call Formatonsave()
