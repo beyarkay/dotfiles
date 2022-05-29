@@ -37,7 +37,7 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
 " Remap ctrl-p to :Files search for fzf
 nnoremap <C-q> :Files<CR>
-" Remap ctrl-f to :Files search for fzf
+" Remap ctrl-g ripgrep search of everything
 nnoremap <C-g> :RG<CR>
 " Coc config
 
@@ -86,13 +86,13 @@ nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+nmap <silent> <leader>d <Plug>(coc-definition)
+nmap <silent> <leader>i <Plug>(coc-implementation)
+nmap <silent> <leader>r <Plug>(coc-references)
 " Symbol renaming.
-nmap <silent> gn <Plug>(coc-rename)
+nmap <silent> <leader>n <Plug>(coc-rename)
 " Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
+nmap <leader>f  <Plug>(coc-fix-current)
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
