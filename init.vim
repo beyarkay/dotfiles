@@ -49,7 +49,6 @@ let g:coc_global_extensions = [
   \ 'coc-html',
   \ 'coc-java',
   \ 'coc-json', 
-  \ 'coc-ltex',
   \ 'coc-markdown-preview-enhanced',
   \ 'coc-marketplace',
   \ 'coc-pyright',
