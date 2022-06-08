@@ -272,6 +272,7 @@ if [ -x "$(command -v brew)" ]; then
     # ==================================================================
     caskable=(
         alfred                 # Productivity manager
+        android-file-transfer  # MacOS <-> Android file sharing
         arduino                # Arduino.cc platform
         firefox                # Web browser
         font-iosevka           # Monospace font with really nice ligatures
@@ -282,7 +283,6 @@ if [ -x "$(command -v brew)" ]; then
         spotify                # Music player
         vlc                    # Video player
         whatsapp               # Instant messaging
-        android-file-transfer  # MacOS <-> Android file sharing
     )
     for c in "${caskable[@]}"
     do
