@@ -225,6 +225,7 @@ if [ -x "$(command -v brew)" ]; then
     # For example: `    gh` -> `    gh     # GitHub command-line tool`
     brewable=( 
         bat         # Clone of cat(1) with syntax highlighting and Git integration
+        clang-format# Formatting tools for C, C++, Obj-C, Java, JavaScript, TypeScript
         fzf         # Command-line fuzzy finder written in Go
         gh          # GitHub command-line tool
         git         # Distributed revision control system
