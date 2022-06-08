@@ -236,6 +236,7 @@ if [ -x "$(command -v brew)" ]; then
         ripgrep     # Search tool like grep and The Silver Searcher
         tmux        # Terminal multiplexer
         tree        # Display directories as trees (with optional color/HTML output)
+        watch       # Executes a program periodically, showing output fullscreen
     )
     # For each brew installable item:
     for b in "${brewable[@]}"
