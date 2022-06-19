@@ -203,7 +203,7 @@ function precmd() {
     if [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MacBook-Pro-2012.local" ]]; then
         # Probably a personal macbook pro
         host_machine="{%F{${FG_CYAN}}mbp2012%F{$FG_GREY}}"
-    elif [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MacBook-Pro.local" ]]; then
+    elif [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MacBook-Pro-2022.local" ]]; then
         # Probably a personal macbook pro
         host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
     else 
