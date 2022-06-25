@@ -110,6 +110,7 @@ set linebreak
 set mouse=a
 set noerrorbells
 set number
+set nrformats=bin,hex,alpha,octal
 set relativenumber
 " Make vim start scrolling {scrolloff} characters before the end of the screen
 set scrolloff=2
