@@ -279,6 +279,7 @@ if [ -x "$(command -v brew)" ]; then
         freecad                # FOSS CAD software for 3D printing
         google-chrome          # Backup web browser for web scraping
         iterm2                 # Better Terminal.app replacement
+        qlstephen              # Extended file support for QuickLook
         rectangle              # MacOS window tiling manager
         spotify                # Music player
         vlc                    # Video player
