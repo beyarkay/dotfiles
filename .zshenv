@@ -22,3 +22,4 @@ else
     export VISUAL=vim
 fi
 
+. "$HOME/.cargo/env"
