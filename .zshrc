@@ -206,6 +206,9 @@ function precmd() {
     elif [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MacBook-Pro-2022.local" ]]; then
         # Probably a personal macbook pro
         host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
+    elif [[ "$(whoami)@$(hostname)" == "brk@Boyds-MBP-2022" ]]; then
+        # Probably a personal macbook pro
+        host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
     else 
         # Probably an aws machine
         AWS_FILE="$HOME/.dotfiles/aws_setup.sh"
