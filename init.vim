@@ -51,7 +51,7 @@ let g:coc_global_extensions = [
   \ 'coc-json', 
   \ 'coc-markdown-preview-enhanced',
   \ 'coc-marketplace',
-  \ 'coc-pyright',
+  \ 'coc-jedi',
   \ 'coc-rust-analyzer',
   \ 'coc-sh',
   \ 'coc-webview',
