@@ -15,7 +15,9 @@ HISTCONTROL=ignoreboth
 # Use ESC to edit the current command line:
 autoload -U edit-command-line
 zle -N edit-command-line
-bindkey '\033' edit-command-line
+bindkey '^[' edit-command-line
+bindkey '^e' edit-command-line
+
 # Wait only 10ms before for additional characters in an escape sequence
 KEYTIMEOUT=1
 
