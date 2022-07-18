@@ -16,6 +16,8 @@ HISTCONTROL=ignoreboth
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '\033' edit-command-line
+# Wait only 10ms before for additional characters in an escape sequence
+KEYTIMEOUT=1
 
 # Aliases for commonly used commands
 
