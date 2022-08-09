@@ -227,9 +227,11 @@ if [ -x "$(command -v brew)" ]; then
         bat         # Clone of cat(1) with syntax highlighting and Git integration
         clang-format# Formatting tools for C, C++, Obj-C, Java, JavaScript, TypeScript
         fzf         # Command-line fuzzy finder written in Go
+        fd          # Simple, fast and user-friendly alternative to find
         gh          # GitHub command-line tool
         git         # Distributed revision control system
         jupyterlab  # Interactive environments for writing and running code
+        jq          # Lightweight and flexible command-line JSON processor
         nvim        # Ambitious Vim-fork focused on extensibility and agility
         node        # Platform built on V8 to build network applications
         pandoc      # Swiss-army knife of markup format conversion
