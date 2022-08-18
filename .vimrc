@@ -44,6 +44,23 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
 \| endif
 
 call plug#begin('~/.vim/plugged')
+" Install Coc: https://github.com/neoclide/coc.nvim
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'sonph/onehalf', { 'rtp': 'vim' }
+
+" Formatting python files with `black`
+" https://black.readthedocs.io/en/stable/integrations/editors.html#vim
+Plug 'psf/black', { 'branch': 'stable' }
+
+" Setup fzf for vim
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+
+" Haskell formatting
+Plug 'neovimhaskell/haskell-vim'
+" The default color is white, which looks terrible
+highlight CocFloating ctermbg=black
+highlight Pmenu ctermfg=white ctermbg=black
 
 " LaTeX plugin
 Plug 'lervag/vimtex'
@@ -164,7 +181,7 @@ autocmd FileType java setlocal ts=2 sts=2 sw=2 et
 " ===================
 
 " For java, cpp, use [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
-function! Formatonsave()
+function! FormatClangOnSave()
     " Might require `python3 -m pip install --user --upgrade pynvim`
     " from https://stackoverflow.com/a/67360265/14555505
     let l:formatdiff = 1
@@ -174,4 +191,12 @@ function! Formatonsave()
         py3f /opt/homebrew/Cellar/clang-format/14.0.0/share/clang/clang-format.py
     endtry
 endfunction
-autocmd BufWritePre *.java,*.h,*.cc,*.cpp call Formatonsave()
+autocmd BufWritePre *.java,*.h,*.cc,*.cpp call FormatClangOnSave()
+
+augroup black_on_save
+  autocmd!
+  autocmd BufWritePre *.py Black
+augroup end
+
+" Plug 'rust-lang/rust.vim'
+" let g:rustfmt_autosave = 1

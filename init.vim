@@ -5,21 +5,6 @@ set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath = &runtimepath
 source ~/.vimrc
 
-call plug#begin()
-" Install Coc: https://github.com/neoclide/coc.nvim
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" The default color is white, which looks terrible
-highlight CocFloating ctermbg=black
-highlight Pmenu ctermfg=white ctermbg=black
-
-
-" Setup fzf for vim
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-
-call plug#end()
-
 " Customising fzf:
 " Most commands support CTRL-T / CTRL-X / CTRL-V key bindings to open in a new
 " tab, a new split, or in a new vertical split. Bang-versions of the commands
