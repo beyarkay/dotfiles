@@ -145,6 +145,16 @@ set timeoutlen=200
 set title
 set wildmenu
 
+" Don't show the banner at the top of netrw
+let g:netrw_banner = 0
+" Show tree-style view by default
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+let g:netrw_winsize = -25
+" Highlight marked files in the same way as searches are
+hi! link netrwMarkFile Search
+
 " =======================================
 " Setup proper folding for markdown files
 " =======================================
