@@ -185,6 +185,8 @@ autocmd FileType javascript setlocal ts=2 sts=2 sw=2 et
 autocmd FileType typescript setlocal ts=2 sts=2 sw=2 et
 autocmd FileType java setlocal ts=2 sts=2 sw=2 et
 
+" Remap :W to write the file, and then run the Makefile
+command! W w|silent make
 
 " ===================
 " Format code on save
