@@ -207,7 +207,7 @@ function! FormatClangOnSave()
     try
         py3f /usr/local/Cellar/clang-format/13.0.1/share/clang/clang-format.py
     catch
-        py3f /opt/homebrew/Cellar/clang-format/14.0.0/share/clang/clang-format.py
+        py3f /opt/homebrew/Cellar/clang-format/14.0.6/share/clang/clang-format.py
     endtry
 endfunction
 autocmd BufWritePre *.java,*.h,*.cc,*.cpp call FormatClangOnSave()
