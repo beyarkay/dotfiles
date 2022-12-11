@@ -48,6 +48,9 @@ call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
+" Install a CSV colour scheme
+Plug 'mechatroner/rainbow_csv'
+
 " Formatting python files with `black`
 " https://black.readthedocs.io/en/stable/integrations/editors.html#vim
 Plug 'psf/black', { 'branch': 'stable' }
