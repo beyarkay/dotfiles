@@ -17,3 +17,16 @@ echo -e "$RESET"
 echo -e "$RESET[D] Setting up node$RED"
 sudo apt install node && echo "$RESET $BOLD[I] Node setup successfully.$RED"
 echo -e "$RESET"
+
+echo -e "$RESET[D] Setting up ripgrep$RED"
+sudo apt install ripgrep && echo "$RESET $BOLD[I] ripgrep setup successfully.$RED"
+echo -e "$RESET"
+
+echo -e "$RESET[D] Setting up fzf$RED"
+sudo apt install fzf && echo "$RESET $BOLD[I] fzf setup successfully.$RED"
+echo -e "$RESET"
+
+echo -e "$RESET[D] Setting up bat$RED"
+sudo apt install bat && mkdir -p ~/.local/bin && ln -s /usr/bin/batcat ~/.local/bin/bat && echo "$RESET $BOLD[I] bat setup successfully.$RED"
+echo -e "$RESET"
+
