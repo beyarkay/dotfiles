@@ -16,7 +16,8 @@
     dag = log --graph --format='format:%C(yellow)%h%C(reset) %C(blue)\"%an\" <%ae>%C(reset) %C(magenta)%cr%C(reset)%C(auto)%d%C(reset)%n%s' --date-order --all
     last = log -1 HEAD
     co = checkout
-    follow = log --follow -p --
+    # See changelist for one file across renames https://stackoverflow.com/a/5493663/14555505
+    history = log --follow --stat -p --
 
 [commit]
 	template = ~/.gitmessage
