@@ -45,7 +45,8 @@ setopt HIST_IGNORE_ALL_DUPS
 export HISTFILESIZE=100000
 export HISTSIZE=100000
 
-
+# Use exa instead of tree
+alias tree="exa --tree -lFa --git"
 # Search for all TODOs / FIXMEs from the current directory
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
 # List-long: ls with colours, long format, human readable, all files
@@ -53,8 +54,8 @@ alias ll="ls -AlhGF"
 # Clear the terminal and ls files in the current directory, excluding the . and
 # .. directories
 alias clear="clear && ls -A"
-# Always include colours and line numbers for grep
-alias grep='grep -n --color=auto'
+# Always include colours for grep
+alias grep='grep --color=auto'
 # Show diskfree with human-readable numerals
 alias df='df -h'
 # Calculate total disk usage for a folder, in human readable numbers
@@ -285,6 +286,7 @@ setopt promptsubst
 # ==========================
 # Enable zsh Autosuggestions
 # ==========================
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # First look for history items, then look for zsh-completion items
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
@@ -300,3 +302,22 @@ alias fz="fzf --layout=reverse --height 40% --multi --border --preview 'bat --co
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/brk/.miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/brk/.miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/Users/brk/.miniforge3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/brk/.miniforge3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+
+[ -f "/Users/brk/.ghcup/env" ] && source "/Users/brk/.ghcup/env" # ghcup-envexport PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
