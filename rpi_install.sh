@@ -14,8 +14,8 @@ sudo apt update
 sudo apt install gh
 echo -e "$RESET"
 
-echo -e "$RESET[D] Setting up node$RED"
-sudo apt install node && echo "$RESET $BOLD[I] Node setup successfully.$RED"
+echo -e "$RESET[D] Setting up nodejs$RED"
+sudo apt install nodejs && echo "$RESET $BOLD[I] nodejs setup successfully.$RED"
 echo -e "$RESET"
 
 echo -e "$RESET[D] Setting up ripgrep$RED"
@@ -30,3 +30,6 @@ echo -e "$RESET[D] Setting up bat$RED"
 sudo apt install bat && mkdir -p ~/.local/bin && ln -s /usr/bin/batcat ~/.local/bin/bat && echo "$RESET $BOLD[I] bat setup successfully.$RED"
 echo -e "$RESET"
 
+echo -e "$RESET[D] Setting up locale$RED"
+sudo cp locale /etc/default/locale
+echo -e "$RESET"
