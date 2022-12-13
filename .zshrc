@@ -286,7 +286,9 @@ setopt promptsubst
 # ==========================
 # Enable zsh Autosuggestions
 # ==========================
-git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+if [ ! -d ~/.zsh/zsh-autosuggestions ]; then
+    git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+fi
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # First look for history items, then look for zsh-completion items
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
