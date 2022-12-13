@@ -1,4 +1,12 @@
 {
+   "languageserver": {
+       "bash": {
+       "command": "bash-language-server",
+       "args": ["start"],
+       "filetypes": ["sh"],
+       "ignoredRootPaths": ["~"]
+       }
+   },
   "coc.preferences.extensionUpdateCheck": "daily",
   "ltex.language": "en-ZA",
   "ltex.dictionary": {
