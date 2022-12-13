@@ -1,29 +1,35 @@
 {
-   "languageserver": {
-       "bash": {
-       "command": "bash-language-server",
-       "args": ["start"],
-       "filetypes": ["sh"],
-       "ignoredRootPaths": ["~"]
-       }
-   },
-  "coc.preferences.extensionUpdateCheck": "daily",
-  "ltex.language": "en-ZA",
-  "ltex.dictionary": {
-      "en-ZA": [
-          "Flexion",
-          "flexion",
-          "Palmar",
-          "palmar"
-      ]
-  },
-  "ltex.disabledRules": {
-      "en-ZA": [
-          "MISSING_HYPHEN",
-          "WHITESPACE_RULE",
-          "UPPERCASE_SENTENCE_START",
-          "AGREEMENT_SENT_START",
-          "WHETHER"
-      ]
-  }
+    "languageserver": {
+        "bash": {
+            "command": "bash-language-server",
+            "args": [
+                "start"
+            ],
+            "filetypes": [
+                "sh"
+            ],
+            "ignoredRootPaths": [
+                "~"
+            ]
+        }
+    },
+    "coc.preferences.extensionUpdateCheck": "daily",
+    "ltex.language": "en-ZA",
+    "ltex.dictionary": {
+        "en-ZA": [
+            "Flexion",
+            "flexion",
+            "Palmar",
+            "palmar"
+        ]
+    },
+    "ltex.disabledRules": {
+        "en-ZA": [
+            "MISSING_HYPHEN",
+            "WHITESPACE_RULE",
+            "UPPERCASE_SENTENCE_START",
+            "AGREEMENT_SENT_START",
+            "WHETHER"
+        ]
+    }
 }
