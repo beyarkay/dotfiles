@@ -219,3 +219,19 @@ augroup end
 
 " Plug 'rust-lang/rust.vim'
 " let g:rustfmt_autosave = 1
+
+" Remove trailing whitespace on save
+" https://stackoverflow.com/a/1618401/14555505
+function! StripTrailingWhitespaces()
+  if !&binary && &filetype != 'diff'
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+  endif
+endfun
+autocmd BufWritePre,FileWritePre,FileAppendPre,FilterWritePre *
+  \ :call StripTrailingWhitespaces()
+
+" Colour trailing whitespace with a red background
+" https://stackoverflow.com/a/356214/14555505
+match PmenuSbar /\s\+$/
