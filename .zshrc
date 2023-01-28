@@ -318,5 +318,31 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 
+# ======================================================
+# Auto-expand globs, aliases, and other shell expansions
+# ======================================================
+# This autoload fix is needed to get the _expand-alias function: https://stackoverflow.com/a/61653489/14555505
+autoload -Uz compinit && compinit
+# This function and related setup comes from:
+# https://blog.patshead.com/2012/11/automatically-expaning-zsh-global-aliases---simplified.html
+globalias() {
+   zle _expand_alias
+   zle self-insert
+}
+zle -N globalias
+bindkey " " globalias
+# control-space to bypass completion
+bindkey "^ " magic-space
+# normal space during searches
+bindkey -M isearch " " magic-space
+
+# Define some extra aliases
+alias gs="git status"
+alias gc="git commit -m "
+alias ga="git add"
+alias gap="git add -p"
+alias gd="git dag"
+alias G="git"
+
 [ -f "/Users/brk/.ghcup/env" ] && source "/Users/brk/.ghcup/env" # ghcup-envexport PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
