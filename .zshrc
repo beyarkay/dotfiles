@@ -51,9 +51,6 @@ alias tree="exa --tree -lFa --git"
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
 # List-long: ls with colours, long format, human readable, all files
 alias ll="ls -AlhGF"
-# Clear the terminal and ls files in the current directory, excluding the . and
-# .. directories
-alias clear="clear && ls -A"
 # Always include colours for grep
 alias grep='grep --color=auto'
 # Show diskfree with human-readable numerals
@@ -114,7 +111,7 @@ function short_pwd {
         if [ $i = ${#directories} ]; then
             # The final directory in the path should be left as-is, unshortened
             shortened_path+="%F{$FG_LIGHTGREY}${directory}%F{$FG_GREY}"
-        else 
+        else
             # Set the shortened path to be just the first character of the
             # current directory
             shortened_path+="${directory:0:1}/"
@@ -214,7 +211,7 @@ function precmd() {
     elif [[ "$(whoami)@$(hostname)" == "brk@Boyds-MBP-2022" ]]; then
         # Probably a personal macbook pro
         host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
-    else 
+    else
         # Probably an aws machine
         AWS_FILE="$HOME/.dotfiles/aws_setup.sh"
         if [ -f $AWS_FILE ]; then
