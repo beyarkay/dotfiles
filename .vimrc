@@ -48,6 +48,27 @@ call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
+" Jupyter Ascending allows sync-ed notebook editing from vim
+" https://github.com/untitled-ai/jupyter_ascending.vim
+Plug 'untitled-ai/jupyter_ascending.vim'
+nmap <silent> <leader>x <Plug>JupyterExecute
+nmap <silent> <leader>X <Plug>JupyterExecuteAll
+
+" Some remappings to easily create new blocks
+noremap <C-j> /\v# \%\%j:noh
+noremap <C-k> ?\v# \%\%nj:noh
+noremap <C-n> o# %%
+
+
+" Install a floating terminal window
+Plug 'voldikss/vim-floaterm'
+" And configure some mappings for it
+let g:floaterm_keymap_toggle = '!'
+" Unfortunately this raises a bug in neovim: https://github.com/neovim/neovim/issues/14061
+" The solution is a bit awkward: https://github.com/neovim/neovim/issues/14061#issuecomment-955167055
+command Z w | qa
+cabbrev wqa Z
+
 " Install a CSV colour scheme
 Plug 'mechatroner/rainbow_csv'
 
