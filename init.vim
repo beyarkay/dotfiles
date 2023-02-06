@@ -33,7 +33,7 @@ let g:coc_global_extensions = [
   \ 'coc-git',
   \ 'coc-html',
   \ 'coc-java',
-  \ 'coc-json', 
+  \ 'coc-json',
   \ 'coc-markdown-preview-enhanced',
   \ 'coc-marketplace',
   \ 'coc-jedi',
@@ -77,6 +77,14 @@ nmap <silent> <leader>r <Plug>(coc-references)
 nmap <silent> <leader>n <Plug>(coc-rename)
 " Apply AutoFix to problem on the current line.
 nmap <leader>f  <Plug>(coc-fix-current)
+nmap <leader>l  :CocAction<CR>
+
+command! -nargs=0 Format :call CocActionAsync('format')
+
+augroup HaskellFormatOnSave
+  autocmd!
+  autocmd BufWritePre *.hs :call CocActionAsync('format')
+augroup end
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -89,6 +97,12 @@ function! s:show_documentation()
     execute '!' . &keywordprg . " " . expand('<cword>')
   endif
 endfunction
+
+" The default color is white, which looks terrible
+highlight CocFloating ctermbg=black
+highlight Pmenu ctermfg=white ctermbg=black
+" Also change the virtual text hint to be similar to that of comments
+highlight CocInlayHint ctermfg='darkgrey'
 
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
