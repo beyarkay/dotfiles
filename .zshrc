@@ -204,21 +204,25 @@ function precmd() {
     local host_machine="{%F{${FG_CYAN}}$(hostname)%F{$FG_GREY}}"
     local need_kinit=''
     local need_mwinit=''
-    if [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MacBook-Pro-2012.local" ]]; then
-        # Probably a personal macbook pro
-        host_machine="{%F{${FG_CYAN}}mbp2012%F{$FG_GREY}}"
-    elif [[ "$(whoami)@$(hostname)" == "boydkane@Boyds-MacBook-Pro-2022.local" ]]; then
-        # Probably a personal macbook pro
+    brk_whoami=(brk boydkane boydrkane)
+    aws_whoami=(boydkane)
+    mbp2022_hostnames=(Boyds-MacBook-Pro-2022.local Boyds-MBP-2022)
+    mbp2012_hostnames=(Boyds-MacBook-Pro-2012.local Boyds-MBP-2012)
+
+    # whoami \in [brk, boydrkane] && hostname \in [mbp2022]
+    if (($brk_whoami[(Ie)$(whoami)])) && (($mbp2022_hostnames[(Ie)$(hostname)])); then
         host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
-    elif [[ "$(whoami)@$(hostname)" == "brk@Boyds-MBP-2022" ]]; then
-        # Probably a personal macbook pro
-        host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
-    else
+    # whoami \in [aws-login]
+    elif (($aws_whoami[(Ie)$(whoami)])); then
         # Probably an aws machine
         AWS_FILE="$HOME/.dotfiles/aws_setup.sh"
         if [ -f $AWS_FILE ]; then
             source ~/.dotfiles/aws_setup.sh
         fi
+        host_machine="{%F{${FG_CYAN}}aws%F{$FG_GREY}}"
+    # whoami \in [brk, boydrkane] && hostname \in [mbp2012]
+    elif (($brk_whoami[(Ie)$(whoami)])) && (($mbp2012_hostnames[(Ie)$(hostname)])); then
+        host_machine="{%F{${FG_CYAN}}mbp2012%F{$FG_GREY}}"
     fi
 
     # ======================================================
