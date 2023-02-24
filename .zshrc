@@ -49,8 +49,10 @@ export HISTSIZE=100000
 alias tree="exa --tree -lFa --git"
 # Search for all TODOs / FIXMEs from the current directory
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
-# List-long: ls with colours, long format, human readable, all files
-alias ll="ls -AlhGF"
+# List long showing filetypes, all files, and git info
+alias ll="exa --long --classify --all --git --time-style=long-iso"
+# List just the simple things
+alias ls="COLUMNS=80 exa --classify --all"
 # Always include colours for grep
 alias grep='grep --color=auto'
 # Show diskfree with human-readable numerals
