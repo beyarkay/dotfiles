@@ -21,6 +21,9 @@
             ]
         }
     },
+    "diagnostic.virtualText": true,
+    "diagnostic.virtualTextPrefix": "|",
+    "diagnostic.virtualTextCurrentLineOnly": false,
     "coc.preferences.extensionUpdateCheck": "daily",
     "ltex.language": "en-ZA",
     "ltex.dictionary": {
