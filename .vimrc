@@ -48,6 +48,10 @@ call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
+" Install a markdown/pandoc helper
+Plug 'vim-pandoc/vim-pandoc'
+Plug 'vim-pandoc/vim-pandoc-syntax'
+
 " Jupyter Ascending allows sync-ed notebook editing from vim
 " https://github.com/untitled-ai/jupyter_ascending.vim
 Plug 'untitled-ai/jupyter_ascending.vim'
@@ -154,7 +158,7 @@ set linebreak
 set mouse=a
 set noerrorbells
 set number
-set nrformats=bin,hex,alpha,octal
+set nrformats=bin,hex,alpha
 set relativenumber
 " Make vim start scrolling {scrolloff} characters before the end of the screen
 set scrolloff=2
@@ -185,16 +189,16 @@ hi! link netrwMarkFile Search
 " =======================================
 " Setup proper folding for markdown files
 " =======================================
-function MdLevel()
-    let h = matchstr(getline(v:lnum), '^#\+')
-    if empty(h)
-        return "="
-    else
-        return ">" . len(h)
-    endif
-endfunction
-au BufEnter *.md setlocal foldexpr=MdLevel()
-au BufEnter *.md setlocal foldmethod=expr
+" function MdLevel()
+"     let h = matchstr(getline(v:lnum), '^#\+')
+"     if empty(h)
+"         return "="
+"     else
+"         return ">" . len(h)
+"     endif
+" endfunction
+" au BufEnter *.md setlocal foldexpr=MdLevel()
+" au BufEnter *.md setlocal foldmethod=expr
 au BufEnter *.md setlocal spell
 
 " ====================================
