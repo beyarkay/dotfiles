@@ -29,19 +29,21 @@ nnoremap <C-g> :RG<CR>
 " Install Coc language extensions
 let g:coc_global_extensions = [
   \ 'coc-clangd',
+  \ 'coc-eslint',
   \ 'coc-fzf-preview',
   \ 'coc-git',
   \ 'coc-html',
   \ 'coc-java',
+  \ 'coc-jedi',
   \ 'coc-json',
   \ 'coc-markdown-preview-enhanced',
   \ 'coc-marketplace',
-  \ 'coc-jedi',
   \ 'coc-rust-analyzer',
   \ 'coc-sh',
+  \ 'coc-tsserver',
+  \ 'coc-vimlsp',
   \ 'coc-webview',
   \ 'coc-yaml',
-  \ 'coc-vimlsp',
   \ ]
 
 
