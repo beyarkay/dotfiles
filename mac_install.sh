@@ -211,7 +211,7 @@ if [[ $install_homebrew == [yY] ]]; then
 	echo -e "$RESET$BOLD Installing homebrew$RESET"
 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	echo -e "$BOLD Homebrew installation finished$RESET"
-fi 
+fi
 
 # Only install brew dependencies if homebrew is installed
 if [ -x "$(command -v brew)" ]; then
@@ -223,7 +223,7 @@ if [ -x "$(command -v brew)" ]; then
     #       0wveyA			# €:r !brew desc "kJdf:xj0
     #
     # For example: `    gh` -> `    gh     # GitHub command-line tool`
-    brewable=( 
+    brewable=(
         bat         # Clone of cat(1) with syntax highlighting and Git integration
         clang-format# Formatting tools for C, C++, Obj-C, Java, JavaScript, TypeScript
         fzf         # Command-line fuzzy finder written in Go
@@ -240,6 +240,7 @@ if [ -x "$(command -v brew)" ]; then
         tree        # Display directories as trees (with optional color/HTML output)
         watch       # Executes a program periodically, showing output fullscreen
     )
+    # TODO Also install `brew install --cask --no-quarantine syntax-highlight`
     # For each brew installable item:
     for b in "${brewable[@]}"
     do
