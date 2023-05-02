@@ -18,6 +18,8 @@
     co = checkout
     # See changelist for one file across renames https://stackoverflow.com/a/5493663/14555505
     history = log --follow --stat -p --
+	yolo = !git add -A && git commit -m \"¯\\_(ツ)_/¯ $(curl --silent --fail https://whatthecommit.com/index.txt)\"
+	uncommit = !git reset --soft HEAD^
 
 [commit]
 	template = ~/.gitmessage
