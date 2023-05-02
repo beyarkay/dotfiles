@@ -78,8 +78,16 @@ nmap <silent> <leader>r <Plug>(coc-references)
 " Symbol renaming.
 nmap <silent> <leader>n <Plug>(coc-rename)
 " Apply AutoFix to problem on the current line.
-nmap <leader>f  <Plug>(coc-fix-current)
-nmap <leader>l  :CocAction<CR>
+nmap <leader>f  <Plug>(coc-fix-current)^[:wa<CR>
+
+" https://www.reddit.com/r/rust/comments/qxgroi/ism9me0/
+" Applying codeAction to the selected region.
+" Example: `<leader>Aap` for current paragraph
+xmap <leader>A  <Plug>(coc-codeaction-selected)
+nmap <leader>A  <Plug>(coc-codeaction-selected)
+
+" Apply codeAction to current cursor position
+nmap <leader>a  <Plug>(coc-codeaction-cursor)
 
 command! -nargs=0 Format :call CocActionAsync('format')
 
