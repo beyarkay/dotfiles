@@ -8,7 +8,6 @@
 " - A general tidy up is needed
 " - Move over to nvim
 
-
 " ------------------------------------------
 "               WRITING THINGS
 " ------------------------------------------
@@ -27,8 +26,6 @@ inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 " all the figure labels. Very useful!
 autocmd FileType tex setlocal iskeyword+=:
 autocmd FileType tex setlocal spell
-
-
 
 " ------------------------------------------
 "               PLUGIN THINGS
@@ -58,10 +55,15 @@ Plug 'untitled-ai/jupyter_ascending.vim'
 nmap <silent> <leader>x <Plug>JupyterExecute
 nmap <silent> <leader>X <Plug>JupyterExecuteAll
 
-" Some remappings to easily create new blocks
-noremap <C-j> /\v# \%\%j:noh
-noremap <C-k> ?\v# \%\%nj:noh
-noremap <C-n> o# %%
+
+" Allow easy parameter moving:
+" ```
+" - def function(one, two, three):
+" + def function(two, one, three):
+" ```
+Plug 'AndrewRadev/sideways.vim'
+nnoremap <c-h> :SidewaysLeft<cr>
+nnoremap <c-l> :SidewaysRight<cr>
 
 
 " Install a floating terminal window
