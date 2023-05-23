@@ -9,7 +9,7 @@
 	default = simple
 
 [core]
-    pager = less -FMRiX
+    pager = delta
 	excludesfile = ~/.gitignore_global
 
 [alias]
@@ -35,6 +35,7 @@
 	tool = vimdiff
     # Better, more concise diffs for functions with curly braces
     algorithm = patience
+    colorMoved = default
 
 [difftool]
 	prompt = false
@@ -48,6 +49,7 @@
 [merge]
     ff = only
 	tool = vimdiff
+    conflictstyle = diff3
 
 [mergetool]
 	keepBackup = false
@@ -55,3 +57,14 @@
 
 [mergetool "vimdiff"]
 	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    # use n and N to move between diff sections
+    navigate = true
+    # set to true if you're in a terminal w/ a light background color (e.g. the
+    # default macOS terminal)
+    light = false
+
