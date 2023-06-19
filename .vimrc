@@ -51,6 +51,9 @@ Plug 'untitled-ai/jupyter_ascending.vim'
 nmap <silent> <leader>x <Plug>JupyterExecute
 nmap <silent> <leader>X <Plug>JupyterExecuteAll
 
+" Open source developer stats. View dashboard at
+" https://wakatime.com/plugins/status
+Plug 'wakatime/vim-wakatime'
 
 " Allow easy parameter moving:
 " ```
