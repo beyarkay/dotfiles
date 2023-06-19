@@ -194,16 +194,16 @@ hi! link netrwMarkFile Search
 " =======================================
 " Setup proper folding for markdown files
 " =======================================
-" function MdLevel()
-"     let h = matchstr(getline(v:lnum), '^#\+')
-"     if empty(h)
-"         return "="
-"     else
-"         return ">" . len(h)
-"     endif
-" endfunction
-" au BufEnter *.md setlocal foldexpr=MdLevel()
-" au BufEnter *.md setlocal foldmethod=expr
+function MdLevel()
+    let h = matchstr(getline(v:lnum), '^#\+')
+    if empty(h)
+        return "="
+    else
+        return ">" . len(h)
+    endif
+endfunction
+au BufEnter *.md setlocal foldexpr=MdLevel()
+au BufEnter *.md setlocal foldmethod=expr
 au BufEnter *.md setlocal spell
 
 " ====================================
