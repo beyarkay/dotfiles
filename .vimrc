@@ -64,6 +64,10 @@ Plug 'AndrewRadev/sideways.vim'
 nnoremap <c-h> :SidewaysLeft<cr>
 nnoremap <c-l> :SidewaysRight<cr>
 
+" Svelte syntax highlighting
+Plug 'leafOfTree/vim-svelte-plugin'
+let g:vim_svelte_plugin_use_foldexpr = 1
+let g:vim_svelte_plugin_use_typescript = 1
 
 " Install a floating terminal window
 Plug 'voldikss/vim-floaterm'
