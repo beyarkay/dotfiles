@@ -36,14 +36,14 @@ fi
 # TODO These history related commands might only work for zsh
 # Immediately append commands to the history file, to allow for easier history
 # searching
-setopt inc_append_history
+#s etopt inc_append_history
 # Include the timestamp in the history file
-export HISTTIMEFORMAT="[%F %T] "
+# export HISTTIMEFORMAT="[%F %T] "
 # Don't include duplicated lines in the history file
-setopt HIST_IGNORE_ALL_DUPS
+# setopt HIST_IGNORE_ALL_DUPS
 # There's no reason to have a limit to the history size
-export HISTFILESIZE=100000
-export HISTSIZE=100000
+# export HISTFILESIZE=100000
+# export HISTSIZE=100000
 
 # Use exa instead of tree
 alias tree="exa --tree -lFa --git --git-ignore --ignore-glob=.git"
@@ -352,3 +352,8 @@ alias G="git"
 
 [ -f "/Users/brk/.ghcup/env" ] && source "/Users/brk/.ghcup/env" # ghcup-envexport PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
+
+test -d "$HOME/.tea" && source <("$HOME/.tea/tea.xyz/v*/bin/tea" --magic=zsh --silent)
+
+# https://atuin.sh/
+eval "$(atuin init zsh --disable-up-arrow)"
