@@ -45,10 +45,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
-" Install a markdown/pandoc helper
-Plug 'vim-pandoc/vim-pandoc'
-Plug 'vim-pandoc/vim-pandoc-syntax'
-
 " Jupyter Ascending allows sync-ed notebook editing from vim
 " https://github.com/untitled-ai/jupyter_ascending.vim
 Plug 'untitled-ai/jupyter_ascending.vim'
@@ -80,7 +76,7 @@ Plug 'mechatroner/rainbow_csv'
 
 " Formatting python files with `black`
 " https://black.readthedocs.io/en/stable/integrations/editors.html#vim
-Plug 'psf/black', { 'branch': 'stable' }
+" Plug 'psf/black', { 'branch': 'stable' }
 
 " Setup fzf for vim
 Plug 'junegunn/fzf'
@@ -239,13 +235,10 @@ function! FormatClangOnSave()
 endfunction
 autocmd BufWritePre *.java,*.h,*.cc,*.cpp call FormatClangOnSave()
 
-augroup black_on_save
-  autocmd!
-  autocmd BufWritePre *.py Black
-augroup end
-
-" Plug 'rust-lang/rust.vim'
-" let g:rustfmt_autosave = 1
+" augroup black_on_save
+"   autocmd!
+"   autocmd BufWritePre *.py Black
+" augroup end
 
 " Remove trailing whitespace on save
 " https://stackoverflow.com/a/1618401/14555505
