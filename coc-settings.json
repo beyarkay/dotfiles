@@ -25,22 +25,6 @@
     "diagnostic.virtualTextPrefix": "|",
     "diagnostic.virtualTextCurrentLineOnly": false,
     "coc.preferences.extensionUpdateCheck": "daily",
-    "ltex.language": "en-ZA",
-    "ltex.dictionary": {
-        "en-ZA": [
-            "Flexion",
-            "flexion",
-            "Palmar",
-            "palmar"
-        ]
-    },
-    "ltex.disabledRules": {
-        "en-ZA": [
-            "MISSING_HYPHEN",
-            "WHITESPACE_RULE",
-            "UPPERCASE_SENTENCE_START",
-            "AGREEMENT_SENT_START",
-            "WHETHER"
-        ]
-    }
+    "coc.preferences.formatOnSave": true,
+    "svelte.enable-ts-plugin": true
 }
