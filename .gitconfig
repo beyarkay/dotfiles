@@ -22,6 +22,9 @@
     history = log --follow --stat -p --
 	yolo = !git add -A && git commit -m \"¯\\_(ツ)_/¯ $(curl --silent --fail https://whatthecommit.com/index.txt)\"
 	uncommit = !git reset --soft HEAD^
+    # "unstash" the most recent stash, keeping track of any files you "git add"-ed
+    # https://stackoverflow.com/a/10827172/14555505
+    unstash = stash apply --index
 
 [commit]
 	template = ~/.gitmessage
