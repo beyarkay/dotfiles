@@ -59,6 +59,8 @@ alias grep='grep --color=auto'
 alias df='df -h'
 # Calculate total disk usage for a folder, in human readable numbers
 alias du='du -h -c'
+# Disallow easy footguns
+alias rm="echo Use 'del', or the full path i.e. '/bin/rm'"
 
 
 # =================================
