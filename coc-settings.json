@@ -1,30 +1,24 @@
 {
-    "rust-analyzer.checkOnSave": true,
-    "rust-analyzer.check.command": "clippy",
-    "languageserver": {
-        "bash": {
-            "command": "bash-language-server",
-            "args": [
-                "start"
-            ],
-            "filetypes": [
-                "sh"
-            ],
-            "ignoredRootPaths": [
-                "~"
-            ]
-        },
-        "ruff-lsp": {
-            "command": "ruff-lsp",
-            "filetypes": [
-                "python"
-            ]
-        }
+  "coc.preferences.jumpCommand": "tab drop",
+  "rust-analyzer.checkOnSave": true,
+  "rust-analyzer.check.command": "clippy",
+  "languageserver": {
+    "bash": {
+      "command": "bash-language-server",
+      "args": ["start"],
+      "filetypes": ["sh"],
+      "ignoredRootPaths": ["~"]
     },
-    "diagnostic.virtualText": true,
-    "diagnostic.virtualTextPrefix": "|",
-    "diagnostic.virtualTextCurrentLineOnly": false,
-    "coc.preferences.extensionUpdateCheck": "daily",
-    "coc.preferences.formatOnSave": true,
-    "svelte.enable-ts-plugin": true
+    "ruff-lsp": {
+      "command": "ruff-lsp",
+      "filetypes": ["python"]
+    }
+  },
+  "diagnostic.virtualText": true,
+  "diagnostic.virtualTextPrefix": "■ ",
+  "diagnostic.virtualTextCurrentLineOnly": false,
+  "coc.preferences.extensionUpdateCheck": "daily",
+  "coc.preferences.formatOnSave": true,
+  "svelte.enable-ts-plugin": true,
+  "markdown-preview-enhanced.scrollSync": false
 }
