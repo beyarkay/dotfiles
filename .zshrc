@@ -46,7 +46,7 @@ fi
 # export HISTSIZE=100000
 
 # Use exa instead of tree
-alias tree="exa --tree -lFa --git --git-ignore --ignore-glob=.git"
+alias tree="exa --tree -lFa --git --ignore-glob=.git"
 # Search for all TODOs / FIXMEs from the current directory
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
 # List long showing filetypes, all files, and git info
