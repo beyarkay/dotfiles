@@ -307,8 +307,33 @@ export FZF_COMPLETION_OPTS="--reverse --height 40% --multi --border"
 export FZF_DEFAULT_COMMAND='rg --files'
 alias fz="fzf --layout=reverse --height 40% --multi --border --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
 
+export FZF_CTRL_T_OPTS="
+  --preview 'bat -n --color=always {}'
+  --bind 'ctrl-/:change-preview-window(down|hidden|)'"
+
+# Print tree structure in the preview window
+# export FZF_ALT_C_COMMAND="^Q"
+export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Unbind ^Q and ^S (which usually start/stop the terminal) so they can be used
+# elsewhere. They never worked for me anyway.
+# https://stackoverflow.com/a/16728429/14555505
+stty start '^-' stop '^-'
+# Rebind the cd widget to ^q instead of alt-c
+# NOTE: these lines MUST come after `source ~/.fzf.zsh`
+zle     -N            fzf-cd-widget
+bindkey -M emacs '^Q' fzf-cd-widget
+bindkey -M vicmd '^Q' fzf-cd-widget
+bindkey -M viins '^Q' fzf-cd-widget
+# Rebind the file-finder widget to ^G
+zle     -N            fzf-file-widget
+bindkey -M emacs '^G' fzf-file-widget
+bindkey -M vicmd '^G' fzf-file-widget
+bindkey -M viins '^G' fzf-file-widget
+
+# Enable floating tmux window for fzf searches
+FZF_TMUX_OPTS='-p80%,60%'
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
