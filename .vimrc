@@ -262,3 +262,44 @@ autocmd BufWritePre,FileWritePre,FileAppendPre,FilterWritePre *
 " Colour trailing whitespace with a red background
 " https://stackoverflow.com/a/356214/14555505
 match PmenuSbar /\s\+$/
+
+" Remap the ALT key so that it is used to trigger macros. For example, ALT-q is
+" equivalent to @q in normal mode. This requires some finagling because in
+" MacOS, ALT-q sends the character "œ" and not a literal ALT and then a literal
+" q.
+"
+" This might seem extra, but it makes creating a little DSL super easy since
+" macros become slightly less hand breaking and a lot easier to treat as native
+" vim keybindings.
+"
+" In iTerm2, you'll need to adjust the settings in profiles>keys>general>left
+" option key so that iTerm2 sends a literal ALT.
+"
+" normal key: a b c d e f g h i j k l m n o p q r s t u v w x y z
+" alt+key:    å ∫ ç ∂ ´ ƒ © ˙ ˆ ∆ ˚ ¬ µ ˜ ø π œ ® ß † ¨ √ ∑ ≈ \ Ω
+nnoremap å @a
+nnoremap ∫ @b
+nnoremap ç @c
+nnoremap ∂ @d
+nnoremap ´ @e
+nnoremap ƒ @f
+nnoremap © @g
+nnoremap ˙ @h
+nnoremap ˆ @i
+nnoremap ∆ @j
+nnoremap ˚ @k
+nnoremap ¬ @l
+nnoremap µ @m
+nnoremap ˜ @n
+nnoremap ø @o
+nnoremap π @p
+nnoremap œ @q
+nnoremap ® @r
+nnoremap ß @s
+nnoremap † @t
+nnoremap ¨ @u
+nnoremap √ @v
+nnoremap ∑ @w
+nnoremap ≈ @x
+nnoremap \ @y
+nnoremap Ω @z
