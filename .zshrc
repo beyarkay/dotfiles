@@ -61,6 +61,8 @@ alias df='df -h'
 alias du='du -h -c'
 # Disallow easy footguns
 alias rm="echo Use 'del', or the full path i.e. '/bin/rm'"
+# Fat fingers
+alias gf="fg"
 
 
 # =================================
