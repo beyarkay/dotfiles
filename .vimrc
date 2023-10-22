@@ -263,6 +263,12 @@ autocmd BufWritePre,FileWritePre,FileAppendPre,FilterWritePre *
 " https://stackoverflow.com/a/356214/14555505
 match PmenuSbar /\s\+$/
 
+"Paste in visual mode without copying
+" https://stackoverflow.com/a/25282274/14555505
+xnoremap p pgvy
+xnoremap P Pgvy
+
+
 " Remap the ALT key so that it is used to trigger macros. For example, ALT-q is
 " equivalent to @q in normal mode. This requires some finagling because in
 " MacOS, ALT-q sends the character "œ" and not a literal ALT and then a literal
