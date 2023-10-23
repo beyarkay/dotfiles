@@ -15,6 +15,7 @@
 setlocal spell
 set spelllang=en_gb
 " Pressing Ctrl+l will fix spelling errors
+" RIP Gilles Castel 1999-2022✝
 inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 
 " ------------------------------------------
