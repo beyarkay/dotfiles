@@ -2,19 +2,13 @@
 " Boyd Kane's .vimrc
 " ------------------
 "
-" TODO:
-" - Add syntax highlighting for trailing whitespace
-"   (Or just remove it automatically on save)
-" - A general tidy up is needed
-" - Move over to nvim
-
 " ------------------------------------------
 "               WRITING THINGS
 " ------------------------------------------
 
 setlocal spell
 set spelllang=en_gb
-" Pressing Ctrl+l will fix spelling errors
+" Pressing Ctrl+l will fix spelling errors while in insert mode
 " RIP Gilles Castel 1999-2022✝
 inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 
@@ -51,19 +45,6 @@ Plug 'sonph/onehalf', { 'rtp': 'vim' }
 Plug 'untitled-ai/jupyter_ascending.vim'
 nmap <silent> <leader>x <Plug>JupyterExecute
 nmap <silent> <leader>X <Plug>JupyterExecuteAll
-
-" Open source developer stats. View dashboard at
-" https://wakatime.com/plugins/status
-Plug 'wakatime/vim-wakatime'
-
-" Allow easy parameter moving:
-" ```
-" - def function(one, two, three):
-" + def function(two, one, three):
-" ```
-Plug 'AndrewRadev/sideways.vim'
-nnoremap <c-h> :SidewaysLeft<cr>
-nnoremap <c-l> :SidewaysRight<cr>
 
 " Svelte syntax highlighting
 Plug 'leafOfTree/vim-svelte-plugin'
@@ -260,9 +241,10 @@ endfun
 autocmd BufWritePre,FileWritePre,FileAppendPre,FilterWritePre *
   \ :call StripTrailingWhitespaces()
 
-" Colour trailing whitespace with a red background
+" Colour trailing whitespace with a white background.
 " https://stackoverflow.com/a/356214/14555505
-match PmenuSbar /\s\+$/
+highlight trailingWhitespace ctermbg=239 guibg=#474e5d
+match trailingWhitespace /\s\+$/
 
 "Paste in visual mode without copying
 " https://stackoverflow.com/a/25282274/14555505
