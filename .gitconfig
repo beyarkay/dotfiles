@@ -7,6 +7,12 @@
 
 [push]
 	default = simple
+    # Only push tags that are both annotated and reachable from the pushed commits
+    # https://stackoverflow.com/a/26438076/14555505
+    followTags = true
+    # So that I don't have to type `git push --set-upstream branch-name` every
+    # time
+    autoSetupRemote = true
 
 [core]
     pager = delta
