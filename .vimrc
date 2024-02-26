@@ -46,6 +46,9 @@ Plug 'untitled-ai/jupyter_ascending.vim'
 nmap <silent> <leader>x <Plug>JupyterExecute
 nmap <silent> <leader>X <Plug>JupyterExecuteAll
 
+" With a visual selection, type \e to evaluate the math of that selection
+xnoremap <leader>e c<C-R>=<C-R>"<CR><ESC>
+
 " Svelte syntax highlighting
 Plug 'leafOfTree/vim-svelte-plugin'
 let g:vim_svelte_plugin_use_foldexpr = 1
