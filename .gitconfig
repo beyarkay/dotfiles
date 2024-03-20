@@ -31,6 +31,9 @@
     # "unstash" the most recent stash, keeping track of any files you "git add"-ed
     # https://stackoverflow.com/a/10827172/14555505
     unstash = stash apply --index
+    # last-edit gets the most recent time that file was included in a commit. This might not actually be the last edited date.
+    # https://superuser.com/a/1661331
+    last-edit = log -n 1 --pretty=format:%cd
 
 [commit]
 	template = ~/.gitmessage
