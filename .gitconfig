@@ -34,6 +34,7 @@
     # last-edit gets the most recent time that file was included in a commit. This might not actually be the last edited date.
     # https://superuser.com/a/1661331
     last-edit = log -n 1 --pretty=format:%cd
+    activity = !curl --silent https://gist.githubusercontent.com/beyarkay/d3be7cc248d3f66e97ecaf2993e57b0a/raw/git-activity.sh | bash
 
 [commit]
 	template = ~/.gitmessage
