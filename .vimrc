@@ -40,6 +40,11 @@ call plug#begin('~/.vim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
+" Ollama requires plenary
+Plug 'nvim-lua/plenary.nvim'
+" Install ollama.nvim for llm support
+Plug 'nomnivore/ollama.nvim'
+
 " Jupyter Ascending allows sync-ed notebook editing from vim
 " https://github.com/untitled-ai/jupyter_ascending.vim
 Plug 'untitled-ai/jupyter_ascending.vim'
@@ -112,6 +117,23 @@ call plug#end()
 
 set t_Co=256
 colorscheme onehalfdark
+
+" Setup ollama.nvim
+lua << EOF
+require('ollama').setup({
+  model = "llama3.1",
+  url = "http://127.0.0.1:11434",
+  prompts = {
+    -- Example custom prompt
+    Critique = {
+      prompt = "You are a thoughtful commentor on lesswrong/star slate codex. Critique this text: $sel",
+      input_label = "> ",
+      action = "display"
+    }
+  }
+})
+EOF
+
 
 " When searching, center the result
 nnoremap n nzz
