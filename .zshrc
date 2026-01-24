@@ -385,7 +385,8 @@ alias v="nvim"
 # https://superuser.com/a/872218/1716125
 alias rpi="arp -a | grep b8:27:eb"
 
-[ -f "/Users/brk/.ghcup/env" ] && source "/Users/brk/.ghcup/env" # ghcup-envexport PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+[ -f "/Users/brk/.ghcup/env" ] && source "/Users/brk/.ghcup/env" # ghcup-env
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
 
 test -d "$HOME/.tea" && source <("$HOME/.tea/tea.xyz/v*/bin/tea" --magic=zsh --silent)
