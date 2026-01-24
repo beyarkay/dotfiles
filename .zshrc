@@ -89,7 +89,6 @@ function cd() {
 
 # Setup colours and variables for the prompt
 local BG_GREY='236'
-local FG_RED='160'
 local FG_ORANGE='208'
 local FG_YELLOW='226'
 local FG_LIGHTGREY='251'
