@@ -105,9 +105,6 @@ Plug 'mhinz/vim-signify'
 " default updatetime 4000ms is not good for async update
 set updatetime=100
 
-" OneHalfDark Theme
-Plug 'sonph/onehalf', { 'rtp': 'vim' }
-
 if has('python3')
     " Autocomplete style snippit engine
     Plug 'SirVer/ultisnips'
