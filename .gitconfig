@@ -7,34 +7,34 @@
 
 [push]
 	default = simple
-    # Only push tags that are both annotated and reachable from the pushed commits
-    # https://stackoverflow.com/a/26438076/14555505
-    followTags = true
-    # So that I don't have to type `git push --set-upstream branch-name` every
-    # time
-    autoSetupRemote = true
+	# Only push tags that are both annotated and reachable from the pushed commits
+	# https://stackoverflow.com/a/26438076/14555505
+	followTags = true
+	# So that I don't have to type `git push --set-upstream branch-name` every
+	# time
+	autoSetupRemote = true
 
 [core]
-    pager = delta
+	pager = delta
 	excludesfile = ~/.gitignore_global
-    # https://stackoverflow.com/a/33732203/14555505
-    ignorecase = false
+	# https://stackoverflow.com/a/33732203/14555505
+	ignorecase = false
 
 [alias]
-    dag = log --graph --format='format:%C(yellow)%h%C(reset) %C(blue)\"%an\" <%ae>%C(reset) %C(magenta)%cr%C(reset)%C(auto)%d%C(reset)%n%s' --date-order --all
-    last = log -1 HEAD
-    co = checkout
-    # See changelist for one file across renames https://stackoverflow.com/a/5493663/14555505
-    history = log --follow --stat -p --
+	dag = log --graph --format='format:%C(yellow)%h%C(reset) %C(blue)\"%an\" <%ae>%C(reset) %C(magenta)%cr%C(reset)%C(auto)%d%C(reset)%n%s' --date-order --all
+	last = log -1 HEAD
+	co = checkout
+	# See changelist for one file across renames https://stackoverflow.com/a/5493663/14555505
+	history = log --follow --stat -p --
 	yolo = !git add -A && git commit -m \"¯\\_(ツ)_/¯ $(curl --silent --fail https://whatthecommit.com/index.txt)\"
 	uncommit = !git reset --soft HEAD^
-    # "unstash" the most recent stash, keeping track of any files you "git add"-ed
-    # https://stackoverflow.com/a/10827172/14555505
-    unstash = stash apply --index
-    # last-edit gets the most recent time that file was included in a commit. This might not actually be the last edited date.
-    # https://superuser.com/a/1661331
-    last-edit = log -n 1 --pretty=format:%cd
-    activity = !curl --silent https://gist.githubusercontent.com/beyarkay/d3be7cc248d3f66e97ecaf2993e57b0a/raw/git-activity.sh | bash
+	# "unstash" the most recent stash, keeping track of any files you "git add"-ed
+	# https://stackoverflow.com/a/10827172/14555505
+	unstash = stash apply --index
+	# last-edit gets the most recent time that file was included in a commit. This might not actually be the last edited date.
+	# https://superuser.com/a/1661331
+	last-edit = log -n 1 --pretty=format:%cd
+	activity = !curl --silent https://gist.githubusercontent.com/beyarkay/d3be7cc248d3f66e97ecaf2993e57b0a/raw/git-activity.sh | bash
 
 [commit]
 	template = ~/.gitmessage
@@ -43,14 +43,14 @@
 	rebase = true
 
 [rebase]
-    # Make the rebase command stashes before running, and pops after running
-    autoStash = true
+	# Make the rebase command stashes before running, and pops after running
+	autoStash = true
 
 [diff]
 	tool = vimdiff
-    # Better, more concise diffs for functions with curly braces
-    algorithm = patience
-    colorMoved = default
+	# Better, more concise diffs for functions with curly braces
+	algorithm = patience
+	colorMoved = default
 
 [difftool]
 	prompt = false
@@ -59,12 +59,12 @@
 	cmd = vimdiff \"$LOCAL\" \"$REMOTE\"
 
 [init]
-    defaultBranch = main
+	defaultBranch = main
 
 [merge]
-    ff = only
+	ff = only
 	tool = vimdiff
-    conflictstyle = diff3
+	conflictstyle = diff3
 
 [mergetool]
 	keepBackup = false
@@ -74,14 +74,14 @@
 	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 
 [interactive]
-    diffFilter = delta --color-only
+	diffFilter = delta --color-only
 
 [delta]
-    # use n and N to move between diff sections
-    navigate = true
-    # set to true if you're in a terminal w/ a light background color (e.g. the
-    # default macOS terminal)
-    light = false
+	# use n and N to move between diff sections
+	navigate = true
+	# set to true if you're in a terminal w/ a light background color (e.g. the
+	# default macOS terminal)
+	light = false
 
 [filter "lfs"]
 	required = true
