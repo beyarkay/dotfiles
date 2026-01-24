@@ -116,3 +116,6 @@ highlight CocInlayHint ctermfg='darkgrey'
 
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Mark .typ files as typst filetypes, for integration with the tinymist typst LSP
+autocmd BufNewFile,BufRead *.typ setfiletype typst

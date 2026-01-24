@@ -2,12 +2,22 @@
   "coc.preferences.jumpCommand": "tab drop",
   "rust-analyzer.checkOnSave": true,
   "rust-analyzer.check.command": "clippy",
+  "inlayHint.position": "eol",
   "languageserver": {
     "bash": {
       "command": "bash-language-server",
       "args": ["start"],
       "filetypes": ["sh"],
       "ignoredRootPaths": ["~"]
+    },
+    "tinymist": {
+      "command": "tinymist",
+      "filetypes": ["typst"],
+      "settings": {
+        "lint": {
+          "enabled": true
+        }
+      }
     },
     "ruff-lsp": {
       "command": "ruff-lsp",

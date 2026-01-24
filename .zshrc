@@ -27,7 +27,7 @@ KEYTIMEOUT=1
 # so
 if [ -x "$(command -v gdate)" ]; then
     # Install gdate (required to get ms precision on MacOS)
-    brew install coreutils
+    # brew install coreutils
     alias date='gdate -u +"%Y-%m-%dT%H:%M:%SZ"'
 else
     alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
@@ -45,14 +45,14 @@ fi
 # export HISTFILESIZE=100000
 # export HISTSIZE=100000
 
-# Use exa instead of tree
-alias tree="exa --tree -lFa --git --ignore-glob=.git"
+# Use eza instead of tree
+alias tree="eza --tree -lFa --git --ignore-glob=.git"
 # Search for all TODOs / FIXMEs from the current directory
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
 # List long showing filetypes, all files, and git info
-alias ll="exa --long --classify --all --git --time-style=long-iso"
+alias ll="eza --long --classify --all --git --time-style=long-iso"
 # List just the simple things
-alias ls="COLUMNS=80 exa --classify --all"
+alias ls="COLUMNS=80 eza --classify --all"
 # Always include colours for grep
 alias grep='grep --color=auto'
 # Show diskfree with human-readable numerals
@@ -371,13 +371,20 @@ bindkey "^ " magic-space
 # normal space during searches
 bindkey -M isearch " " magic-space
 
-# Define some extra aliases
+# Define some extra aliases for git
 alias gs="git status"
 alias gc="git commit -m "
 alias ga="git add"
 alias gap="git add -p"
-alias gd="git dag"
-alias G="git"
+alias gdag="git dag"
+alias gd="git diff"
+alias g="git"
+alias n="nvim"
+alias v="nvim"
+
+# And an alias to find raspberry pi's on the local network
+# https://superuser.com/a/872218/1716125
+alias rpi="arp -a | grep b8:27:eb"
 
 [ -f "/Users/brk/.ghcup/env" ] && source "/Users/brk/.ghcup/env" # ghcup-envexport PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
@@ -386,3 +393,21 @@ test -d "$HOME/.tea" && source <("$HOME/.tea/tea.xyz/v*/bin/tea" --magic=zsh --s
 
 # https://atuin.sh/
 eval "$(atuin init zsh --disable-up-arrow)"
+
+# bun completions
+[ -s "/Users/brk/.bun/_bun" ] && source "/Users/brk/.bun/_bun"
+
+
+# BEGIN opam configuration
+# This is useful if you're using opam as it adds:
+#   - the correct directories to the PATH
+#   - auto-completion for the opam binary
+# This section can be safely removed at any time if needed.
+[[ ! -r '/Users/brk/.opam/opam-init/init.zsh' ]] || source '/Users/brk/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
+# END opam configuration
+. "$HOME/.cargo/env"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+alias hive-mind='bun /Users/brk/.claude/plugins/cache/alignment-hive/hive-mind/0.1.22/cli.js'

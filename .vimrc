@@ -22,17 +22,24 @@ inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 autocmd FileType tex setlocal iskeyword+=:
 autocmd FileType tex setlocal spell
 
+" For Tera HTML templates, set the filetype to html
+autocmd BufEnter *.tera :set ft=html
+
+" Also make `$` be a "word" for vim in YAML files
+autocmd FileType yaml setlocal iskeyword+=\$
+
+
 " ------------------------------------------
 "               PLUGIN THINGS
 " ------------------------------------------
 if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 " Run PlugInstall if there are missing plugins
 autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-  \| PlugInstall --sync | source $MYVIMRC
+\| PlugInstall --sync | source $MYVIMRC
 \| endif
 
 call plug#begin('~/.vim/plugged')
@@ -118,21 +125,6 @@ call plug#end()
 set t_Co=256
 colorscheme onehalfdark
 
-" Setup ollama.nvim
-lua << EOF
-require('ollama').setup({
-  model = "llama3.1",
-  url = "http://127.0.0.1:11434",
-  prompts = {
-    -- Example custom prompt
-    Critique = {
-      prompt = "You are a thoughtful commentor on lesswrong/star slate codex. Critique this text: $sel",
-      input_label = "> ",
-      action = "display"
-    }
-  }
-})
-EOF
 
 
 " When searching, center the result
@@ -181,7 +173,6 @@ set sidescroll=1
 " edge of the screen
 set sidescrolloff=10
 set smartcase
-set smartcase
 " Hardwrap the text at 79 characters
 set textwidth=79
 set timeoutlen=200
@@ -222,32 +213,32 @@ set shiftwidth=4
 set softtabstop=4
 set tabstop=4
 " For some file types, use 2 spaces
-autocmd FileType html setlocal ts=2 sts=2 sw=2 et
-autocmd FileType ruby setlocal ts=2 sts=2 sw=2 et
-autocmd FileType javascript setlocal ts=2 sts=2 sw=2 et
-autocmd FileType typescript setlocal ts=2 sts=2 sw=2 et
-autocmd FileType java setlocal ts=4 sts=4 sw=4 et
-autocmd FileType haskell setlocal ts=2 sts=2 sw=2 et
+" autocmd FileType html setlocal ts=2 sts=2 sw=2 et
+" autocmd FileType ruby setlocal ts=2 sts=2 sw=2 et
+" autocmd FileType javascript setlocal ts=2 sts=2 sw=2 et
+" autocmd FileType typescript setlocal ts=2 sts=2 sw=2 et
+" autocmd FileType java setlocal ts=4 sts=4 sw=4 et
+" autocmd FileType haskell setlocal ts=2 sts=2 sw=2 et
 
 " Remap :W to write the file, and then run the Makefile in the background
-command! W w|call jobstart('make&')
+" command! W w|call jobstart('make&')
 
 " ===================
 " Format code on save
 " ===================
 
-" For java, cpp, use [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
-function! FormatClangOnSave()
-    " Might require `python3 -m pip install --user --upgrade pynvim`
-    " from https://stackoverflow.com/a/67360265/14555505
-    let l:formatdiff = 1
-    try
-        py3f /usr/local/Cellar/clang-format/13.0.1/share/clang/clang-format.py
-    catch
-        py3f /opt/homebrew/Cellar/clang-format/14.0.6/share/clang/clang-format.py
-    endtry
-endfunction
-autocmd BufWritePre *.java,*.h,*.cc,*.cpp call FormatClangOnSave()
+" " For java, cpp, use [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
+" function! FormatClangOnSave()
+"     " Might require `python3 -m pip install --user --upgrade pynvim`
+"     " from https://stackoverflow.com/a/67360265/14555505
+"     let l:formatdiff = 1
+"     try
+"         py3f /usr/local/Cellar/clang-format/13.0.1/share/clang/clang-format.py
+"     catch
+"         py3f /opt/homebrew/Cellar/clang-format/14.0.6/share/clang/clang-format.py
+"     endtry
+" endfunction
+" autocmd BufWritePre *.java,*.h,*.cc,*.cpp call FormatClangOnSave()
 
 " augroup black_on_save
 "   autocmd!
@@ -317,3 +308,67 @@ nnoremap ∑ @w
 nnoremap ≈ @x
 nnoremap \ @y
 nnoremap Ω @z
+
+" Ocaml setup:
+set rtp^="/Users/brk/.opam/test/share/ocp-indent/vim"
+
+" Merlin setup (ocaml editor support)
+let g:opamshare = substitute(system('opam var share'),'\n$','','''')
+" Run this in vim:
+" :execute "set rtp+=" . g:opamshare . "/merlin/vim"
+
+" ## added by OPAM user-setup for vim / base ## d611dd144a5764d46fdea4c0c2e0ba07 ## you can edit, but keep this line
+let s:opam_share_dir = system("opam var share")
+let s:opam_share_dir = substitute(s:opam_share_dir, '[\r\n]*$', '', '')
+
+let s:opam_configuration = {}
+
+function! OpamConfOcpIndent()
+  execute "set rtp^=" . s:opam_share_dir . "/ocp-indent/vim"
+endfunction
+let s:opam_configuration['ocp-indent'] = function('OpamConfOcpIndent')
+
+function! OpamConfOcpIndex()
+  execute "set rtp+=" . s:opam_share_dir . "/ocp-index/vim"
+endfunction
+let s:opam_configuration['ocp-index'] = function('OpamConfOcpIndex')
+
+function! OpamConfMerlin()
+  let l:dir = s:opam_share_dir . "/merlin/vim"
+  execute "set rtp+=" . l:dir
+endfunction
+let s:opam_configuration['merlin'] = function('OpamConfMerlin')
+
+let s:opam_packages = ["ocp-indent", "ocp-index", "merlin"]
+let s:opam_available_tools = []
+for tool in s:opam_packages
+  " Respect package order (merlin should be after ocp-index)
+  if isdirectory(s:opam_share_dir . "/" . tool)
+    call add(s:opam_available_tools, tool)
+    call s:opam_configuration[tool]()
+  endif
+endfor
+" ## end of OPAM user-setup addition for vim / base ## keep this line
+" ## added by OPAM user-setup for vim / ocp-indent ## 743d9e3778a013866e09571f9d63ead0 ## you can edit, but keep this line
+if count(s:opam_available_tools,"ocp-indent") == 0
+  source "/Users/brk/.opam/test/share/ocp-indent/vim/indent/ocaml.vim"
+endif
+" ## end of OPAM user-setup addition for vim / ocp-indent ## keep this line
+
+
+" Setup ollama.nvim (this goes at the end because it fucks with the syntax
+" highlighting unfortunately)
+lua << EOF
+require('ollama').setup({
+  model = "llama3.1",
+  url = "http://127.0.0.1:11434",
+  prompts = {
+    -- Example custom prompt
+    Critique = {
+      prompt = "You are a thoughtful commentor on lesswrong/star slate codex. Critique this text: $sel",
+      input_label = "> ",
+      action = "display"
+    }
+  }
+})
+EOF
