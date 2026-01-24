@@ -209,38 +209,6 @@ au BufEnter *.md setlocal spell
 set shiftwidth=4
 set softtabstop=4
 set tabstop=4
-" For some file types, use 2 spaces
-" autocmd FileType html setlocal ts=2 sts=2 sw=2 et
-" autocmd FileType ruby setlocal ts=2 sts=2 sw=2 et
-" autocmd FileType javascript setlocal ts=2 sts=2 sw=2 et
-" autocmd FileType typescript setlocal ts=2 sts=2 sw=2 et
-" autocmd FileType java setlocal ts=4 sts=4 sw=4 et
-" autocmd FileType haskell setlocal ts=2 sts=2 sw=2 et
-
-" Remap :W to write the file, and then run the Makefile in the background
-" command! W w|call jobstart('make&')
-
-" ===================
-" Format code on save
-" ===================
-
-" " For java, cpp, use [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
-" function! FormatClangOnSave()
-"     " Might require `python3 -m pip install --user --upgrade pynvim`
-"     " from https://stackoverflow.com/a/67360265/14555505
-"     let l:formatdiff = 1
-"     try
-"         py3f /usr/local/Cellar/clang-format/13.0.1/share/clang/clang-format.py
-"     catch
-"         py3f /opt/homebrew/Cellar/clang-format/14.0.6/share/clang/clang-format.py
-"     endtry
-" endfunction
-" autocmd BufWritePre *.java,*.h,*.cc,*.cpp call FormatClangOnSave()
-
-" augroup black_on_save
-"   autocmd!
-"   autocmd BufWritePre *.py Black
-" augroup end
 
 " Remove trailing whitespace on save
 " https://stackoverflow.com/a/1618401/14555505
