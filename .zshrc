@@ -405,7 +405,6 @@ eval "$(atuin init zsh --disable-up-arrow)"
 # This section can be safely removed at any time if needed.
 [[ ! -r '/Users/brk/.opam/opam-init/init.zsh' ]] || source '/Users/brk/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
 # END opam configuration
-. "$HOME/.cargo/env"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
