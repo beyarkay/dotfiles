@@ -108,10 +108,7 @@ function! s:show_documentation()
   endif
 endfunction
 
-" The default color is white, which looks terrible
-highlight CocFloating ctermbg=black
-highlight Pmenu ctermfg=white ctermbg=black
-" Also change the virtual text hint to be similar to that of comments
+" Change the virtual text hint to be similar to that of comments
 highlight CocInlayHint ctermfg='darkgrey'
 
 " Highlight the symbol and its references when holding the cursor.
