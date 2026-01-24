@@ -33,18 +33,6 @@ else
     alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 fi
 
-# TODO These history related commands might only work for zsh
-# Immediately append commands to the history file, to allow for easier history
-# searching
-#s etopt inc_append_history
-# Include the timestamp in the history file
-# export HISTTIMEFORMAT="[%F %T] "
-# Don't include duplicated lines in the history file
-# setopt HIST_IGNORE_ALL_DUPS
-# There's no reason to have a limit to the history size
-# export HISTFILESIZE=100000
-# export HISTSIZE=100000
-
 # Use eza instead of tree
 alias tree="eza --tree -lFa --git --ignore-glob=.git"
 # Search for all TODOs / FIXMEs from the current directory
@@ -126,58 +114,8 @@ function short_pwd {
 }
 
 
-# Setup a timer variable so that we can see how long the previous command took
-# function preexec() {
-#     if [ -x "$(command -v gdate)" ]; then
-#         timer=$(($(\gdate +%s%0N)/1000000))
-#     else
-#         timer=$(($(\date +%s%0N)/1000000))
-#     fi
-# }
-
 # `precmd()` is called before the prompt is displayed. This is used to customise the prompt and update it each time.
 function precmd() {
-    # local errors='$(code=$?; if [[ $code -gt 0 ]]; then echo "%F{${FG_RED}}✘ $code"; else echo "✔"; fi)'
-    # if [ $timer ]; then
-    #     if [ -x "$(command -v gdate)" ]; then
-    #         now=$(($(\gdate +%s%0N)/1000000))
-    #     else
-    #         now=$(($(\date +%s%0N)/1000000))
-    #     fi
-    #     m=''
-    #     s=''
-    #     ms=$(($now-$timer))
-    #     m_unit=''
-    #     s_unit=''
-    #     ms_unit='ms'
-    #     if [ $ms -ge 1000 ]; then
-    #         s=$(($ms/1000))
-    #         ms=$(($ms%1000))
-    #         s_unit='s '
-    #     fi
-    #     if [ $s -ge 60 2>/dev/null ]; then
-    #         m=$(($s/60))
-    #         s=$(($s%60))
-    #         m_unit='m '
-    #     fi
-    #     rprompt="%F{${FG_GREY}}"
-    #     rprompt+="${m}${m_unit}"
-    #     rprompt+="${s}${s_unit}"
-    #     rprompt+="${ms}${ms_unit}"
-    #     rprompt+="%F{${FG_GREEN}} ${errors}"
-    #     rprompt+="%F{${FG_GREY}}"
-    #     rprompt+="%{$reset_color%}"
-
-    #     export RPROMPT=$rprompt
-    #     unset timer
-    # fi
-
-    # prmpt="%K{${BG_GREY}}"
-    # prmpt+="%F{${FG_RED}}"
-    # NEWLINE=$'\n'
-    # prmpt+=$(ps aux | awk 'NR==2{if($3>=80.0) print "kill " $2 " (" $3 "%% " $11 ")${NEWLINE}"}')
-    # prmpt+="%F{${FG_ORANGE}}"
-    # prmpt+=$(ps aux | awk 'NR==2{if($3>=60.0) print "kill " $2 " (" $3 "%% " $11 ")${NEWLINE}"}')
     local curr_time='%*'
 
     # ===================================================================
