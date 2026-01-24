@@ -53,8 +53,8 @@ alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *
 alias ll="eza --long --classify --all --git --time-style=long-iso"
 # List just the simple things
 alias ls="COLUMNS=80 eza --classify --all"
-# Always include colours for grep
-alias grep='grep --color=auto'
+# Always include colours and line numbers for grep
+alias grep='grep -n --color=auto'
 # Show diskfree with human-readable numerals
 alias df='df -h'
 # Calculate total disk usage for a folder, in human readable numbers
