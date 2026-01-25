@@ -44,36 +44,13 @@ autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
 
 call plug#begin('~/.vim/plugged')
 " Install Coc: https://github.com/neoclide/coc.nvim
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+if has('mac') || has('macunix')
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+endif
 Plug 'sonph/onehalf', { 'rtp': 'vim' }
-
-" Ollama requires plenary
-Plug 'nvim-lua/plenary.nvim'
-" Install ollama.nvim for llm support
-Plug 'nomnivore/ollama.nvim'
-
-" Jupyter Ascending allows sync-ed notebook editing from vim
-" https://github.com/untitled-ai/jupyter_ascending.vim
-Plug 'untitled-ai/jupyter_ascending.vim'
-nmap <silent> <leader>x <Plug>JupyterExecute
-nmap <silent> <leader>X <Plug>JupyterExecuteAll
 
 " With a visual selection, type \e to evaluate the math of that selection
 xnoremap <leader>e c<C-R>=<C-R>"<CR><ESC>
-
-" Svelte syntax highlighting
-Plug 'leafOfTree/vim-svelte-plugin'
-let g:vim_svelte_plugin_use_foldexpr = 1
-let g:vim_svelte_plugin_use_typescript = 1
-
-" Install a floating terminal window
-Plug 'voldikss/vim-floaterm'
-" And configure some mappings for it
-let g:floaterm_keymap_toggle = '!'
-" Unfortunately this raises a bug in neovim: https://github.com/neovim/neovim/issues/14061
-" The solution is a bit awkward: https://github.com/neovim/neovim/issues/14061#issuecomment-955167055
-command Z w | qa
-cabbrev wqa Z
 
 " Install a CSV colour scheme
 Plug 'mechatroner/rainbow_csv'
@@ -86,37 +63,12 @@ Plug 'mechatroner/rainbow_csv'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 
-" Haskell formatting
-Plug 'neovimhaskell/haskell-vim'
-" The default color is white, which looks terrible
-highlight CocFloating ctermbg=black
-highlight Pmenu ctermfg=white ctermbg=black
-
-" LaTeX plugin
-Plug 'lervag/vimtex'
-let g:vimtex_fold_enabled=1
-let g:tex_flavor='latex'
-set conceallevel=1
-let g:tex_conceal='abdmg'
-
 " Git gutter for git diffs
 Plug 'mhinz/vim-signify'
 
 " default updatetime 4000ms is not good for async update
 set updatetime=100
 
-if has('python3')
-    " Autocomplete style snippit engine
-    Plug 'SirVer/ultisnips'
-    " Snippet trigger configuration.
-    let g:UltiSnipsExpandTrigger="<tab>"
-    let g:UltiSnipsJumpForwardTrigger="<tab>"
-    let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-
-    " Typeing :UltiSnipsEdit will edit the current filetype's snippets, in a
-    " window split dependant on context
-    "let g:UltiSnipsEditSplit="context"
-endif
 call plug#end()
 
 set t_Co=256
@@ -275,7 +227,7 @@ nnoremap \ @y
 nnoremap Ω @z
 
 " Ocaml setup:
-set rtp^="/Users/brk/.opam/test/share/ocp-indent/vim"
+set rtp^="$HOME/.opam/test/share/ocp-indent/vim"
 
 " Merlin setup (ocaml editor support)
 let g:opamshare = substitute(system('opam var share'),'\n$','','''')
@@ -316,24 +268,6 @@ endfor
 " ## end of OPAM user-setup addition for vim / base ## keep this line
 " ## added by OPAM user-setup for vim / ocp-indent ## 743d9e3778a013866e09571f9d63ead0 ## you can edit, but keep this line
 if count(s:opam_available_tools,"ocp-indent") == 0
-  source "/Users/brk/.opam/test/share/ocp-indent/vim/indent/ocaml.vim"
+  source "$HOME/.opam/test/share/ocp-indent/vim/indent/ocaml.vim"
 endif
 " ## end of OPAM user-setup addition for vim / ocp-indent ## keep this line
-
-
-" Setup ollama.nvim (this goes at the end because it fucks with the syntax
-" highlighting unfortunately)
-lua << EOF
-require('ollama').setup({
-  model = "llama3.1",
-  url = "http://127.0.0.1:11434",
-  prompts = {
-    -- Example custom prompt
-    Critique = {
-      prompt = "You are a thoughtful commentor on lesswrong/star slate codex. Critique this text: $sel",
-      input_label = "> ",
-      action = "display"
-    }
-  }
-})
-EOF
