@@ -276,14 +276,14 @@ FZF_TMUX_OPTS='-p80%,60%'
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/brk/.miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('$HOME/.miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/Users/brk/.miniforge3/etc/profile.d/conda.sh" ]; then
-        . "/Users/brk/.miniforge3/etc/profile.d/conda.sh"
+    if [ -f "$HOME/.miniforge3/etc/profile.d/conda.sh" ]; then
+        . "$HOME/.miniforge3/etc/profile.d/conda.sh"
     else
-        export PATH="/Users/brk/.miniforge3/bin:$PATH"
+        export PATH="$HOME/.miniforge3/bin:$PATH"
     fi
 fi
 unset __conda_setup
@@ -323,7 +323,7 @@ alias v="nvim"
 # https://superuser.com/a/872218/1716125
 alias rpi="arp -a | grep b8:27:eb"
 
-[ -f "/Users/brk/.ghcup/env" ] && source "/Users/brk/.ghcup/env" # ghcup-env
+[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env" # ghcup-env
 export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
 
@@ -333,7 +333,7 @@ test -d "$HOME/.tea" && source <("$HOME/.tea/tea.xyz/v*/bin/tea" --magic=zsh --s
 eval "$(atuin init zsh --disable-up-arrow)"
 
 # bun completions
-[ -s "/Users/brk/.bun/_bun" ] && source "/Users/brk/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 
 # BEGIN opam configuration
@@ -341,10 +341,10 @@ eval "$(atuin init zsh --disable-up-arrow)"
 #   - the correct directories to the PATH
 #   - auto-completion for the opam binary
 # This section can be safely removed at any time if needed.
-[[ ! -r '/Users/brk/.opam/opam-init/init.zsh' ]] || source '/Users/brk/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
+[[ ! -r "$HOME/.opam/opam-init/init.zsh" ]] || source "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null
 # END opam configuration
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-alias hive-mind='bun /Users/brk/.claude/plugins/cache/alignment-hive/hive-mind/0.1.22/cli.js'
+alias hive-mind='bun $HOME/.claude/plugins/cache/alignment-hive/hive-mind/0.1.22/cli.js'
