@@ -1,7 +1,7 @@
 # =============================
 # Zshrc - configuration for zsh
 # =============================
-source ~/.dotfiles/define_colours.sh
+[ -f ~/.dotfiles/define_colours.sh ] && source ~/.dotfiles/define_colours.sh
 
 # Enable colours for macOS
 export CLICOLOR=1
@@ -233,10 +233,12 @@ setopt promptsubst
 if [ ! -d ~/.zsh/zsh-autosuggestions ]; then
     git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
 fi
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-# First look for history items, then look for zsh-completion items
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-bindkey '^n' autosuggest-accept
+if [ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+    # First look for history items, then look for zsh-completion items
+    ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+    bindkey '^n' autosuggest-accept
+fi
 
 # ===========================
 # Fzf options and preferences
@@ -261,15 +263,19 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 stty start '^-' stop '^-'
 # Rebind the cd widget to ^q instead of alt-c
 # NOTE: these lines MUST come after `source ~/.fzf.zsh`
-zle     -N            fzf-cd-widget
-bindkey -M emacs '^Q' fzf-cd-widget
-bindkey -M vicmd '^Q' fzf-cd-widget
-bindkey -M viins '^Q' fzf-cd-widget
+if (( $+functions[fzf-cd-widget] )); then
+    zle     -N            fzf-cd-widget
+    bindkey -M emacs '^Q' fzf-cd-widget
+    bindkey -M vicmd '^Q' fzf-cd-widget
+    bindkey -M viins '^Q' fzf-cd-widget
+fi
 # Rebind the file-finder widget to ^G
-zle     -N            fzf-file-widget
-bindkey -M emacs '^G' fzf-file-widget
-bindkey -M vicmd '^G' fzf-file-widget
-bindkey -M viins '^G' fzf-file-widget
+if (( $+functions[fzf-file-widget] )); then
+    zle     -N            fzf-file-widget
+    bindkey -M emacs '^G' fzf-file-widget
+    bindkey -M vicmd '^G' fzf-file-widget
+    bindkey -M viins '^G' fzf-file-widget
+fi
 
 # Enable floating tmux window for fzf searches
 FZF_TMUX_OPTS='-p80%,60%'
@@ -330,7 +336,7 @@ export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
 test -d "$HOME/.tea" && source <("$HOME/.tea/tea.xyz/v*/bin/tea" --magic=zsh --silent)
 
 # https://atuin.sh/
-eval "$(atuin init zsh --disable-up-arrow)"
+command -v atuin &>/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
 
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"

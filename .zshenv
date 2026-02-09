@@ -22,4 +22,4 @@ else
     export VISUAL=vim
 fi
 
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
