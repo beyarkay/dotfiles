@@ -168,14 +168,28 @@ function precmd() {
 
     # ======================================================
     # If we are inside a git repo, then show git branch info
+    # Uses a single `git status` call instead of separate
+    # ls-files, diff, diff --staged, and branch commands.
     # ======================================================
     local git_branch=''
-    if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]]; then
+    local git_porcelain
+    git_porcelain=$(git --no-optional-locks status --porcelain -b 2>/dev/null)
+    if [[ $? -eq 0 ]]; then
+        local -a git_lines=("${(@f)git_porcelain}")
+
+        # Extract branch from header: "## branch...remote" or "## branch"
+        local branch_name=${git_lines[1]#\#\# }
+        branch_name=${branch_name%%...*}
+        branch_name=${branch_name%% \[*}
+        shift git_lines
+
+        # Count statuses using zsh array filtering (no subprocesses)
+        local git_untracked=${#${(M)git_lines:#\?\?*}}
+        local git_unstaged=${#${(M)git_lines:#?[MTDAU]*}}
+        local git_uncommitted=${#${(M)git_lines:#[MTADRC]*}}
+        local git_unpushed=$(git rev-list --count @{push}..HEAD 2>/dev/null || echo 0)
+
         local git_colour=''
-        local git_untracked=$(git ls-files --others --exclude-standard 2>/dev/null | wc -l | xargs)
-        local git_unstaged=$(git diff --numstat 2>/dev/null | wc -l | xargs)
-        local git_uncommitted=$(git diff --numstat --staged 2>/dev/null | wc -l | xargs)
-        local git_unpushed=$(git log @{push}.. --oneline 2>/dev/null | wc -l | xargs)
         # Check for untracked files
         if [[ $git_untracked -gt 0 ]]; then
             git_colour+="%F{${FG_LIGHTGREY}}t$git_untracked"
@@ -200,7 +214,7 @@ function precmd() {
         # ========================================
         # Add the current git branch to the prompt
         # ========================================
-        git_branch=" ($git_colour%F{$FG_GREY}$(git branch --show-current 2>/dev/null)"
+        git_branch=" ($git_colour%F{$FG_GREY}${branch_name}"
         git_branch+="%F{$FG_GREY})"
     fi
 
