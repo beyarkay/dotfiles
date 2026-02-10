@@ -3,6 +3,7 @@
 # =============================
 [ -f ~/.dotfiles/define_colours.sh ] && source ~/.dotfiles/define_colours.sh
 
+export TERM=xterm-256color
 # Enable colours for macOS
 export CLICOLOR=1
 
@@ -33,14 +34,16 @@ else
     alias date='date -u +"%Y-%m-%dT%H:%M:%SZ"'
 fi
 
-# Use eza instead of tree
-alias tree="eza --tree -lFa --git --ignore-glob=.git"
+if command -v eza &>/dev/null; then
+    alias tree="eza --tree -lFa --git --ignore-glob=.git"
+    alias ll="eza --long --classify --all --git --time-style=long-iso"
+    alias ls="COLUMNS=80 eza --classify --all"
+else
+    alias ll="ls -alhF"
+    alias ls="ls -aF"
+fi
 # Search for all TODOs / FIXMEs from the current directory
 alias gtd="grep -ri --exclude-dir=build --exclude-dir=.git -E \"(TODO|FIXME)\" *"
-# List long showing filetypes, all files, and git info
-alias ll="eza --long --classify --all --git --time-style=long-iso"
-# List just the simple things
-alias ls="COLUMNS=80 eza --classify --all"
 # Always include colours and line numbers for grep
 alias grep='grep -n --color=auto'
 # Show diskfree with human-readable numerals
