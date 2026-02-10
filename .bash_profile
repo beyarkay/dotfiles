@@ -1,6 +1,8 @@
  # Only execute if running interactively
 [ -z "$PS1" ] && return
 
+export TERM=xterm-256color
+
 # Don't put duplicated lines, or lines starting with a space ' ' into the history
 HISTCONTROL=ignoreboth
 
