@@ -9,6 +9,8 @@ export PATH="/opt/local/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 # Need to include node in our path
 export PATH="/usr/local/opt/node@14/bin:$PATH"
+# uv, uvx, and other user-local binaries
+export PATH="$HOME/.local/bin:$PATH"
 
 
 # =================================
@@ -22,4 +24,5 @@ else
     export VISUAL=vim
 fi
 
-[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+# Source cargo env if it exists (silenced — not always installed)
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env" 2>/dev/null
