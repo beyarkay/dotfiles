@@ -93,6 +93,17 @@ local NO_BG='234'
 local WHITE='255'
 local FG_RED='196'
 
+# Detect GPU configuration once at shell startup
+_PROMPT_GPU_INFO=""
+if command -v nvidia-smi &>/dev/null; then
+    _gpu_names=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null)
+    if [[ -n "$_gpu_names" ]]; then
+        _gpu_count=$(echo "$_gpu_names" | wc -l | tr -d ' ')
+        _gpu_model=$(echo "$_gpu_names" | head -1 | sed 's/NVIDIA //' | awk '{print $1}')
+        _PROMPT_GPU_INFO="${_gpu_count}x${_gpu_model}"
+    fi
+    unset _gpu_names _gpu_count _gpu_model
+fi
 
 # =============================================================================
 # Calculate a short-form of pwd, where instead of /User/boyd/Documents you have
@@ -167,6 +178,11 @@ function precmd() {
     # whoami \in [brk, boydrkane] && hostname \in [mbp2012]
     elif (($brk_whoami[(Ie)$(whoami)])) && (($mbp2012_hostnames[(Ie)$(hostname)])); then
         host_machine="{%F{${FG_CYAN}}mbp2012%F{$FG_GREY}}"
+    fi
+
+    # Append GPU info (e.g. 1xH100) inside the braces if available
+    if [[ -n "$_PROMPT_GPU_INFO" ]]; then
+        host_machine="${host_machine%\}} %F{${FG_CYAN}}${_PROMPT_GPU_INFO}%F{$FG_GREY}}"
     fi
 
     # ======================================================
