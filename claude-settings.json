@@ -720,7 +720,6 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:api.openai.com)",
       "WebFetch(domain:api.anthropic.com)",
-      // Documentation providers
       "WebFetch(domain:docs.rs)",
       "WebFetch(domain:lib.rs)",
       "WebFetch(domain:crates.io)",
@@ -741,6 +740,8 @@
       "WebFetch(domain:arxiv.org)",
       "WebFetch(domain:openrouter.com)",
       "WebFetch(domain:wandb.ai)",
+      "WebFetch(domain:alignmentforum.org)",
+      "WebFetch(domain:lesswrong.org)",
       "WebSearch(**)",
 
       // ===== TODO TOOLS =====
