@@ -142,6 +142,8 @@ create_symlink "$DOTFILES_DIR/.gitignore_global" "$HOME/.gitignore_global"
 create_symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
 create_symlink "$DOTFILES_DIR/init.vim" "$HOME/.config/nvim/init.vim"
 create_symlink "$DOTFILES_DIR/coc-settings.json" "$HOME/.config/nvim/coc-settings.json"
+create_symlink "$DOTFILES_DIR/claude-settings.json" "$HOME/.claude/settings.jsonc"
+create_symlink "$DOTFILES_DIR/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 
 # ----------------------------------------
 # Step 6: Install uv
