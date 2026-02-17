@@ -736,6 +736,11 @@
       "WebFetch(domain:docs.github.com)",
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:stackoverflow.com)",
+      "WebFetch(domain:anthropic.com)",
+      "WebFetch(domain:openai.com)",
+      "WebFetch(domain:arxiv.org)",
+      "WebFetch(domain:openrouter.com)",
+      "WebFetch(domain:wandb.ai)",
       "WebSearch(**)",
 
       // ===== TODO TOOLS =====
