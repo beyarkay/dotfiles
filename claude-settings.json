@@ -742,6 +742,7 @@
       "WebFetch(domain:wandb.ai)",
       "WebFetch(domain:www.runpod.io)",
       "WebFetch(domain:www.tensorflow.org)",
+      "WebFetch(domain:boydkane.com)",
       "WebSearch(**)",
 
       // ===== TODO TOOLS =====
