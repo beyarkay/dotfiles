@@ -731,7 +731,7 @@
       "WebFetch(domain:docs.runpod.io)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:huggingface.co)",
-      "WebFetch(domain:lesswrong.org)",
+      "WebFetch(domain:lesswrong.com)",
       "WebFetch(domain:lib.rs)",
       "WebFetch(domain:localhost)",
       "WebFetch(domain:openai.com)",
