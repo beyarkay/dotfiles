@@ -46,6 +46,8 @@
       "Bash(git reset --hard origin/main*)"
     ],
     "allow": [
+      // GPU monitoring
+      "Bash(nvidia-smi:*)",
       // ===== DOCKER COMMANDS =====
       // Basic Docker operations
       "Bash(docker ps)",
