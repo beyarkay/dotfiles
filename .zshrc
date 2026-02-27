@@ -189,8 +189,10 @@ function precmd() {
     # If we are inside a git repo, then show git branch info
     # Uses a single `git status` call instead of separate
     # ls-files, diff, diff --staged, and branch commands.
+    # Skip on RunPod — git is too slow on networked storage.
     # ======================================================
     local git_branch=''
+    if [[ -z "$RUNPOD_POD_ID" ]]; then
     local git_porcelain
     git_porcelain=$(git --no-optional-locks status --porcelain -b 2>/dev/null)
     if [[ $? -eq 0 ]]; then
@@ -236,6 +238,7 @@ function precmd() {
         git_branch=" ($git_colour%F{$FG_GREY}${branch_name}"
         git_branch+="%F{$FG_GREY})"
     fi
+    fi # end RUNPOD_POD_ID check
 
     # ===========================================================================
     # Collect all the variables together for the prompt and give them some colour
