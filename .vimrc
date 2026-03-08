@@ -266,3 +266,9 @@ if executable('opam')
     endif
   endif
 endif
+
+
+" 'Automatically' load changes from disk
+set autoread
+" trigger the 'automatic' read-from-disk after every cursor move
+au CursorHold,CursorHoldI * checktime
