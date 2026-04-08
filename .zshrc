@@ -51,7 +51,7 @@ alias df='df -h'
 # Calculate total disk usage for a folder, in human readable numbers
 alias du='du -h -c'
 # Disallow easy footguns
-alias rm="echo Use 'del', or the full path i.e. '/bin/rm'"
+rm() { echo "Use del, or the full path i.e. /bin/rm"; return 255; }
 # Fat fingers
 alias gf="fg"
 
