@@ -74,7 +74,13 @@ call plug#end()
 set t_Co=256
 colorscheme onehalfdark
 
-
+" ctrl-j and ctrl-k to scroll the screen in a different way
+"                    | move screen? | move cursor? | change line? |
+" OLD:           j/k |    no        |      yes     |    yes       |
+" OLD: ctrl-e/ctrl-y |    yes       |      yes     |    no        |
+" NEW: ctrl-j/ctrl-k |    yes       |      no      |    yes       |
+nnoremap <C-j> <C-e>j
+nnoremap <C-k> <C-y>k
 
 " When searching, center the result
 nnoremap n nzz
