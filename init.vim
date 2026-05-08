@@ -24,6 +24,8 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 nnoremap <C-q> :Files<CR>
 " Remap ctrl-g ripgrep search of everything
 nnoremap <C-g> :RG<CR>
+" <leader>gb: git blame the current line
+nnoremap <silent> <leader>gb :execute '!git blame -L ' . line('.') . ',' . line('.') . ' -- ' . shellescape(expand('%'))<CR>
 " Coc config (macOS only)
 if has('mac') || has('macunix')
     " Install Coc language extensions
