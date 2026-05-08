@@ -66,10 +66,22 @@ Plug 'junegunn/fzf.vim'
 " Git gutter for git diffs
 Plug 'mhinz/vim-signify'
 
+" Neogit — magit-style git UI for neovim (plus its plenary dependency)
+if has('nvim')
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'NeogitOrg/neogit'
+endif
+
 " default updatetime 4000ms is not good for async update
 set updatetime=100
 
 call plug#end()
+
+" Neogit setup + keymap (neovim only)
+if has('nvim')
+    lua require('neogit').setup({})
+    nnoremap <leader>gg <cmd>Neogit<cr>
+endif
 
 set t_Co=256
 colorscheme onehalfdark
