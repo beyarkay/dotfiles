@@ -136,18 +136,18 @@ function precmd() {
     # If there are any jobs which are stopped or in the background, add a
     # little symbol to the prompt
     # ===================================================================
-    # Use `... | xargs` to trim whitespace:
-    # https://stackoverflow.com/a/12973694/14555505
+    # Iterate the $jobstates special param directly — `$(jobs ...)` would run
+    # in a subshell with an empty job table and always report 0.
+    local stopped_count=0 running_count=0
+    local _job_state
+    for _job_state in ${(v)jobstates}; do
+        [[ $_job_state == suspended:* ]] && ((stopped_count++))
+        [[ $_job_state == running:* ]] && ((running_count++))
+    done
     local stopped_jobs=''
     local running_jobs=''
-    # Check if there are any stopped jobs
-    if [[ "$(jobs -sp | wc -l | xargs)" != "0" ]]; then
-        stopped_jobs+="$(jobs -sp | wc -l | xargs)s"
-    fi
-    # Check if there are any running jobs
-    if [[ "$(jobs -rp | wc -l | xargs)" != "0" ]]; then
-        running_jobs+="$(jobs -rp | wc -l | xargs)r"
-    fi
+    (( stopped_count > 0 )) && stopped_jobs="${stopped_count}s"
+    (( running_count > 0 )) && running_jobs="${running_count}r"
     local job_string="$stopped_jobs$running_jobs"
     if [[ ${#job_string} -gt 0 ]]; then
         job_string=" $job_string"
@@ -161,12 +161,12 @@ function precmd() {
     local need_mwinit=''
     brk_whoami=(brk boydkane boydrkane)
     aws_whoami=(boydkane)
-    mbp2022_hostnames=(Boyds-MacBook-Pro-2022.local Boyds-MBP-2022)
-    mbp2012_hostnames=(Boyds-MacBook-Pro-2012.local Boyds-MBP-2012)
+    mbp2022_hostnames=(Boyds-MacBook-Pro-2022.local Boyds-MBP-2022 Boyds-MBP-2022.home)
+    mbp2012_hostnames=(Boyds-MacBook-Pro-2012.local Boyds-MBP-2012 Boyds-MBP-2012.home)
 
     # whoami \in [brk, boydrkane] && hostname \in [mbp2022]
     if (($brk_whoami[(Ie)$(whoami)])) && (($mbp2022_hostnames[(Ie)$(hostname)])); then
-        host_machine="{%F{${FG_CYAN}}mbp%F{$FG_GREY}}"
+        host_machine="{%F{${FG_CYAN}}laptop%F{$FG_GREY}}"
     # whoami \in [aws-login]
     elif (($aws_whoami[(Ie)$(whoami)])); then
         # Probably an aws machine
@@ -177,7 +177,7 @@ function precmd() {
         host_machine="{%F{${FG_CYAN}}aws%F{$FG_GREY}}"
     # whoami \in [brk, boydrkane] && hostname \in [mbp2012]
     elif (($brk_whoami[(Ie)$(whoami)])) && (($mbp2012_hostnames[(Ie)$(hostname)])); then
-        host_machine="{%F{${FG_CYAN}}mbp2012%F{$FG_GREY}}"
+        host_machine="{%F{${FG_CYAN}}laptop2012%F{$FG_GREY}}"
     fi
 
     # Append GPU info (e.g. 1xH100) inside the braces if available
