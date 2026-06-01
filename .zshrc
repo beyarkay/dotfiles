@@ -50,8 +50,11 @@ alias grep='grep -n --color=auto'
 alias df='df -h'
 # Calculate total disk usage for a folder, in human readable numbers
 alias du='du -h -c'
-# Disallow easy footguns
-rm() { echo "Use del, or the full path i.e. /bin/rm"; return 255; }
+# Disallow easy footguns (but let Claude Code use rm directly, since it has
+# its own automode checker — CLAUDECODE is set inside Claude sessions)
+if [[ -z "$CLAUDECODE" ]]; then
+    rm() { echo "Use del, or the full path i.e. /bin/rm"; return 255; }
+fi
 # Fat fingers
 alias gf="fg"
 
@@ -390,3 +393,10 @@ command -v atuin &>/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 alias hive-mind='bun $HOME/.claude/plugins/cache/alignment-hive/hive-mind/0.1.22/cli.js'
+
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+# Added by deepsource CLI (shell completions)
+fpath=(~/.zsh/completions $fpath)
+autoload -Uz compinit && compinit
