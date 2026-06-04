@@ -118,6 +118,35 @@ if command -v nvidia-smi &>/dev/null; then
 fi
 
 # =============================================================================
+# Detect the machine identity once at startup (used by the prompt).
+# whoami/hostname never change within a session, so there's no reason to spawn
+# them (x3 each) on every single prompt — that alone cost ~25ms per keystroke.
+# =============================================================================
+_PROMPT_HOST_MACHINE="{%F{${FG_CYAN}}$(hostname)%F{$FG_GREY}}"
+{
+    local _whoami=$(whoami) _hostname=$(hostname)
+    local brk_whoami=(brk boydkane boydrkane)
+    local aws_whoami=(boydkane)
+    local mbp2022_hostnames=(Boyds-MacBook-Pro-2022.local Boyds-MBP-2022 Boyds-MBP-2022.home)
+    local mbp2012_hostnames=(Boyds-MacBook-Pro-2012.local Boyds-MBP-2012 Boyds-MBP-2012.home)
+
+    if (($brk_whoami[(Ie)$_whoami])) && (($mbp2022_hostnames[(Ie)$_hostname])); then
+        _PROMPT_HOST_MACHINE="{%F{${FG_CYAN}}laptop%F{$FG_GREY}}"
+    elif (($aws_whoami[(Ie)$_whoami])); then
+        # Probably an aws machine
+        [ -f "$HOME/.dotfiles/aws_setup.sh" ] && source ~/.dotfiles/aws_setup.sh
+        _PROMPT_HOST_MACHINE="{%F{${FG_CYAN}}aws%F{$FG_GREY}}"
+    elif (($brk_whoami[(Ie)$_whoami])) && (($mbp2012_hostnames[(Ie)$_hostname])); then
+        _PROMPT_HOST_MACHINE="{%F{${FG_CYAN}}laptop2012%F{$FG_GREY}}"
+    fi
+
+    # Append GPU info (e.g. 1xH100) inside the braces if available
+    if [[ -n "$_PROMPT_GPU_INFO" ]]; then
+        _PROMPT_HOST_MACHINE="${_PROMPT_HOST_MACHINE%\}} %F{${FG_CYAN}}${_PROMPT_GPU_INFO}%F{$FG_GREY}}"
+    fi
+}
+
+# =============================================================================
 # Calculate a short-form of pwd, where instead of /User/boyd/Documents you have
 # /U/b/Documents in order to save space
 # =============================================================================
@@ -166,36 +195,12 @@ function precmd() {
     fi
 
     # ============================================================
-    # Add some identification of the current machine to the prompt
+    # Machine identity (laptop / aws / GPU info) is detected once at startup
+    # into $_PROMPT_HOST_MACHINE — see the block near the top of this file.
     # ============================================================
-    local host_machine="{%F{${FG_CYAN}}$(hostname)%F{$FG_GREY}}"
+    local host_machine="$_PROMPT_HOST_MACHINE"
     local need_kinit=''
     local need_mwinit=''
-    brk_whoami=(brk boydkane boydrkane)
-    aws_whoami=(boydkane)
-    mbp2022_hostnames=(Boyds-MacBook-Pro-2022.local Boyds-MBP-2022 Boyds-MBP-2022.home)
-    mbp2012_hostnames=(Boyds-MacBook-Pro-2012.local Boyds-MBP-2012 Boyds-MBP-2012.home)
-
-    # whoami \in [brk, boydrkane] && hostname \in [mbp2022]
-    if (($brk_whoami[(Ie)$(whoami)])) && (($mbp2022_hostnames[(Ie)$(hostname)])); then
-        host_machine="{%F{${FG_CYAN}}laptop%F{$FG_GREY}}"
-    # whoami \in [aws-login]
-    elif (($aws_whoami[(Ie)$(whoami)])); then
-        # Probably an aws machine
-        AWS_FILE="$HOME/.dotfiles/aws_setup.sh"
-        if [ -f $AWS_FILE ]; then
-            source ~/.dotfiles/aws_setup.sh
-        fi
-        host_machine="{%F{${FG_CYAN}}aws%F{$FG_GREY}}"
-    # whoami \in [brk, boydrkane] && hostname \in [mbp2012]
-    elif (($brk_whoami[(Ie)$(whoami)])) && (($mbp2012_hostnames[(Ie)$(hostname)])); then
-        host_machine="{%F{${FG_CYAN}}laptop2012%F{$FG_GREY}}"
-    fi
-
-    # Append GPU info (e.g. 1xH100) inside the braces if available
-    if [[ -n "$_PROMPT_GPU_INFO" ]]; then
-        host_machine="${host_machine%\}} %F{${FG_CYAN}}${_PROMPT_GPU_INFO}%F{$FG_GREY}}"
-    fi
 
     # ======================================================
     # If we are inside a git repo, then show git branch info
@@ -210,17 +215,25 @@ function precmd() {
     if [[ $? -eq 0 ]]; then
         local -a git_lines=("${(@f)git_porcelain}")
 
-        # Extract branch from header: "## branch...remote" or "## branch"
-        local branch_name=${git_lines[1]#\#\# }
+        # Header looks like "## branch...remote [ahead N, behind M]" or "## branch".
+        local git_header=${git_lines[1]}
+        local branch_name=${git_header#\#\# }
         branch_name=${branch_name%%...*}
         branch_name=${branch_name%% \[*}
+
+        # Unpushed count: parse "[ahead N]" straight from the header rather than
+        # spawning a second `git rev-list` subprocess every prompt. (Reports vs
+        # upstream; for same-named push branches this matches @{push}..HEAD.)
+        local git_unpushed=0
+        if [[ $git_header == *'[ahead '* ]]; then
+            git_unpushed=${${git_header##*\[ahead }%%[,\]]*}
+        fi
         shift git_lines
 
         # Count statuses using zsh array filtering (no subprocesses)
         local git_untracked=${#${(M)git_lines:#\?\?*}}
         local git_unstaged=${#${(M)git_lines:#?[MTDAU]*}}
         local git_uncommitted=${#${(M)git_lines:#[MTADRC]*}}
-        local git_unpushed=$(git rev-list --count @{push}..HEAD 2>/dev/null || echo 0)
 
         local git_colour=''
         # Check for untracked files
@@ -313,27 +326,42 @@ stty start '^-' stop '^-'
 # Enable floating tmux window for fzf searches
 FZF_TMUX_OPTS='-p80%,60%'
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('$HOME/.miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "$HOME/.miniforge3/etc/profile.d/conda.sh" ]; then
+# >>> conda initialize (lazy) >>>
+# The real `conda init` block runs `eval "$(conda shell.zsh hook)"` eagerly,
+# which costs ~26ms every startup just to define a function we rarely call
+# (conda base is not auto-activated here). Instead, define a stub that loads
+# the real conda on first use, then re-invokes it transparently.
+conda() {
+    unset -f conda
+    __conda_setup="$("$HOME/.miniforge3/bin/conda" 'shell.zsh' 'hook' 2>/dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    elif [ -f "$HOME/.miniforge3/etc/profile.d/conda.sh" ]; then
         . "$HOME/.miniforge3/etc/profile.d/conda.sh"
     else
         export PATH="$HOME/.miniforge3/bin:$PATH"
     fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
+    unset __conda_setup
+    conda "$@"
+}
+# <<< conda initialize (lazy) <<<
 
 
 # ======================================================
 # Auto-expand globs, aliases, and other shell expansions
 # ======================================================
 # This autoload fix is needed to get the _expand-alias function: https://stackoverflow.com/a/61653489/14555505
-autoload -Uz compinit && compinit
+# Completions live here too (deepsource etc.); fpath must be set before compinit.
+fpath=(~/.zsh/completions $fpath)
+# compinit's security audit + dump rebuild is the single most expensive part of
+# startup (~150ms). Only pay it once a day: if the cached dump is <24h old, use
+# the fast path (-C) that skips the audit and trusts the existing dump.
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
 # This function and related setup comes from:
 # https://blog.patshead.com/2012/11/automatically-expaning-zsh-global-aliases---simplified.html
 globalias() {
@@ -362,11 +390,8 @@ alias v="nvim"
 # https://superuser.com/a/872218/1716125
 alias rpi="arp -a | grep b8:27:eb"
 
-[ -f "$HOME/.ghcup/env" ] && source "$HOME/.ghcup/env" # ghcup-env
 export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"
-
-test -d "$HOME/.tea" && source <("$HOME/.tea/tea.xyz/v*/bin/tea" --magic=zsh --silent)
 
 # https://atuin.sh/
 command -v atuin &>/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
@@ -388,12 +413,13 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 alias hive-mind='bun $HOME/.claude/plugins/cache/alignment-hive/hive-mind/0.1.22/cli.js'
 
-# Generated for envman. Do not edit.
-[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+# envman: its load.sh costs ~11ms (4 `touch` calls + sourcing 3 empty files)
+# but all it actually does is prepend ~/.local/bin to PATH. Do that directly.
+# (ENV.env / alias.env / function.sh are all empty as of this writing.)
+export PATH="$HOME/.local/bin:$PATH"
 
 # Added by deepsource CLI (shell completions)
-fpath=(~/.zsh/completions $fpath)
-autoload -Uz compinit && compinit
+# (fpath for ~/.zsh/completions and compinit are handled once, above.)
 
 # opencode
 export PATH=/Users/brk/.opencode/bin:$PATH
