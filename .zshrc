@@ -13,11 +13,20 @@ export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
 # Don't put duplicated lines, or lines starting with a space ' ' into the history
 HISTCONTROL=ignoreboth
 
-# Use ESC to edit the current command line:
+# Emacs-style line editing. This MUST be explicit: EDITOR=nvim contains "vi",
+# so zsh would otherwise default to vi mode and these keys wouldn't work.
+# Emacs mode gives ^A ^E ^F ^B ^W ^K ^Y, alt-f/alt-b/alt-d, etc. for free.
+bindkey -e
+
+# ESC opens the current command line in $EDITOR (nvim).
+# Must come after `bindkey -e`. KEYTIMEOUT=1 (below) keeps meta combos like
+# alt-f/alt-b snappy while still letting a bare ESC open the editor.
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '^[' edit-command-line
-bindkey '^e' edit-command-line
+
+# ^U kills to start of line (bash-style) instead of zsh's kill-whole-line.
+bindkey '^U' backward-kill-line
 
 # Wait only 10ms before for additional characters in an escape sequence
 KEYTIMEOUT=1
@@ -300,21 +309,6 @@ export FZF_ALT_C_OPTS="--preview 'tree -C {}'"
 # elsewhere. They never worked for me anyway.
 # https://stackoverflow.com/a/16728429/14555505
 stty start '^-' stop '^-'
-# Rebind the cd widget to ^q instead of alt-c
-# NOTE: these lines MUST come after `source ~/.fzf.zsh`
-if (( $+functions[fzf-cd-widget] )); then
-    zle     -N            fzf-cd-widget
-    bindkey -M emacs '^Q' fzf-cd-widget
-    bindkey -M vicmd '^Q' fzf-cd-widget
-    bindkey -M viins '^Q' fzf-cd-widget
-fi
-# Rebind the file-finder widget to ^G
-if (( $+functions[fzf-file-widget] )); then
-    zle     -N            fzf-file-widget
-    bindkey -M emacs '^G' fzf-file-widget
-    bindkey -M vicmd '^G' fzf-file-widget
-    bindkey -M viins '^G' fzf-file-widget
-fi
 
 # Enable floating tmux window for fzf searches
 FZF_TMUX_OPTS='-p80%,60%'
@@ -400,3 +394,6 @@ alias hive-mind='bun $HOME/.claude/plugins/cache/alignment-hive/hive-mind/0.1.22
 # Added by deepsource CLI (shell completions)
 fpath=(~/.zsh/completions $fpath)
 autoload -Uz compinit && compinit
+
+# opencode
+export PATH=/Users/brk/.opencode/bin:$PATH
