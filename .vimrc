@@ -12,6 +12,36 @@ set spelllang=en_gb
 " RIP Gilles Castel 1999-2022✝
 inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 
+" Offline dictionary + thesaurus via WordNet (`brew install wordnet`). No network.
+"   <leader>wd / :Define [word]  -> definitions of all senses
+"   <leader>ws / :Syn [word]     -> synonyms (all parts of speech)
+" Output opens in a scratch split; press q to close it. With no [word] argument
+" the commands (and both mappings) act on the word under the cursor.
+let s:wn = executable('wn') ? 'wn' : '/opt/homebrew/bin/wn'
+function! s:WordNet(word, flags, title) abort
+  let l:word = empty(a:word) ? expand('<cword>') : a:word
+  if empty(l:word)
+    echohl WarningMsg | echo 'WordNet: no word under cursor' | echohl None | return
+  endif
+  if !executable(s:wn)
+    echohl ErrorMsg | echo 'WordNet not found — run: brew install wordnet' | echohl None | return
+  endif
+  let l:out = systemlist(s:wn . ' ' . shellescape(l:word) . ' ' . a:flags)
+  call filter(l:out, 'v:val !=# ""')
+  if empty(l:out)
+    echohl WarningMsg | echo 'No WordNet entry for "' . l:word . '"' | echohl None | return
+  endif
+  botright 14new
+  setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nospell
+  call setline(1, [a:title . ': ' . l:word, ''] + l:out)
+  setlocal nomodifiable
+  nnoremap <buffer><silent> q :close<CR>
+endfunction
+command! -nargs=? Define call s:WordNet(<q-args>, '-over', 'Definition')
+command! -nargs=? Syn    call s:WordNet(<q-args>, '-synsn -synsv -synsa -synsr', 'Synonyms')
+nnoremap <silent> <leader>wd :call <SID>WordNet('', '-over', 'Definition')<CR>
+nnoremap <silent> <leader>ws :call <SID>WordNet('', '-synsn -synsv -synsa -synsr', 'Synonyms')<CR>
+
 " ------------------------------------------
 "               LATEX THINGS
 " ------------------------------------------
