@@ -145,5 +145,6 @@ function! s:SyncToDrive() abort
   let l:link = trim(l:out)
   let @+ = l:link
   let @* = l:link
-  redraw | echo 'SyncToDrive: ' . l:link . '  (copied to clipboard)'
+  silent call system('open ' . shellescape(l:link))
+  redraw | echo 'SyncToDrive: ' . l:link . '  (copied to clipboard, opened in browser)'
 endfunction
