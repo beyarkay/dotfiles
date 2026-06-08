@@ -119,3 +119,31 @@ endif
 
 " Mark .typ files as typst filetypes, for integration with the tinymist typst LSP
 autocmd BufNewFile,BufRead *.typ setfiletype typst
+
+" :SyncToDrive — upload the current markdown buffer to Google Drive as a Google
+" Doc and copy a shareable (commenter) link to the clipboard. One-way only.
+" Re-running updates the same Doc, so the link is stable and comments survive.
+command! SyncToDrive call s:SyncToDrive()
+function! s:SyncToDrive() abort
+  if expand('%:e') !=# 'md' && &filetype !=# 'markdown'
+    echohl WarningMsg | echo 'SyncToDrive: current buffer is not markdown' | echohl None
+    return
+  endif
+  silent write
+  let l:script = expand('~/.dotfiles/scripts/sync_to_drive.py')
+  let l:errfile = tempname()
+  echo 'SyncToDrive: uploading…'
+  " stderr (progress logs) -> temp file; stdout (the URL) -> l:out only.
+  let l:out = system('uv run ' . shellescape(l:script) . ' ' . shellescape(expand('%:p')) . ' 2> ' . shellescape(l:errfile))
+  if v:shell_error
+    let l:err = filereadable(l:errfile) ? join(readfile(l:errfile), ' ') : l:out
+    call delete(l:errfile)
+    echohl ErrorMsg | echo 'SyncToDrive failed: ' . trim(l:err) | echohl None
+    return
+  endif
+  call delete(l:errfile)
+  let l:link = trim(l:out)
+  let @+ = l:link
+  let @* = l:link
+  redraw | echo 'SyncToDrive: ' . l:link . '  (copied to clipboard)'
+endfunction
