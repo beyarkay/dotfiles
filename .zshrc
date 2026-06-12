@@ -82,11 +82,13 @@ export LESS_TERMCAP_us=$'\e[1;4;31m'
 
 # -----------------------------------------------------------------------------
 # Super handy: After changing directory, list the contents of that directory
-# Note that if there's an absurd number of files in a directory, this will list
-# them all which can be annoying if you're often changing in and out of it
+# Only auto-list when there are fewer than 10 entries (incl. hidden), so that
+# changing in and out of huge directories doesn't spew their whole contents.
 # -----------------------------------------------------------------------------
 function cd() {
-    builtin cd "$*" && ls
+    builtin cd "$*" || return
+    local entries=( *(DN) )
+    (( ${#entries} < 10 )) && ls
 }
 
 
