@@ -12,6 +12,10 @@ set spelllang=en_gb
 " RIP Gilles Castel 1999-2022✝
 inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 
+digraph ~= 8776 " ≈ U+2248 ALMOST EQUAL TO
+digraph ?! 8253 " ‽  U+203D INTERROBANG
+digraph !? 8253 " ‽  U+203D INTERROBANG
+
 " Offline dictionary + thesaurus via WordNet (`brew install wordnet`). No network.
 "   <leader>wd / :Define [word]  -> definitions of all senses
 "   <leader>ws / :Syn [word]     -> synonyms (all parts of speech)
