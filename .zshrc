@@ -82,13 +82,16 @@ export LESS_TERMCAP_us=$'\e[1;4;31m'
 
 # -----------------------------------------------------------------------------
 # Super handy: After changing directory, list the contents of that directory
-# Only auto-list when there are fewer than 10 entries (incl. hidden), so that
-# changing in and out of huge directories doesn't spew their whole contents.
 # -----------------------------------------------------------------------------
 function cd() {
     builtin cd "$*" || return
-    local entries=( *(DN) )
-    (( ${#entries} < 10 )) && ls
+    # Skip the auto-ls inside Claude Code (its shell disables zsh glob
+    # qualifiers, so the *(DN) count below errors). Only list in a real shell,
+    # and only when there are fewer than 10 entries so huge dirs don't spew.
+    if [[ -z "$CLAUDECODE" ]]; then
+        local entries=( *(DN) )
+        (( ${#entries} < 10 )) && ls
+    fi
 }
 
 
