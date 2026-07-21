@@ -1,0 +1,260 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash($HOME/.claude/skills/reviewer/review.sh --quiet*)"
+    ],
+    "deny": [
+      "Bash(open *)",
+      "Bash(cd *&& git*)",
+      "Bash(cd *\ngit*)",
+      "Bash(cd *; git*)",
+      "Bash(*| tail*)",
+      "Bash(*|tail*)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "opus[1m]",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W 🚧\""
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W ❓\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W\""
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/current-task.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W 🗜️\""
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W\""
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.session_id' | { read -r sid; echo '#!/usr/bin/env bash\\nclaude --resume '\"$sid\" > claude-resume.sh && chmod +x claude-resume.sh; }"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W\""
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "SID=$(jq -r '.session_id // empty'); [ -n \"$SID\" ] && { rm -f \"/tmp/claude-task-$SID.txt\" \"/tmp/claude-task-$SID.count\"; rm -rf \"/tmp/claude-pbar-$SID\"; }"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "$HOME/.claude/statusline.sh",
+    "padding": 0,
+    "refreshInterval": 1
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-code-plugins": true,
+    "claude-in-the-act@claude-in-the-act": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-code-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-code"
+      }
+    },
+    "claude-in-the-act": {
+      "source": {
+        "source": "github",
+        "repo": "beyarkay/claude-in-the-act"
+      }
+    }
+  },
+  "effortLevel": "xhigh",
+  "tui": "default",
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true
+}

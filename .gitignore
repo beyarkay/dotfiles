@@ -2,3 +2,7 @@ wpa_supplicant.conf
 .*.sw*
 aws_setup.sh
 .DS_Store
+
+# peon-ping installs its own skills into ~/.claude/skills, which is a symlink
+# into claude/skills here. Homebrew owns them.
+claude/skills/peon-ping-*

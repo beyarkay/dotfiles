@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# drop-user-in-file — pause Claude Code, float an interactive nvim popup over the
+# user's tmux pane, block until they quit, then print the before/after diff(s).
+#
+# Usage:
+#   drop-user-in-file PATH [LINE]        # one file, optional line number
+#   drop-user-in-file PATH1 PATH2 ...    # many files, each in its own nvim tab (-p)
+#
+# How it works: this runs from Claude's non-interactive Bash subshell (no TTY),
+# but `tmux display-popup` talks to the tmux *server*, which paints an interactive
+# popup onto the user's attached client. `display-popup -E` blocks the invoking
+# shell until the popup command exits, so Claude's tool call naturally waits for
+# the edit session to finish. We diff a backup of each file against the saved file
+# afterwards.
+
+set -euo pipefail
+
+if [ "$#" -lt 1 ]; then
+  echo "usage: drop-user-in-file PATH [LINE]   |   drop-user-in-file PATH1 PATH2 ..." >&2
+  exit 2
+fi
+
+# Two argument forms, disambiguated: exactly two args whose 2nd is all-digits is
+# the PATH+LINE form; anything else with 2+ args is multi-file mode (LINE defaults
+# to 1, and applies to the first file's cursor only).
+line=1
+files=()
+if [ "$#" -eq 2 ] && printf '%s' "$2" | grep -Eq '^[0-9]+$'; then
+  files=("$1"); line="$2"
+else
+  files=("$@")
+fi
+
+if [ -z "${TMUX:-}" ]; then
+  echo "ERROR: not inside tmux — cannot open an interactive popup." >&2
+  echo "Claude's Bash subshell has no TTY; tmux is what lets nvim render on your screen." >&2
+  exit 3
+fi
+
+if ! command -v nvim >/dev/null 2>&1; then
+  echo "ERROR: nvim not found on PATH." >&2
+  exit 4
+fi
+
+# Resolve every file to an absolute path (the popup runs from a different cwd) and
+# snapshot its before-state into a temp dir (empty backup if it doesn't exist yet).
+bdir="$(mktemp -d)"
+trap 'rm -rf "$bdir"' EXIT
+abs_files=()
+i=0
+for f in "${files[@]}"; do
+  case "$f" in
+    /*) a="$f" ;;
+    *)  a="$PWD/$f" ;;
+  esac
+  mkdir -p "$(dirname -- "$a")"
+  abs_files+=("$a")
+  : > "$bdir/$i"
+  [ -e "$a" ] && cp -- "$a" "$bdir/$i"
+  i=$((i + 1))
+done
+
+# Build the in-popup nvim command with safe quoting (paths may contain spaces).
+# `-p` opens one tab per file; `+LINE` positions the cursor in the first.
+q_line=$(printf '%q' "$line")
+q_paths=""
+for a in "${abs_files[@]}"; do
+  q_paths="$q_paths $(printf '%q' "$a")"
+done
+if [ "${#abs_files[@]}" -gt 1 ]; then
+  nvim_cmd="nvim -p +${q_line} --${q_paths}"
+  popup_title=" editing ${#abs_files[@]} files — gt/gT switch tabs, :wqa to return to Claude "
+else
+  nvim_cmd="nvim +${q_line} --${q_paths}"
+  popup_title=" editing $(basename -- "${abs_files[0]}") :$line — :wq to return to Claude "
+fi
+
+# --- Window gate ---------------------------------------------------------
+# A tmux popup floats over whatever window the client is *currently* viewing.
+# When running several Claudes side by side that's an ambush. So if this
+# Claude's window isn't the active one, don't pop yet: flag the window name
+# so the user can spot which Claude wants attention, and wait until they
+# switch back to it. The popup then appears on the right window only.
+claude_pane="${TMUX_PANE:?TMUX_PANE unset}"
+if [ "$(tmux display-message -p -t "$claude_pane" '#{window_active}')" != "1" ]; then
+  orig_name="$(tmux display-message -p -t "$claude_pane" '#{window_name}')"
+  auto_rename="$(tmux show-options -wqv -t "$claude_pane" automatic-rename || true)"
+  tmux rename-window -t "$claude_pane" "✎ EDIT WAITING — $orig_name" 2>/dev/null || true
+  # Restore the name no matter how we exit the wait.
+  restore_name() {
+    tmux rename-window -t "$claude_pane" "$orig_name" 2>/dev/null || true
+    [ "$auto_rename" = "on" ] && tmux set-option -w -t "$claude_pane" automatic-rename on 2>/dev/null || true
+  }
+  trap 'rm -rf "$bdir"; restore_name' EXIT
+  while [ "$(tmux display-message -p -t "$claude_pane" '#{window_active}')" != "1" ]; do
+    sleep 0.3
+  done
+  restore_name
+  trap 'rm -rf "$bdir"' EXIT
+fi
+# -------------------------------------------------------------------------
+
+# Anchored at the top, ~1 column margin each side, leaving the bottom BOTTOM_FREE
+# rows uncovered so the user can still read Claude's latest response. Falls back
+# to a top-anchored 80%-tall popup if client dimensions can't be read.
+BOTTOM_FREE=20
+cw="$(tmux display-message -p -t "$claude_pane" '#{client_width}' 2>/dev/null || true)"
+ch="$(tmux display-message -p -t "$claude_pane" '#{client_height}' 2>/dev/null || true)"
+ypos=1   # top of popup, 1 row down (absolute, works even without dims)
+if [ -n "$cw" ] && [ -n "$ch" ] && [ "$cw" -gt 4 ] && [ "$ch" -gt $((BOTTOM_FREE + 6)) ]; then
+  pw=$((cw - 2)); ph=$((ch - BOTTOM_FREE - ypos))
+else
+  pw="90%"; ph="80%"
+fi
+
+# `-E` closes the popup and unblocks us the moment nvim exits. `-t` anchors it to
+# this Claude's pane/client; `-y` pins it to the top.
+tmux display-popup -E -t "$claude_pane" -y "$ypos" -w "$pw" -h "$ph" \
+  -T "$popup_title" \
+  "$nvim_cmd"
+
+# Report the diff for each file (never truncated — per project convention).
+echo "=== drop-user-in-file: ${#abs_files[@]} file(s), opened at line $line ==="
+i=0
+for a in "${abs_files[@]}"; do
+  echo "--- $a ---"
+  if [ ! -e "$a" ]; then
+    echo "RESULT: file does not exist after edit (you did not save / created nothing)."
+  elif cmp -s "$bdir/$i" "$a"; then
+    echo "RESULT: no changes ($(wc -l < "$a" | tr -d ' ') lines)."
+  else
+    echo "RESULT: file changed. Unified diff (before -> after):"
+    echo "---"
+    diff -u --label "before" --label "after" "$bdir/$i" "$a" || true
+    echo "---"
+  fi
+  i=$((i + 1))
+done
