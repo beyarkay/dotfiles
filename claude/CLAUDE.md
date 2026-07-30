@@ -5,7 +5,7 @@ can you see this? let me know if you can, i'm not sure if it's working
 ## Preferred tools
 
 Rust, ruff, uv, ty, zsh, tmux, neovim, fd, ripgrep, firefox, iterm2, bun, Skim
-(PDF viewer), homebrew.
+(PDF viewer), homebrew, hyperfine.
 
 Note that you won't use all of these. But if you need to, I'd prefer you to use
 the tools listed above.
@@ -111,6 +111,15 @@ better
 -recovering a conv-only ablation baseline. Int not bool for W&B sweeps."""
 +"""Number of heads attenting to the full size x size grid. if zero, transformer not used"""
  attn_heads: int = 8
+```
+
+```diff
+ lr: float = 1e-3
+-"""peak learning rate (after warmup, before cosine decay). ~1e-3 is the
+-centre of the 91w8vyea attention-arch sweep's top-cluster (8.6e-4–1.5e-3,
+-best 8.95e-4); the old 3.242e-3 predated attention (a #244-era conv-only
+-sweep) and sat above the [8e-4, 3e-3] band this architecture was swept in."""
++"""peak learning rate (after warmup, before cosine decay)"""
 ```
 
 ### Self explanatory comments
