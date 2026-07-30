@@ -393,7 +393,8 @@ PAGE = """<!doctype html>
 </head><body><main>
 <header><h1>Localhost</h1><span id="stamp">scanning&hellip;</span></header>
 <div id="out"></div>
-<footer>Auto-refreshing. Raw data at <a href="/api" style="color:var(--accent)">/api</a>.</footer>
+<footer>Auto-refreshing. Raw data at
+<a href="/api" target="_blank" rel="noopener" style="color:var(--accent)">/api</a>.</footer>
 </main>
 <script>
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => (
@@ -410,7 +411,7 @@ function card(s) {
     + `<div class="title">${tag}${esc(title)}</div>`
     + `<div class="meta">${esc(bits.join("  ·  "))}</div></div>`;
   const face = h
-    ? `<a class="card" href="${esc(h.url)}">${inner}</a>`
+    ? `<a class="card" href="${esc(h.url)}" target="_blank" rel="noopener">${inner}</a>`
     : `<div class="card">${inner}</div>`;
   const kill = `<button class="kill" data-port="${s.port}" data-pid="${s.pid}"`
     + ` title="Stop ${esc(s.name)} (pid ${s.pid})" aria-label="Stop ${esc(s.name)}">&times;</button>`;
