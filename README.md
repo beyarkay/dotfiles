@@ -63,6 +63,23 @@ directories are shortened to one character.
 The prompt will also include a line like `kill 3947 (86.3% /Applications/Google
 Chrome.app)` if any application starts using more than 75% CPU or so.
 
+### What's running on localhost?
+
+I lose track of which port each project ended up on. `localhost:1111` lists them
+all: every listening TCP socket, the process and directory behind it, and the
+page title of anything that answers HTTP. So a bare `:8791` shows up as "Factory
+builder" instead. There's nothing to register — new servers just appear, and
+dead ones drop off.
+
+Typing `ports` prints the same thing in the terminal.
+
+Background helpers like Spotify and Raycast are sorted into their own muted
+section, on the theory that anything launchd started sits in `/` while anything
+I started from a shell inherits a project directory.
+
+A launchd agent keeps it up; `scripts/install-localports.sh` installs or
+reinstalls it. It only scans while the page is actually open.
+
 ### OS-aware install script
 
 I still need to describe this.

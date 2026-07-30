@@ -338,9 +338,9 @@ function card(s) {
   if (s.cwd) bits.push(s.cwd);
   const tag = h && h.status >= 400 ? `<span class="tag">${h.status}</span>`
             : !h && s.group !== "self" ? `<span class="tag">not http</span>` : "";
-  const inner = `<span class="port">:${s.port}</span><span class="body">`
+  const inner = `<div class="port">:${s.port}</div><div class="body">`
     + `<div class="title">${tag}${esc(title)}</div>`
-    + `<div class="meta">${esc(bits.join("  ·  "))}</div></span>`;
+    + `<div class="meta">${esc(bits.join("  ·  "))}</div></div>`;
   return h
     ? `<li><a class="card" href="${esc(h.url)}">${inner}</a></li>`
     : `<li><div class="card">${inner}</div></li>`;
