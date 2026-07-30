@@ -206,7 +206,18 @@ else
 fi
 
 # ----------------------------------------
-# Step 10: Apply macOS defaults
+# Step 10: localports login agent
+# ----------------------------------------
+section "localports agent"
+
+if "$DOTFILES_DIR/scripts/install-localports.sh"; then
+    success "localports listening on http://localhost:1111"
+else
+    warn "localports agent failed to start (see ~/Library/Logs/localports.log)"
+fi
+
+# ----------------------------------------
+# Step 11: Apply macOS defaults
 # ----------------------------------------
 section "Applying macOS defaults"
 

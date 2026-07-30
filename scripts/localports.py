@@ -25,6 +25,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 DEFAULT_PORT = 1111
 SCAN_INTERVAL = 2.0
+IDLE_AFTER = 60.0
+STALE_AFTER = 5.0
 PROBE_TIMEOUT = 1.5
 PROBE_TTL = 30.0
 PROBE_WORKERS = 30
@@ -179,13 +181,19 @@ def _is_app(cwd):
 
 
 class Scanner:
-    """Rescans on a timer so page loads render an already-warm snapshot."""
+    """Rescans on a timer so page loads render an already-warm snapshot.
+
+    The timer only runs while someone is actually watching. lsof is not free,
+    and this is a login agent that spends most of its life unobserved.
+    """
 
     def __init__(self, own_port):
         self.own_port = own_port
         self.snapshot = {"services": [], "scanned_at": 0.0}
         self.lock = threading.Lock()
+        self.scan_lock = threading.Lock()
         self.probes = {}
+        self.last_seen = 0.0
 
     def _probe_cached(self, port, pids):
         key = (port, tuple(sorted(pids)))
@@ -198,6 +206,10 @@ class Scanner:
         return result
 
     def scan(self):
+        with self.scan_lock:
+            self._scan()
+
+    def _scan(self):
         listeners, names = _listeners()
         every_pid = {pid for entry in listeners.values() for pid in entry["pids"]}
         commands = _command_lines(every_pid)
@@ -235,12 +247,25 @@ class Scanner:
         with self.lock:
             return self.snapshot
 
+    def mark_active(self):
+        self.last_seen = time.time()
+
+    def touch(self):
+        """Note that someone is watching, and refresh if the snapshot went cold."""
+        self.mark_active()
+        if self.last_seen - self.latest()["scanned_at"] > STALE_AFTER:
+            self._guarded_scan()
+
+    def _guarded_scan(self):
+        try:
+            self.scan()
+        except Exception as error:
+            print("scan failed: {}".format(error), file=sys.stderr, flush=True)
+
     def run_forever(self):
         while True:
-            try:
-                self.scan()
-            except Exception as error:
-                print("scan failed: {}".format(error), file=sys.stderr, flush=True)
+            if time.time() - self.last_seen < IDLE_AFTER:
+                self._guarded_scan()
             time.sleep(SCAN_INTERVAL)
 
 
@@ -338,8 +363,9 @@ async function tick() {
       + section("Other listeners", by("other"), true)
       + section("System &amp; apps", by("app"), true);
     const age = Math.max(0, Math.round(Date.now() / 1000 - data.scanned_at));
+    const listening = data.services.filter(s => s.group !== "self").length;
     document.getElementById("stamp").textContent =
-      `${web.length} web · ${data.services.length} listening · ${age}s ago`;
+      `${web.length} web · ${listening} listening · ${age}s ago`;
   } catch (e) {
     document.getElementById("stamp").textContent = "disconnected";
   }
@@ -367,8 +393,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?")[0].rstrip("/") or "/"
         if path == "/":
+            self.scanner.mark_active()
             self._send(PAGE, "text/html; charset=utf-8")
         elif path == "/api":
+            self.scanner.touch()
             self._send(json.dumps(self.scanner.latest()), "application/json")
         else:
             self.send_error(404)
