@@ -396,7 +396,8 @@ alias v="nvim"
 alias rpi="arp -a | grep b8:27:eb"
 
 # What am I running on localhost? Dashboard lives at http://localhost:1111
-alias ports="/usr/bin/python3 $HOME/.dotfiles/scripts/localports.py --list"
+# `ports` lists them, `ports --kill 8787` stops one, `ports --all` includes apps.
+ports() { /usr/bin/python3 "$HOME/.dotfiles/scripts/localports.py" "${@:---list}" }
 
 export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export PATH="/opt/homebrew/opt/llvm@12/bin:$PATH"

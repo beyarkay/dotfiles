@@ -73,6 +73,13 @@ dead ones drop off.
 
 Typing `ports` prints the same thing in the terminal.
 
+Each entry has a stop button, and `ports --kill 8787` does the same from the
+shell. It sends SIGTERM and offers SIGKILL if that isn't enough. Two things it
+is careful about: the port is rescanned immediately before signalling, so a
+recycled pid can't turn a stale click into killing something unrelated; and
+`/kill` requires a custom header, because otherwise a form on any site I happened
+to visit could POST to `localhost:1111` and start shutting things down.
+
 Background helpers like Spotify and Raycast are sorted into their own muted
 section, on the theory that anything launchd started sits in `/` while anything
 I started from a shell inherits a project directory.

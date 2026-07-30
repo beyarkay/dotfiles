@@ -13,6 +13,7 @@ import html
 import json
 import os
 import re
+import signal
 import ssl
 import subprocess
 import sys
@@ -31,6 +32,7 @@ PROBE_TIMEOUT = 1.5
 PROBE_TTL = 30.0
 PROBE_WORKERS = 30
 BODY_LIMIT = 65536
+KILL_GRACE = 2.5
 
 HOME = os.path.expanduser("~")
 LOOPBACK_ADDRS = {"*", "127.0.0.1", "::1", "::", "0.0.0.0", "[::1]", "[::]"}
@@ -175,6 +177,17 @@ def _shorten(path):
     return path
 
 
+def _alive(pid):
+    """Is the process still doing anything?
+
+    os.kill(pid, 0) is not enough: it succeeds on a zombie, so a process that
+    died on SIGTERM but has not been reaped by its parent yet would be reported
+    as having survived.
+    """
+    state = _run(["ps", "-o", "state=", "-p", str(pid)]).strip()
+    return bool(state) and not state.startswith("Z")
+
+
 def _is_app(cwd):
     """Background helper of an installed app rather than something you started.
 
@@ -258,6 +271,39 @@ class Scanner:
     def mark_active(self):
         self.last_seen = time.time()
 
+    def kill(self, port, pid, force=False):
+        """Signal whatever holds `port`, but only if it is still `pid`.
+
+        The caller's pid came from an earlier snapshot. Rescanning and insisting
+        the port still belongs to that pid is what stops a recycled pid from
+        turning a stale click into a kill of something unrelated.
+        """
+        self.scan()
+        live = next((s for s in self.latest()["services"] if s["port"] == port), None)
+        if live is None:
+            return {"ok": True, "alive": False, "message": "nothing on :{} any more".format(port)}
+        if live["pid"] != pid:
+            return {"ok": False, "alive": True,
+                    "message": ":{} now belongs to pid {}, not {}; refusing"
+                               .format(port, live["pid"], pid)}
+        if live["group"] == "self":
+            return {"ok": False, "alive": True, "message": "refusing to kill the dashboard"}
+
+        try:
+            os.kill(pid, signal.SIGKILL if force else signal.SIGTERM)
+        except ProcessLookupError:
+            return {"ok": True, "alive": False, "message": "already gone"}
+        except PermissionError:
+            return {"ok": False, "alive": True, "message": "pid {} is not yours".format(pid)}
+
+        deadline = time.time() + KILL_GRACE
+        while time.time() < deadline and _alive(pid):
+            time.sleep(0.25)
+        alive = _alive(pid)
+        self.scan()
+        return {"ok": True, "alive": alive,
+                "message": "still up after SIGTERM" if alive else "stopped {}".format(live["name"])}
+
     def touch(self):
         """Note that someone is watching, and refresh if the snapshot went cold."""
         self.mark_active()
@@ -281,15 +327,18 @@ PAGE = """<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>localhost</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2318a06a'/><g fill='%23fff'><rect x='7' y='9' width='18' height='3' rx='1.5'/><rect x='7' y='14.5' width='18' height='3' rx='1.5'/><rect x='7' y='20' width='11' height='3' rx='1.5'/></g></svg>">
 <style>
   :root {
     --bg:#faf9f7; --panel:#fff; --ink:#1a1a19; --muted:#78756e; --line:#e3e0da;
     --accent:#0b6b58; --live:#18a06a; --shadow:0 1px 2px rgba(0,0,0,.05);
+    --danger:#b3261e; --danger-bg:#fdeceb;
   }
   @media (prefers-color-scheme:dark) {
     :root {
       --bg:#131316; --panel:#1b1b1f; --ink:#e9e7e3; --muted:#8d8a84; --line:#2c2c32;
       --accent:#5fd7b4; --live:#3ecf8e; --shadow:none;
+      --danger:#ff8a80; --danger-bg:#3a1d1b;
     }
   }
   * { box-sizing:border-box }
@@ -307,11 +356,22 @@ PAGE = """<!doctype html>
   }
   ul { list-style:none; margin:0; padding:0; display:grid; gap:.5rem }
   li {
+    display:flex; align-items:stretch; overflow:hidden;
     background:var(--panel); border:1px solid var(--line); border-radius:8px;
     box-shadow:var(--shadow); transition:border-color .12s;
   }
   li:hover { border-color:var(--accent) }
-  a.card, div.card { display:flex; gap:1rem; padding:.85rem 1rem; text-decoration:none; color:inherit }
+  a.card, div.card {
+    flex:1; min-width:0; display:flex; gap:1rem; padding:.85rem 1rem;
+    text-decoration:none; color:inherit;
+  }
+  .kill {
+    flex:none; width:2.75rem; border:0; border-left:1px solid var(--line);
+    background:transparent; color:var(--muted); font:inherit; font-size:1.15rem;
+    cursor:pointer; opacity:.3; transition:opacity .12s, color .12s, background .12s;
+  }
+  li:hover .kill { opacity:1 }
+  .kill:hover, .kill:focus-visible { opacity:1; background:var(--danger-bg); color:var(--danger) }
   .port { font-weight:600; font-variant-numeric:tabular-nums; min-width:5.5rem; color:var(--accent) }
   a.card .port::before {
     content:""; display:inline-block; width:6px; height:6px; border-radius:50%;
@@ -349,15 +409,47 @@ function card(s) {
   const inner = `<div class="port">:${s.port}</div><div class="body">`
     + `<div class="title">${tag}${esc(title)}</div>`
     + `<div class="meta">${esc(bits.join("  ·  "))}</div></div>`;
-  return h
-    ? `<li><a class="card" href="${esc(h.url)}">${inner}</a></li>`
-    : `<li><div class="card">${inner}</div></li>`;
+  const face = h
+    ? `<a class="card" href="${esc(h.url)}">${inner}</a>`
+    : `<div class="card">${inner}</div>`;
+  const kill = `<button class="kill" data-port="${s.port}" data-pid="${s.pid}"`
+    + ` title="Stop ${esc(s.name)} (pid ${s.pid})" aria-label="Stop ${esc(s.name)}">&times;</button>`;
+  return `<li>${face}${kill}</li>`;
 }
 
 function section(name, list, muted) {
   if (!list.length) return "";
   return `<section class="${muted ? "muted" : ""}"><h2>${name}</h2>`
     + `<ul>${list.map(card).join("")}</ul></section>`;
+}
+
+document.getElementById("out").addEventListener("click", ev => {
+  const button = ev.target.closest(".kill");
+  if (!button) return;
+  ev.preventDefault();
+  const port = +button.dataset.port, pid = +button.dataset.pid;
+  if (confirm(`Stop whatever is listening on :${port}?  (pid ${pid})`)) stop(port, pid, false);
+});
+
+async function stop(port, pid, force) {
+  let result;
+  try {
+    const response = await fetch("/kill", {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "X-Localports": "1"},
+      body: JSON.stringify({port, pid, force}),
+    });
+    result = await response.json();
+  } catch (e) {
+    alert("Could not reach localports.");
+    return;
+  }
+  if (result.ok && result.alive) {
+    if (confirm(`${result.message}. Force it with SIGKILL?`)) return stop(port, pid, true);
+  } else if (!result.ok) {
+    alert(result.message);
+  }
+  tick();
 }
 
 async function tick() {
@@ -387,6 +479,7 @@ setInterval(tick, 2000);
 
 class Handler(BaseHTTPRequestHandler):
     scanner = None
+    allowed_origins = ()
     protocol_version = "HTTP/1.1"
 
     def _send(self, body, content_type):
@@ -398,6 +491,18 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(payload)
 
+    def _is_local_caller(self):
+        """Reject cross-site requests to /kill.
+
+        A page on any site you visit can POST a form to 127.0.0.1:1111 without
+        the browser asking anyone's permission. Requiring a custom header forces
+        a CORS preflight, which we never answer, so only our own page gets through.
+        """
+        if self.headers.get("X-Localports") != "1":
+            return False
+        origin = self.headers.get("Origin")
+        return origin is None or origin in self.allowed_origins
+
     def do_GET(self):
         path = self.path.split("?")[0].rstrip("/") or "/"
         if path == "/":
@@ -408,6 +513,23 @@ class Handler(BaseHTTPRequestHandler):
             self._send(json.dumps(self.scanner.latest()), "application/json")
         else:
             self.send_error(404)
+
+    def do_POST(self):
+        if self.path.split("?")[0].rstrip("/") != "/kill":
+            self.send_error(404)
+            return
+        if not self._is_local_caller():
+            self.send_error(403, "cross-site requests are not accepted")
+            return
+        try:
+            body = self.rfile.read(int(self.headers.get("Content-Length") or 0))
+            payload = json.loads(body or b"{}")
+            port, pid = int(payload["port"]), int(payload["pid"])
+        except (KeyError, TypeError, ValueError):
+            self.send_error(400, "expected a JSON body of {port, pid}")
+            return
+        result = self.scanner.kill(port, pid, bool(payload.get("force")))
+        self._send(json.dumps(result), "application/json")
 
     def log_message(self, *args):
         pass
@@ -441,15 +563,27 @@ def main():
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     parser.add_argument("--list", action="store_true", help="print a table and exit")
     parser.add_argument("--all", action="store_true", help="include system and app helpers")
+    parser.add_argument("--kill", type=int, metavar="PORT", help="stop whatever holds PORT")
+    parser.add_argument("--force", action="store_true", help="use SIGKILL for --kill")
     args = parser.parse_args()
 
     scanner = Scanner(args.port)
+    if args.kill:
+        scanner.scan()
+        live = next((s for s in scanner.latest()["services"] if s["port"] == args.kill), None)
+        if live is None:
+            sys.exit("nothing listening on :{}".format(args.kill))
+        result = scanner.kill(args.kill, live["pid"], args.force)
+        print(result["message"])
+        sys.exit(0 if result["ok"] and not result["alive"] else 1)
     if args.list:
         print_table(scanner, args.all)
         return
 
     threading.Thread(target=scanner.run_forever, daemon=True).start()
     Handler.scanner = scanner
+    Handler.allowed_origins = ("http://localhost:{}".format(args.port),
+                               "http://127.0.0.1:{}".format(args.port))
     server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     server.daemon_threads = True
     print("localports on http://localhost:{}".format(args.port), flush=True)
