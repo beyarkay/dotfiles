@@ -206,7 +206,15 @@ else
 fi
 
 # ----------------------------------------
-# Step 10: localports login agent
+# Step 10: Git hooks
+# ----------------------------------------
+section "Git hooks"
+
+git -C "$DOTFILES_DIR" config core.hooksPath .githooks
+success "Pre-commit hook enabled (lints staged files, runs scripts/test_*.py)"
+
+# ----------------------------------------
+# Step 11: localports login agent
 # ----------------------------------------
 section "localports agent"
 
@@ -217,7 +225,7 @@ else
 fi
 
 # ----------------------------------------
-# Step 11: Apply macOS defaults
+# Step 12: Apply macOS defaults
 # ----------------------------------------
 section "Applying macOS defaults"
 

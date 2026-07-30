@@ -35,6 +35,11 @@ BODY_LIMIT = 65536
 HOME = os.path.expanduser("~")
 LOOPBACK_ADDRS = {"*", "127.0.0.1", "::1", "::", "0.0.0.0", "[::1]", "[::]"}
 
+# Local dev certificates are self-signed as a rule; we only want the page title.
+UNVERIFIED_TLS = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+UNVERIFIED_TLS.check_hostname = False
+UNVERIFIED_TLS.verify_mode = ssl.CERT_NONE
+
 TITLE_RE = re.compile(rb"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 H1_RE = re.compile(rb"<h1[^>]*>(.*?)</h1>", re.IGNORECASE | re.DOTALL)
 TAG_RE = re.compile(r"<[^>]+>")
@@ -145,7 +150,7 @@ def _probe(port):
     """Return HTTP details for a port, or None if it does not speak HTTP."""
     for scheme in ("http", "https"):
         url = "{}://127.0.0.1:{}/".format(scheme, port)
-        context = ssl._create_unverified_context() if scheme == "https" else None
+        context = UNVERIFIED_TLS if scheme == "https" else None
         request = urllib.request.Request(url, headers={"User-Agent": "localports"})
         try:
             with urllib.request.urlopen(request, timeout=PROBE_TIMEOUT, context=context) as response:
@@ -240,8 +245,11 @@ class Scanner:
                          else "web" if http
                          else "other",
             })
+        now = time.time()
+        self.probes = {key: hit for key, hit in self.probes.items()
+                       if now - hit[1] < PROBE_TTL * 4}
         with self.lock:
-            self.snapshot = {"services": services, "scanned_at": time.time()}
+            self.snapshot = {"services": services, "scanned_at": now}
 
     def latest(self):
         with self.lock:

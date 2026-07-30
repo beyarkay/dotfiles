@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Lint what you are about to commit, and run the whole test suite. Enable with:
+#   git config core.hooksPath .githooks
+#
+# Linting is scoped to staged files on purpose. The repo predates this hook and
+# has plenty of legacy warnings; blocking every commit on those would just teach
+# you to pass --no-verify.
+set -uo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+status=0
+
+run() {
+  local label="$1"; shift
+  local out
+  if ! out="$("$@" 2>&1)"; then
+    printf '\033[31m✗ %s\033[0m\n%s\n' "$label" "$out"
+    status=1
+  else
+    printf '\033[32m✓ %s\033[0m\n' "$label"
+  fi
+}
+
+staged=()
+while IFS= read -r file; do
+  [[ -f "$ROOT/$file" ]] && staged+=("$ROOT/$file")
+done < <(git diff --cached --name-only --diff-filter=ACM)
+
+python_files=()
+shell_files=()
+for file in ${staged[@]+"${staged[@]}"}; do
+  case "$file" in
+    *.py) python_files+=("$file") ;;
+    *.sh | */.githooks/*) shell_files+=("$file") ;;
+  esac
+done
+
+if command -v ruff >/dev/null && ((${#python_files[@]})); then
+  run "ruff check" ruff check --line-length 100 "${python_files[@]}"
+fi
+
+if command -v shellcheck >/dev/null && ((${#shell_files[@]})); then
+  run "shellcheck" shellcheck "${shell_files[@]}"
+fi
+
+for test in "$ROOT"/scripts/test_*.py; do
+  [[ -e "$test" ]] || continue
+  run "$(basename "$test")" /usr/bin/python3 "$test"
+done
+
+exit "$status"
