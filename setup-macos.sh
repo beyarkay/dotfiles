@@ -147,6 +147,8 @@ create_symlink "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 create_symlink "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
 create_symlink "$DOTFILES_DIR/claude/statusline.sh" "$HOME/.claude/statusline.sh"
 create_symlink "$DOTFILES_DIR/claude/hooks/current-task.sh" "$HOME/.claude/hooks/current-task.sh"
+create_symlink "$DOTFILES_DIR/claude/hooks/note.sh" "$HOME/.claude/hooks/note.sh"
+create_symlink "$DOTFILES_DIR/claude/commands" "$HOME/.claude/commands"
 create_symlink "$DOTFILES_DIR/claude/skills" "$HOME/.claude/skills"
 create_symlink "$DOTFILES_DIR/claude/tools" "$HOME/.claude/tools"
 
