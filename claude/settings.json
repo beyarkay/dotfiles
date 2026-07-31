@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W 🚧\""
+            "command": "$HOME/.claude/hooks/tmux-window.sh 🚧"
           }
         ]
       },
@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W ❓\""
+            "command": "$HOME/.claude/hooks/tmux-window.sh ❓"
           }
         ]
       }
@@ -54,7 +54,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W\""
+            "command": "$HOME/.claude/hooks/tmux-window.sh"
           }
         ]
       },
@@ -75,7 +75,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W 🗜️\""
+            "command": "$HOME/.claude/hooks/tmux-window.sh 🗜️"
           }
         ]
       },
@@ -97,7 +97,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W\""
+            "command": "$HOME/.claude/hooks/tmux-window.sh"
           }
         ]
       }
@@ -108,7 +108,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W\""
+            "command": "$HOME/.claude/hooks/tmux-window.sh"
           }
         ]
       },
@@ -148,7 +148,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "W=$(tmux display-message -t $TMUX_PANE -p '#W' | sed 's/ [❓🚧🗜️]$//'); tmux rename-window -t $TMUX_PANE \"$W\""
+            "command": "$HOME/.claude/hooks/tmux-window.sh"
           }
         ]
       },
