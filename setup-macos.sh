@@ -153,6 +153,17 @@ create_symlink "$DOTFILES_DIR/claude/commands" "$HOME/.claude/commands"
 create_symlink "$DOTFILES_DIR/claude/skills" "$HOME/.claude/skills"
 create_symlink "$DOTFILES_DIR/claude/tools" "$HOME/.claude/tools"
 
+# 7-day minimum release age, so a compromised package has time to be caught and
+# pulled before it can be installed here. Each tool wants a different unit; see
+# the files themselves. pnpm reads Library/Preferences on macOS, .config on Linux.
+create_symlink "$DOTFILES_DIR/.npmrc" "$HOME/.npmrc"
+create_symlink "$DOTFILES_DIR/bunfig.toml" "$HOME/.bunfig.toml"
+create_symlink "$DOTFILES_DIR/pnpm-rc" "$HOME/Library/Preferences/pnpm/rc"
+create_symlink "$DOTFILES_DIR/pnpm-rc" "$HOME/.config/pnpm/rc"
+create_symlink "$DOTFILES_DIR/uv.toml" "$HOME/.config/uv/uv.toml"
+create_symlink "$DOTFILES_DIR/pip.conf" "$HOME/.config/pip/pip.conf"
+create_symlink "$DOTFILES_DIR/cargo-config.toml" "$HOME/.cargo/config.toml"
+
 # ----------------------------------------
 # Step 6: Install uv
 # ----------------------------------------

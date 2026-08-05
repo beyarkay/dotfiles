@@ -1,0 +1,6 @@
+# INERT as of cargo 1.95: RFC 3923 is merged and the registry side shipped in
+# 1.94, but the client side has not. Cargo ignores this key without erroring,
+# so it starts working by itself once the client lands. Until then cargo has
+# no release-age gate.
+[registry]
+global-min-publish-age = "7 days"

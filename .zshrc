@@ -432,3 +432,15 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # opencode
 export PATH=/Users/brk/.opencode/bin:$PATH
+
+# Deno has no config file or env var for its release-age gate, only the
+# --minimum-dependency-age flag, so inject it here. 10080 minutes = 7 days.
+# Every other package manager is gated via its own config file instead.
+deno() {
+    case "$1" in
+        install|add|update|outdated)
+            command deno "$@" --minimum-dependency-age 10080 ;;
+        *)
+            command deno "$@" ;;
+    esac
+}

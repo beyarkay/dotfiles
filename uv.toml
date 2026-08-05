@@ -1,0 +1,2 @@
+# Relative durations need uv >= 0.9.17.
+exclude-newer = "7d"

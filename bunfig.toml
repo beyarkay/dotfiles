@@ -1,0 +1,3 @@
+[install]
+# seconds. Needs bun >= 1.3.0.
+minimumReleaseAge = 604800
