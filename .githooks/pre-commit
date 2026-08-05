@@ -48,4 +48,22 @@ for test in "$ROOT"/scripts/test_*.py; do
   run "$(basename "$test")" /usr/bin/python3 "$test"
 done
 
+# ~/.npmrc, ~/.config/pip/pip.conf and ~/.cargo/config.toml are symlinks into
+# this repo, so `npm login` / `cargo login` would write a live credential
+# straight into a tracked file. Block that.
+# shellcheck disable=SC2329  # invoked indirectly, via run()
+check_no_credentials() {
+  local found=0 file
+  for file in .npmrc pip.conf cargo-config.toml; do
+    git diff --cached --name-only --diff-filter=ACM | grep -qx "$file" || continue
+    if git show ":$file" 2>/dev/null \
+       | grep -nEi '(_auth(Token)?|_password|^[[:space:]]*token[[:space:]]*=|://[^/[:space:]]+:[^@[:space:]]+@)'; then
+      printf '\033[31m✗ %s contains a credential — unstage it\033[0m\n' "$file"
+      found=1
+    fi
+  done
+  return "$found"
+}
+run "no credentials in package-manager configs" check_no_credentials
+
 exit "$status"
