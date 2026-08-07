@@ -110,6 +110,16 @@ local NO_BG='234'
 local WHITE='255'
 local FG_RED='196'
 
+# Record command timing with zsh's own clock, without spawning a process.
+zmodload zsh/datetime
+autoload -Uz add-zsh-hook
+typeset -gF _PROMPT_COMMAND_STARTED_AT=0
+
+function _prompt_record_command_start() {
+    _PROMPT_COMMAND_STARTED_AT=$EPOCHREALTIME
+}
+add-zsh-hook preexec _prompt_record_command_start
+
 # Detect GPU configuration once at shell startup
 _PROMPT_GPU_INFO=""
 if command -v nvidia-smi &>/dev/null; then
@@ -152,6 +162,102 @@ _PROMPT_HOST_MACHINE="{%F{${FG_CYAN}}$(hostname)%F{$FG_GREY}}"
 }
 
 # =============================================================================
+# Sample expensive system metrics away from the prompt's critical path.
+#
+# `ps` takes around 15ms on macOS and nvidia-smi can be slower, so a disowned
+# background job refreshes this cache at most every 30 seconds. Reading the
+# cache on each prompt is a zsh builtin. Alerts only appear for CPU/GPU use of
+# at least 80%, or when the root filesystem has less than 10GiB free.
+# =============================================================================
+typeset -g _PROMPT_METRICS_LAST_LAUNCH=0
+typeset -g _PROMPT_METRICS_CACHE=''
+typeset -g _PROMPT_METRICS_DIR="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/zsh-prompt-${EUID}"
+
+if [[ -d "$_PROMPT_METRICS_DIR" && -O "$_PROMPT_METRICS_DIR" ]] \
+        || command mkdir -m 700 "$_PROMPT_METRICS_DIR" 2>/dev/null; then
+    _PROMPT_METRICS_CACHE="$_PROMPT_METRICS_DIR/metrics"
+fi
+
+function _prompt_refresh_system_metrics() {
+    local cache_file=$1
+    local cache_tmp="${cache_file}.${$}"
+    local cpu_count cpu_total cpu_util gpu_util disk_kib disk_gib
+    local -a alerts=()
+
+    cpu_count=$(command getconf _NPROCESSORS_ONLN 2>/dev/null)
+    [[ $cpu_count == <-> && $cpu_count -gt 0 ]] || cpu_count=1
+    cpu_total=$(
+        /bin/ps -A -o %cpu= 2>/dev/null \
+            | command awk '{ total += $1 } END { printf "%.0f", total }'
+    )
+    if [[ $cpu_total == <-> ]]; then
+        (( cpu_util = cpu_total / cpu_count ))
+        (( cpu_util >= 80 )) && alerts+=("cpu${cpu_util}")
+    fi
+
+    if command -v nvidia-smi &>/dev/null; then
+        gpu_util=$(
+            command nvidia-smi \
+                --query-gpu=utilization.gpu \
+                --format=csv,noheader,nounits 2>/dev/null \
+                | command awk '$1 > highest { highest = $1 }
+                    END { printf "%.0f", highest }'
+        )
+        [[ $gpu_util == <-> && $gpu_util -ge 80 ]] \
+            && alerts+=("gpu${gpu_util}")
+    fi
+
+    disk_kib=$(command df -Pk / 2>/dev/null \
+        | command awk 'NR == 2 { print $4 }')
+    if [[ $disk_kib == <-> ]]; then
+        (( disk_gib = disk_kib / 1024 / 1024 ))
+        (( disk_gib < 10 )) && alerts+=("d${disk_gib}G")
+    fi
+
+    print -r -- "${(j: :)alerts}" >| "$cache_tmp" \
+        && command mv -f "$cache_tmp" "$cache_file"
+}
+
+# Find in-progress Git operations without another Git process. This handles
+# both ordinary repositories and worktrees whose .git is a pointer file.
+function _prompt_git_operation() {
+    local search_dir=$PWD
+    local git_dir=''
+    local gitdir_line=''
+    REPLY=''
+
+    if [[ -n $GIT_DIR ]]; then
+        git_dir=$GIT_DIR
+        [[ $git_dir == /* ]] || git_dir="$PWD/$git_dir"
+    else
+        while true; do
+            if [[ -d "$search_dir/.git" ]]; then
+                git_dir="$search_dir/.git"
+                break
+            elif [[ -f "$search_dir/.git" ]]; then
+                IFS= read -r gitdir_line < "$search_dir/.git"
+                if [[ $gitdir_line == 'gitdir: '* ]]; then
+                    git_dir=${gitdir_line#gitdir: }
+                    [[ $git_dir == /* ]] || git_dir="$search_dir/$git_dir"
+                fi
+                break
+            fi
+            [[ $search_dir == / ]] && break
+            search_dir=${search_dir:h}
+        done
+    fi
+
+    [[ -n $git_dir ]] || return
+    if [[ -d "$git_dir/rebase-merge" || -d "$git_dir/rebase-apply" ]]; then
+        REPLY='rb'
+    elif [[ -f "$git_dir/MERGE_HEAD" ]]; then
+        REPLY='mg'
+    elif [[ -f "$git_dir/BISECT_LOG" || -f "$git_dir/BISECT_START" ]]; then
+        REPLY='bs'
+    fi
+}
+
+# =============================================================================
 # Calculate a short-form of pwd, where instead of /User/boyd/Documents you have
 # /U/b/Documents in order to save space
 # =============================================================================
@@ -176,7 +282,32 @@ function short_pwd {
 
 # `precmd()` is called before the prompt is displayed. This is used to customise the prompt and update it each time.
 function precmd() {
+    # This must be first: anything before it would overwrite the exit status of
+    # the command that just finished.
+    local last_exit_status=$?
     local curr_time='%*'
+    local command_result=''
+
+    if (( last_exit_status != 0 )); then
+        command_result+=" %F{${FG_RED}}e${last_exit_status}%F{${FG_GREY}}"
+    fi
+
+    if (( _PROMPT_COMMAND_STARTED_AT > 0 )); then
+        local -i elapsed_seconds=$(( EPOCHREALTIME - _PROMPT_COMMAND_STARTED_AT ))
+        _PROMPT_COMMAND_STARTED_AT=0
+        if (( elapsed_seconds >= 5 )); then
+            if (( elapsed_seconds >= 60 )); then
+                local -i elapsed_minutes=$(( elapsed_seconds / 60 ))
+                local -i elapsed_remainder=$(( elapsed_seconds % 60 ))
+                command_result+=" %F{${FG_TURQUOISE}}${elapsed_minutes}m"
+                (( elapsed_remainder > 0 )) \
+                    && command_result+="${elapsed_remainder}s"
+                command_result+="%F{${FG_GREY}}"
+            else
+                command_result+=" %F{${FG_TURQUOISE}}${elapsed_seconds}s%F{${FG_GREY}}"
+            fi
+        fi
+    fi
 
     # ===================================================================
     # If there are any jobs which are stopped or in the background, add a
@@ -223,8 +354,16 @@ function precmd() {
         # Header looks like "## branch...remote [ahead N, behind M]" or "## branch".
         local git_header=${git_lines[1]}
         local branch_name=${git_header#\#\# }
-        branch_name=${branch_name%%...*}
-        branch_name=${branch_name%% \[*}
+        local git_has_upstream=0
+        [[ $branch_name == *...* ]] && git_has_upstream=1
+        if [[ $branch_name == 'No commits yet on '* ]]; then
+            branch_name=${branch_name#No commits yet on }
+        elif [[ $branch_name == 'Initial commit on '* ]]; then
+            branch_name=${branch_name#Initial commit on }
+        else
+            branch_name=${branch_name%%...*}
+            branch_name=${branch_name%% \[*}
+        fi
 
         # Unpushed count: parse "[ahead N]" straight from the header rather than
         # spawning a second `git rev-list` subprocess every prompt. (Reports vs
@@ -233,14 +372,33 @@ function precmd() {
         if [[ $git_header == *'[ahead '* ]]; then
             git_unpushed=${${git_header##*\[ahead }%%[,\]]*}
         fi
+        local git_behind=0
+        if [[ $git_header == *'behind '* ]]; then
+            git_behind=${${git_header##*behind }%%[,\]]*}
+        fi
         shift git_lines
 
-        # Count statuses using zsh array filtering (no subprocesses)
-        local git_untracked=${#${(M)git_lines:#\?\?*}}
-        local git_unstaged=${#${(M)git_lines:#?[MTDAU]*}}
-        local git_uncommitted=${#${(M)git_lines:#[MTADRC]*}}
+        # Pull conflicts out first so they get one unambiguous red count rather
+        # than also appearing in the staged/unstaged totals.
+        local git_conflicts=0
+        local git_line
+        local -a non_conflict_lines=()
+        for git_line in "${git_lines[@]}"; do
+            case "${git_line[1,2]}" in
+                DD|AU|UD|UA|DU|AA|UU) (( git_conflicts++ )) ;;
+                *) non_conflict_lines+=("$git_line") ;;
+            esac
+        done
+
+        # Count statuses using zsh array filtering (no subprocesses).
+        local git_untracked=${#${(M)non_conflict_lines:#\?\?*}}
+        local git_unstaged=${#${(M)non_conflict_lines:#?[MTDAU]*}}
+        local git_uncommitted=${#${(M)non_conflict_lines:#[MTADRC]*}}
 
         local git_colour=''
+        if [[ $git_conflicts -gt 0 ]]; then
+            git_colour+="%F{${FG_RED}}x$git_conflicts"
+        fi
         # Check for untracked files
         if [[ $git_untracked -gt 0 ]]; then
             git_colour+="%F{${FG_LIGHTGREY}}t$git_untracked"
@@ -257,6 +415,18 @@ function precmd() {
         if [[ $git_unpushed -gt 0 ]]; then
             git_colour+="%F{${FG_RED}}p$git_unpushed"
         fi
+        if [[ $git_behind -gt 0 ]]; then
+            git_colour+="%F{${FG_TURQUOISE}}↓$git_behind"
+        fi
+        if (( ! git_has_upstream )) && [[ $branch_name != 'HEAD (no branch)' ]]; then
+            git_colour+="%F{${FG_RED}}p?"
+        fi
+
+        _prompt_git_operation
+        local git_operation=$REPLY
+        if [[ -n $git_operation ]]; then
+            git_colour+="%F{${FG_ORANGE}}${git_operation}"
+        fi
         # Only add trailing white space if we've actually got something in
         # `git_colour`
         if [[ ${#git_colour} -gt 0 ]]; then
@@ -270,13 +440,30 @@ function precmd() {
     fi
     fi # end RUNPOD_POD_ID check
 
+    # Start stale metric refreshes asynchronously, then consume the most recent
+    # complete result. `&!` prevents this helper from appearing as a shell job.
+    local system_alerts=''
+    if [[ -n $_PROMPT_METRICS_CACHE ]]; then
+        if (( EPOCHSECONDS - _PROMPT_METRICS_LAST_LAUNCH >= 30 )); then
+            _PROMPT_METRICS_LAST_LAUNCH=$EPOCHSECONDS
+            _prompt_refresh_system_metrics "$_PROMPT_METRICS_CACHE" &!
+        fi
+        [[ -r $_PROMPT_METRICS_CACHE ]] \
+            && system_alerts=$(<"$_PROMPT_METRICS_CACHE")
+        [[ -n $system_alerts ]] \
+            && system_alerts=" %F{${FG_ORANGE}}${system_alerts}%F{${FG_GREY}}"
+    fi
+
     # ===========================================================================
     # Collect all the variables together for the prompt and give them some colour
     # ===========================================================================
-    prompt="%F{${FG_GREY}}%K{${BG_GREY}}"
-    prompt+="╭ ${curr_time}"
+    local prompt_background=$BG_GREY
+    (( EUID == 0 )) && prompt_background=$FG_RED
+    prompt="%F{${FG_GREY}}%K{${prompt_background}}"
+    prompt+="╭ ${curr_time}${command_result}"
     prompt+="${job_string}"
     prompt+=" ${host_machine}"
+    prompt+="${system_alerts}"
     if [[ ${#need_mwinit} -gt 0 ]]; then
         prompt+=" ${need_mwinit}"
     fi

@@ -29,6 +29,10 @@ add`-ed but not `git commit`-ed, then I'll see something like `(a1c2 main)`.
 Finally, if I've also got 3 commits which haven't been `git push`-ed to remote,
 then I'll see something like `(a1c2p3 main)`
 
+The Git summary also calls out conflicts (`x2`), commits behind upstream
+(`↓3`), a missing upstream (`p?`), and an in-progress rebase, merge, or bisect
+(`rb`, `mg`, or `bs`).
+
 ![git-hidden](images/git_hidden.png)
 
 The git part of the prompt is hidden if I'm not inside a git repository.
@@ -48,6 +52,12 @@ then the full hostname is added to the prompt.
 
 If I've got jobs running / stopped in the background, a little `1r` or `2s`
 will be added to the prompt (for 1 running, or 2 stopped).
+
+Failed commands add their exit status (for example `e1`), and commands taking
+at least five seconds add their duration (`12s` or `2m4s`). High CPU/GPU usage
+and low disk space are sampled asynchronously and only appear as warnings, so
+the checks do not delay the prompt. When running as root, the whole prompt
+background turns red.
 
 ![authentication-required](images/authN.png)
 
