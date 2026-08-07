@@ -16,11 +16,11 @@ At time of writing, the tools I use are:
 ### Zsh prompt
 Usually includes: `time` {`host alias`} `short pwd` (`git status`)
 
-![basic prompt](images/prompt.png)
+<img src="images/prompt-clean.png" alt="Basic prompt" width="660">
 
 A note on the git integration:
 
-![prompt-with-git](images/prompt_with_git.png)
+<img src="images/prompt-git-state.png" alt="Prompt with Git state" width="660">
 
 If I'm in a repository, I'll see the name of the current branch like `(main)`.
 If I've modified 1 files but still need to `git add` them, then I'll see
@@ -59,6 +59,15 @@ and low disk space are sampled asynchronously and only appear as warnings, so
 the checks do not delay the prompt. When running as root, the input arrow turns
 red.
 
+<img src="images/prompt-command.png" alt="Failed and long-running command indicators" width="660">
+
+<img src="images/prompt-system-alerts.png" alt="High CPU and GPU use plus low disk space" width="660">
+
+<img src="images/prompt-root.png" alt="Red input arrow when running as root" width="660">
+
+These figures are rendered at 2x resolution and can be regenerated with
+`vhs scripts/prompt-screenshots.tape`.
+
 ![authentication-required](images/authN.png)
 
 If authentication is needed for various tools, a single character is added to
@@ -69,9 +78,6 @@ the prompt to remind me of that.
 The `pwd` is included, except it's shortened so that it doesn't take up the
 whole screenwidth. The current directory is highlighted, but all higher level
 directories are shortened to one character.
-
-The prompt will also include a line like `kill 3947 (86.3% /Applications/Google
-Chrome.app)` if any application starts using more than 75% CPU or so.
 
 ### What's running on localhost?
 
