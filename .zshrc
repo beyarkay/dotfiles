@@ -457,9 +457,7 @@ function precmd() {
     # ===========================================================================
     # Collect all the variables together for the prompt and give them some colour
     # ===========================================================================
-    local prompt_background=$BG_GREY
-    (( EUID == 0 )) && prompt_background=$FG_RED
-    prompt="%F{${FG_GREY}}%K{${prompt_background}}"
+    prompt="%F{${FG_GREY}}%K{${BG_GREY}}"
     prompt+="╭ ${curr_time}${command_result}"
     prompt+="${job_string}"
     prompt+=" ${host_machine}"
@@ -472,7 +470,9 @@ function precmd() {
     fi
     prompt+=" $(short_pwd)"
     prompt+="${git_branch}"
-    prompt+="%F{${FG_GREY}}"$'\n'"╰→"
+    local prompt_arrow_colour=$FG_GREY
+    (( EUID == 0 )) && prompt_arrow_colour=$FG_RED
+    prompt+="%F{${prompt_arrow_colour}}"$'\n'"╰→"
     prompt+="%K{NO_BG}%F{WHITE} "
     export PROMPT=$prompt
 }

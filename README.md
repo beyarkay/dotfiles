@@ -56,8 +56,8 @@ will be added to the prompt (for 1 running, or 2 stopped).
 Failed commands add their exit status (for example `e1`), and commands taking
 at least five seconds add their duration (`12s` or `2m4s`). High CPU/GPU usage
 and low disk space are sampled asynchronously and only appear as warnings, so
-the checks do not delay the prompt. When running as root, the whole prompt
-background turns red.
+the checks do not delay the prompt. When running as root, the input arrow turns
+red.
 
 ![authentication-required](images/authN.png)
 
