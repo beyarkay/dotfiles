@@ -323,7 +323,7 @@ endif
 " :date inserts an ISO-8601 timestamp at the cursor. User commands must start
 " with a capital, so :Date is the real command and :date abbreviates to it
 " (only when it's the whole command line, so filenames like date.txt survive).
-command! Date execute "normal! a" . strftime('%Y-%m-%dT%H:%M:%S')
+command! Date execute "normal! a" . strftime('%Y-%m-%d %H:%M:%S')
 cnoreabbrev <expr> date (getcmdtype() ==# ':' && getcmdline() ==# 'date') ? 'Date' : 'date'
 
 " 'Automatically' load changes from disk
