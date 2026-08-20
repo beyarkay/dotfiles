@@ -1,0 +1,53 @@
+# Ruleset for response-gate.sh (a Stop hook). Every rule that matches the final
+# reply sends the turn back with its `message` attached, up to max_rewrites.
+#
+#   regex    PCRE (ripgrep -P). Single-quote it so YAML leaves backslashes alone.
+#   message  one line, imperative — this is the instruction Claude gets back.
+#   scope    prose (default) checks the reply with code blocks and inline
+#            spans stripped out; raw checks the whole thing.
+#
+# A false alarm costs a whole turn, so prefer a regex that misses over one that
+# over-fires. `rg -oP -e '<regex>' <<< 'sample text'` to try one out.
+
+max_rewrites: 2
+
+patterns:
+  - name: sycophancy
+    regex: '(?i)\b(great|good|excellent|perfect|nice|sharp|brilliant|awesome|fantastic|astute|insightful|clever)\s+(question|point|catch|call|idea|find|observation|instinct|feedback|suggestion|thinking|work|job)\b'
+    message: 'Cut the compliment. State the fact and move on.'
+
+  - name: flattering-agreement
+    regex: "(?i)\\byou(?:'re| are)\\s+(?:absolutely\\s+|completely\\s+|totally\\s+|100%\\s+)?right\\b|\\bexactly\\s+(?:right|correct)\\b|\\bgood\\s+(?:catch|eye|shout)\\b"
+    message: 'Do not praise the user for being right. Say what is true and carry on.'
+
+  - name: abbreviation
+    regex: '(?i)\b(emb|coh|attn|cfg|impl|repr)\b'
+    message: 'Full words only in prose. Write the whole name out (embodiment, not emb).'
+
+  - name: ai-tell
+    regex: "(?i)\\b(delv(?:e|es|ing)|tapestry|testament to|ever-evolving|in today's|it is worth noting|it's worth noting|I hope this helps|feel free to|rest assured|game.changer|seamlessly|robust solution|navigating the)\\b"
+    message: 'Stock AI phrasing. Say the same thing in plain words, or cut it.'
+
+  - name: not-just-x-but-y
+    regex: "(?i)\\bnot (?:just|only) [^.\\n]{1,60}?, (?:it'?s|but|they'?re|this is)\\b"
+    message: 'Drop the "not just X, it''s Y" construction. Make the point once, directly.'
+
+  - name: apology
+    regex: "(?i)\\b(I apologi[sz]e|my apologies|sorry about that|sorry for the confusion)\\b"
+    message: 'No apologies. Correct the error in one plain sentence and continue.'
+
+# Off by default: this shells out to `claude -p` on every turn, so it costs a few
+# seconds and some tokens each time. Turn it on for rules no regex can catch.
+judge:
+  enabled: false
+  model: haiku
+  timeout: 45
+  rules: |
+    1. No compliments to the user and no praise for their ideas, questions or
+       corrections. Reporting that something works is fine; admiring it is not.
+    2. No abbreviations or acronyms in prose. Inside code is fine.
+    3. No narrating a loop's progress ("1/200, 2/200, ..."). A summary line is fine.
+    4. No claiming something was verified, tested or confirmed unless the reply
+       shows the evidence. Say plainly what was and was not checked.
+    5. No filler openers ("Let me", "I'll go ahead and", "Sure!") and no closing
+       offers of further help.

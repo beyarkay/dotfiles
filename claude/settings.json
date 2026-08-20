@@ -13,7 +13,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-opus-5",
+  "model": "opus",
   "hooks": {
     "Notification": [
       {
@@ -130,6 +130,16 @@
             "command": "jq -r '.session_id' | { read -r sid; echo '#!/usr/bin/env bash\\nclaude --resume '\"$sid\" > claude-resume.sh && chmod +x claude-resume.sh; }"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/response-gate.sh",
+            "timeout": 60
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -193,7 +203,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "SID=$(jq -r '.session_id // empty'); [ -n \"$SID\" ] && { rm -f \"/tmp/claude-task-$SID.txt\" \"/tmp/claude-task-$SID.count\" \"/tmp/claude-note-$SID.txt\"; rm -rf \"/tmp/claude-pbar-$SID\"; }"
+            "command": "SID=$(jq -r '.session_id // empty'); [ -n \"$SID\" ] && { rm -f \"/tmp/claude-task-$SID.txt\" \"/tmp/claude-task-$SID.count\" \"/tmp/claude-note-$SID.txt\"; rm -f \"/tmp/claude-gate-$SID.state\"; rm -rf \"/tmp/claude-pbar-$SID\"; }"
           }
         ]
       }
