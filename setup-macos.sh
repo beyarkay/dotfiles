@@ -142,6 +142,7 @@ create_symlink "$DOTFILES_DIR/.gitignore_global" "$HOME/.gitignore_global"
 create_symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf"
 create_symlink "$DOTFILES_DIR/init.vim" "$HOME/.config/nvim/init.vim"
 create_symlink "$DOTFILES_DIR/coc-settings.json" "$HOME/.config/nvim/coc-settings.json"
+create_symlink "$DOTFILES_DIR/nvim/after/plugin/mdimg.lua" "$HOME/.config/nvim/after/plugin/mdimg.lua"
 # hooks/ is linked per-file: peon-ping installs into that same directory.
 create_symlink "$DOTFILES_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 create_symlink "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
