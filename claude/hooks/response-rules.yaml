@@ -32,6 +32,10 @@ patterns:
     regex: "(?i)\\bnot (?:just|only) [^.\\n]{1,60}?, (?:it'?s|but|they'?re|this is)\\b"
     message: 'Drop the "not just X, it''s Y" construction. Make the point once, directly.'
 
+  - name: let-me-rather-than
+    regex: '(?i)\blet me\b[^.\n]{1,200}\brather than\b'
+    message: 'First check whether the relevant data is already in context. If it is, answer directly without redundant tool calls to reconfirm something obvious.'
+
   - name: apology
     regex: "(?i)\\b(I apologi[sz]e|my apologies|sorry about that|sorry for the confusion)\\b"
     message: 'No apologies. Correct the error in one plain sentence and continue.'
