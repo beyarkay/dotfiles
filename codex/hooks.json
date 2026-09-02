@@ -1,0 +1,16 @@
+{
+  "description": "Keep Codex thread titles aligned with the current task.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.codex/hooks/current-task.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

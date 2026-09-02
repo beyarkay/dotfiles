@@ -153,6 +153,8 @@ create_symlink "$DOTFILES_DIR/claude/hooks/tmux-window.sh" "$HOME/.claude/hooks/
 create_symlink "$DOTFILES_DIR/claude/commands" "$HOME/.claude/commands"
 create_symlink "$DOTFILES_DIR/claude/skills" "$HOME/.claude/skills"
 create_symlink "$DOTFILES_DIR/claude/tools" "$HOME/.claude/tools"
+create_symlink "$DOTFILES_DIR/codex/hooks.json" "$HOME/.codex/hooks.json"
+create_symlink "$DOTFILES_DIR/codex/hooks/current-task.sh" "$HOME/.codex/hooks/current-task.sh"
 
 bash "$DOTFILES_DIR/codex/configure-statusline.sh"
 success "Configured Codex status line"

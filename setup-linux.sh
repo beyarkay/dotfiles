@@ -68,6 +68,8 @@ create_symlink "$DOTFILES_DIR/claude/hooks/tmux-window.sh" "$HOME/.claude/hooks/
 create_symlink "$DOTFILES_DIR/claude/commands" "$HOME/.claude/commands"
 create_symlink "$DOTFILES_DIR/claude/skills" "$HOME/.claude/skills"
 create_symlink "$DOTFILES_DIR/claude/tools" "$HOME/.claude/tools"
+create_symlink "$DOTFILES_DIR/codex/hooks.json" "$HOME/.codex/hooks.json"
+create_symlink "$DOTFILES_DIR/codex/hooks/current-task.sh" "$HOME/.codex/hooks/current-task.sh"
 
 bash "$DOTFILES_DIR/codex/configure-statusline.sh"
 success "Configured Codex status line"
@@ -92,13 +94,13 @@ echo "Installing packages..."
 install_packages() {
     if command -v apt-get &> /dev/null; then
         sudo apt-get update -qq
-        sudo apt-get install -y -qq ripgrep bat
+        sudo apt-get install -y -qq ripgrep bat jq
         success "Installed packages via apt"
     elif command -v dnf &> /dev/null; then
-        sudo dnf install -y -q ripgrep bat
+        sudo dnf install -y -q ripgrep bat jq
         success "Installed packages via dnf"
     elif command -v pacman &> /dev/null; then
-        sudo pacman -S --noconfirm ripgrep bat
+        sudo pacman -S --noconfirm ripgrep bat jq
         success "Installed packages via pacman"
     else
         error "No supported package manager found (apt/dnf/pacman)"
