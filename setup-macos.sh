@@ -154,6 +154,9 @@ create_symlink "$DOTFILES_DIR/claude/commands" "$HOME/.claude/commands"
 create_symlink "$DOTFILES_DIR/claude/skills" "$HOME/.claude/skills"
 create_symlink "$DOTFILES_DIR/claude/tools" "$HOME/.claude/tools"
 
+bash "$DOTFILES_DIR/codex/configure-statusline.sh"
+success "Configured Codex status line"
+
 # 7-day minimum release age, so a compromised package has time to be caught and
 # pulled before it can be installed here. Each tool wants a different unit; see
 # the files themselves. pnpm reads Library/Preferences on macOS, .config on Linux.
