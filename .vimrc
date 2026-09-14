@@ -128,6 +128,13 @@ colorscheme onehalfdark
 nnoremap <C-j> <C-e>j
 nnoremap <C-k> <C-y>k
 
+" Move by display lines, so wrapped text behaves like separate lines.
+" Keep the g-prefixed forms available for moving by actual file lines.
+nnoremap j gj
+nnoremap k gk
+nnoremap gj j
+nnoremap gk k
+
 " When searching, center the result
 nnoremap n nzz
 nnoremap N Nzz
