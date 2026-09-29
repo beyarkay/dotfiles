@@ -92,6 +92,7 @@ function cd() {
         local entries=( *(DN) )
         (( ${#entries} < 10 )) && ls
     fi
+    return 0
 }
 
 
