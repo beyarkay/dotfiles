@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Build "Open in Nvim.app" and make it the default for json/jsonl/yaml/md. Safe to re-run.
+# Build "Open in Nvim.app" and make it the default for every extension in
+# open-in-nvim/extensions.txt. Safe to re-run.
 set -euo pipefail
 
 BUNDLE_ID="com.brk.open-in-nvim"
@@ -8,7 +9,10 @@ APP="$HOME/Applications/Open in Nvim.app"
 PLIST="$APP/Contents/Info.plist"
 PB=/usr/libexec/PlistBuddy
 LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
-EXTENSIONS=(json jsonl yaml yml md markdown)
+EXTENSIONS=()
+while IFS= read -r ext; do
+  [[ -n "$ext" ]] && EXTENSIONS+=("$ext")
+done <"$DOTFILES/open-in-nvim/extensions.txt"
 UTIS=(public.json public.yaml net.daringfireball.markdown)
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
@@ -45,3 +49,12 @@ done
 for uti in "${UTIS[@]}"; do
   duti -s "$BUNDLE_ID" "$uti" all
 done
+
+wrong=()
+for ext in "${EXTENSIONS[@]}"; do
+  [[ "$(duti -x "$ext" 2>/dev/null | sed -n 3p)" == "$BUNDLE_ID" ]] || wrong+=("$ext")
+done
+if ((${#wrong[@]})); then
+  echo "open-in-nvim: not the default for: ${wrong[*]}" >&2
+  exit 1
+fi
