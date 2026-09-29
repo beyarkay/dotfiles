@@ -89,6 +89,7 @@ BREW_PACKAGES=(
     delta
     eza
     atuin
+    duti
 )
 
 for pkg in "${BREW_PACKAGES[@]}"; do
@@ -245,7 +246,18 @@ else
 fi
 
 # ----------------------------------------
-# Step 12: Apply macOS defaults
+# Step 12: Open json/yaml/md in nvim
+# ----------------------------------------
+section "Open in Nvim"
+
+if "$DOTFILES_DIR/scripts/install-open-in-nvim.sh"; then
+    success "json/jsonl/yaml/md open in nvim in a new iTerm2 tab"
+else
+    warn "Open in Nvim.app failed to install"
+fi
+
+# ----------------------------------------
+# Step 13: Apply macOS defaults
 # ----------------------------------------
 section "Applying macOS defaults"
 
