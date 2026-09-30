@@ -1,8 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash($HOME/.claude/skills/reviewer/review.sh --quiet*)"
-    ],
+    "allow": ["Bash($HOME/.claude/skills/reviewer/review.sh --quiet*)"],
     "deny": [
       "Bash(open *)",
       "Bash(cd *&& git*)",
