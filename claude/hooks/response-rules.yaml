@@ -12,21 +12,21 @@
 max_rewrites: 2
 
 patterns:
+  - name: praising-the-user
+    regex: '(?i)^(clear|good call|fair|fair challenge|you''re right)\.\s'
+    message: "Stop praising the user, just give a factual response without flattery."
+
   - name: sycophancy
     regex: '(?i)\b(great|good|excellent|perfect|nice|sharp|brilliant|awesome|fantastic|astute|insightful|clever)\s+(question|point|catch|call|idea|find|observation|instinct|feedback|suggestion|thinking|work|job)\b'
-    message: 'Cut the compliment. State the fact and move on.'
+    message: "Cut the compliment. State the fact and move on."
 
   - name: flattering-agreement
     regex: "(?i)\\byou(?:'re| are)\\s+(?:absolutely\\s+|completely\\s+|totally\\s+|100%\\s+)?right\\b|\\bexactly\\s+(?:right|correct)\\b|\\bgood\\s+(?:catch|eye|shout)\\b"
-    message: 'Do not praise the user for being right. Say what is true and carry on.'
-
-  - name: abbreviation
-    regex: '(?i)\b(emb|coh|attn|cfg|impl|repr)\b'
-    message: 'Full words only in prose. Write the whole name out (embodiment, not emb).'
+    message: "Do not praise the user for being right. Say what is true and carry on."
 
   - name: ai-tell
     regex: "(?i)\\b(delv(?:e|es|ing)|tapestry|testament to|ever-evolving|in today's|it is worth noting|it's worth noting|I hope this helps|feel free to|rest assured|game.changer|seamlessly|robust solution|navigating the)\\b"
-    message: 'Stock AI phrasing. Say the same thing in plain words, or cut it.'
+    message: "Stock AI phrasing. Say the same thing in plain words, or cut it."
 
   - name: not-just-x-but-y
     regex: "(?i)\\bnot (?:just|only) [^.\\n]{1,60}?, (?:it'?s|but|they'?re|this is)\\b"
@@ -34,11 +34,11 @@ patterns:
 
   - name: let-me-rather-than
     regex: '(?i)\blet me\b[^.\n]{1,200}\brather than\b'
-    message: 'First check whether the relevant data is already in context. If it is, answer directly without redundant tool calls to reconfirm something obvious.'
+    message: "First check whether the relevant data is already in context. If it is, answer directly without redundant tool calls to reconfirm something obvious."
 
   - name: apology
     regex: "(?i)\\b(I apologi[sz]e|my apologies|sorry about that|sorry for the confusion)\\b"
-    message: 'No apologies. Correct the error in one plain sentence and continue.'
+    message: "No apologies. Correct the error in one plain sentence and continue."
 
 # Off by default: this shells out to `claude -p` on every turn, so it costs a few
 # seconds and some tokens each time. Turn it on for rules no regex can catch.
