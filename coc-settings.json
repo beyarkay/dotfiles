@@ -30,5 +30,9 @@
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.formatOnSave": true,
   "svelte.enable-ts-plugin": true,
-  "markdown-preview-enhanced.scrollSync": false
+  "markdown-preview-enhanced.scrollSync": false,
+  "json.schemaDownload.trustedDomains": {
+    "https://www.schemastore.org": true,
+    "https://json.schemastore.org": true
+  }
 }
