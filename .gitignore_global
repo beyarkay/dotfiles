@@ -4,3 +4,5 @@ claude-resume.sh
 .venv
 __pycache__/
 .ipynb_checkpoints/
+
+**/.claude/.cc-writes/
