@@ -1,6 +1,11 @@
 {
+  "env": {
+    "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"
+  },
   "permissions": {
-    "allow": ["Bash($HOME/.claude/skills/reviewer/review.sh --quiet*)"],
+    "allow": [
+      "Bash($HOME/.claude/skills/reviewer/review.sh --quiet*)"
+    ],
     "deny": [
       "Bash(open *)",
       "Bash(cd *&& git*)",
@@ -275,7 +280,9 @@
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "env": {
-    "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
   }
 }
