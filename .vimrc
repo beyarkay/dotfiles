@@ -93,6 +93,8 @@ Plug 'mechatroner/rainbow_csv'
 " https://black.readthedocs.io/en/stable/integrations/editors.html#vim
 " Plug 'psf/black', { 'branch': 'stable' }
 
+Plug 'beyarkay/todo.nvim'
+
 " Setup fzf for vim
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
