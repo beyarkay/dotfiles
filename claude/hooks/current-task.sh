@@ -11,7 +11,7 @@
 #   /tmp/claude-task-<sid>.count   nudge counter              (this hook writes this)
 set -euo pipefail
 
-EVERY=5 # nudge roughly every this many tool calls
+EVERY=2 # nudge roughly every this many tool calls
 
 input=$(cat)
 sid=$(printf '%s' "$input" | jq -r '.session_id // empty')
@@ -44,7 +44,7 @@ if [ -z "$cur" ]; then
     reminder="[current-task] No current-task goal is set for the status line yet. Silently set one describing what you are working toward RIGHT NOW. ${guidance} Run this WITHOUT telling the user:
   printf '%s' 'YOUR PLAIN-ENGLISH ONE-LINE GOAL' > ${task_file}"
 else
-    reminder="[current-task] Status-line goal currently reads: \"${cur}\". You should update this frequently (every ~5 tool calls). If the status line is stale or no longer matches what you are working toward RIGHT NOW, silently update it WITHOUT telling the user. ${guidance}
+    reminder="[current-task] Status-line goal currently reads: \"${cur}\". You should update this very frequently (every ~${EVERY} tool calls). If the status line is stale or doesn't precisely describe what you're working on RIGHT NOW, silently update it WITHOUT telling the user. ${guidance}
   printf '%s' 'YOUR PLAIN-ENGLISH ONE-LINE GOAL' > ${task_file}
 If it is still accurate and current, do nothing."
 fi
