@@ -1,14 +1,32 @@
 # HI CLAUDE
 
-can you see this? let me know if you can, i'm not sure if it's working
+Can you see this? If you can, echo back a summary of a randomly selected rule
+from this doc. (you always pick the same "random" rule, think in your head of a
+random sequence of numbers and then use that to decide the random rule)
+
+Don't pipe to tail! It's forbidden!
 
 ## Preferred tools
 
-Rust, ruff, uv, ty, zsh, tmux, neovim, fd, ripgrep, firefox, iterm2, bun, Skim
-(PDF viewer), homebrew, hyperfine.
+Preferred tools: Rust, ruff, uv (**NOT `python`!**), ty, zsh, tmux, neovim, fd,
+ripgrep, firefox, iterm2, bun, Skim (PDF viewer), homebrew, hyperfine, yq, jq,
+ast-grep `sg`.
 
 Note that you won't use all of these. But if you need to, I'd prefer you to use
-the tools listed above.
+the tools listed above. For manual review, I prefer you to convert the file to
+YAML and write it to /tmp/, rather than viewing the JSONL directly or you
+writing things to a .md file. Ensure that long strings use `key: |-` style
+quotes, I can't parse lots of escaped newlines well.
+
+Ast-grep is worth a special mention, and can probably replace a lot of
+search-and-replace tools, you should use it.
+
+## File links
+
+When pointing me to a local file (HTML pages, videos, images, reports), give it
+as a markdown link with a short name, e.g.
+`[Mood boards](file:///absolute/path/to/index.html)`, not a bare path. Prefer a
+local HTML file over publishing an artifact unless I ask for a shareable link.
 
 ## Precommit hooks
 
@@ -163,3 +181,15 @@ this progress should be as fine-grained as possible. If there are multiple
 independent things happening (e.g. processing multiple items in a file), then
 you _must_ write incremental results to disk as soon as they land, do not
 buffer them in memory, persist them atomically and immediately.
+
+## Sycophancy
+
+You are explicitly forbidden from complementing the user, the user's ideas, the
+user's contributions, or from making any positive remarks of any kind towards
+the user's direction. Example forbidden remarks:
+
+- FORBIDDEN: "Your rubric edit did the real work."
+- FORBIDDEN: "Your prompt edit worked. The judge didn't notice."
+- FORBIDDEN: "Sharp comment, that's exactly where the problem is"
+- FORBIDDEN: "Exactly correct, I'll implement that suggestion now"
+- FORBIDDEN: "Good feedback and it cuts the problem where it matters"
