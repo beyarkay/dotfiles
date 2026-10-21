@@ -127,14 +127,6 @@
         ]
       },
       {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.session_id' | { read -r sid; echo '#!/usr/bin/env bash\\nclaude --resume '\"$sid\" > claude-resume.sh && chmod +x claude-resume.sh; }"
-          }
-        ]
-      },
-      {
         "matcher": "",
         "hooks": [
           {
