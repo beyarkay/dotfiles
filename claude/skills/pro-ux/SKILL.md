@@ -175,6 +175,30 @@ Copy these from `index.html` and do not reinvent them:
 - No gridlines by default. Fixed y range from the metric's theoretical minimum to maximum. Same metric means same range on every panel.
 - Label lines at the line's end, not with a legend, when there are six or fewer.
 - Hover follows the Hover section: a pointer ring on the nearest point, the series promoted, the rest at 0.2, and the static data card with a zoom inset.
+- An ordered colour dimension (a fraction, a step, a size) gets a sequential map, so the lines read as a gradient: in the explorer, yellow for 0.005 through to black for 1. The order of the lines is then visible before reading any label.
+
+## Two levels of detail: glance and read
+
+Every chart exists at two sizes, and the user toggles between them by clicking the card header. Read the two reference pictures beside this file before drawing a chart: `glance.png` (minimised) and `read.png` (expanded). They show the same card at each size, and they are the target.
+
+**Glance (minimised card).** For someone who already knows what the axes are and wants to see how the lines move. In the explorer it's a 150 by 86 pixel panel, in a horizontal strip beside the card title, with one panel per facet:
+- **Kept:** every line, dot, band and colour, exactly as in the full chart.
+- **Title:** only the facet name ("Distress", "Greek", "Bird"), 11.5px, muted.
+- **Axes:** only the two end ticks on each axis ("0" and "100"), 9.5px, tick length 2. No axis labels.
+- **Gone:** the legend, the subtitle, the gridlines and the resize handle.
+
+**Read (expanded card).** For when the user has forgotten what is what:
+- **Title:** the full chart title, with the words that differ between panels underlined ("Judge score vs finetuning step — <u>Greek</u>").
+- **Subtitle:** model, statistic and interval, and n per point ("gemma-3-27b-it · mean ± 95% CI (t) · n = 42–50 per point").
+- **Legend:** a colour legend.
+- **Axes:** labelled, every tick, light gridlines.
+- **Size:** panels at their full height, which the resize handle sets.
+
+Rules:
+- Strip labels, not data. The glance has the same marks and colours as the full chart, so its shape matches what expands.
+- The same y range in every panel at both sizes, so the panels compare at a glance.
+- The glance must still be honest: keep the interval bands, and keep the y end ticks so a flat line at 0 never looks like one at 100.
+- A page of minimised cards is an overview of everything, one line per card. Remember each card's state and restore it on reload.
 
 ## Do not
 
@@ -193,6 +217,7 @@ These are the mistakes a model makes when it copies the look but not the behavio
 - **Views are not linked.** Hovering a table row leaves the chart unchanged, so the user must click (pin) to find where it is. Hover should already show it.
 - **Thin slivers stay unreadable.** A dense timeline needs the zoom inset in the data card.
 - **Cards are fixed.** No grip, no rename, no minimise, no resize, no delete with undo, and no tabs. Every card needs the full header.
+- **Minimise only hides.** A minimised card that collapses to its title throws away the overview. It should shrink to the glance-sized charts.
 - **Ranked lists have no gradient.** A table sorted by time spent shows every row in the same black. Underline each row in a sequential colour by its value, with a key.
 - **Gradients are splattered.** Colour that encodes nothing, or a categorical map used for an ordered quantity.
 
@@ -204,6 +229,7 @@ These are the mistakes a model makes when it copies the look but not the behavio
 - Hover any entity in one view: it is highlighted and the rest dimmed in every view that shows it.
 - Hover a view-changing control: the result previews, and leaving reverts it.
 - Drag a card by its grip, double-click its title, click its header, drag its resize handle, delete it and undo. Do the same for a tab.
+- Minimise every card: the page becomes a readable overview of small charts with the same lines and colours. Expand one: it has the full title, subtitle, legend and axis labels.
 - Every number column uses tabular numbers, and every chart states n and the interval kind.
 - Every colour on the page encodes something you can name. Every ranked list and comparison uses a sequential or diverging gradient with a key.
 - Reload the page: the view and layout come back.
