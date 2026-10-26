@@ -19,7 +19,7 @@ When in doubt, open that file and copy what it does. Its `<style>` block (lines 
 - **Every action has a key.** Show the key beside the control (`<kbd>c</kbd>colour`), so the interface teaches its own shortcuts.
 - **Nothing is lost.** Deletes give an undo toast. `z`/`Z` undo and redo. State lives in the address bar, so every view is a shareable link.
 - **The user owns the layout.** Cards and tabs can be dragged, renamed, minimised, resized, duplicated and deleted, and the layout persists.
-- **Quiet, then one strong accent.** Greys do the work. Dark `#3a3a40` marks "on" or "selected". Red appears only for errors and destructive hovers.
+- **Black and white, colour only for data.** Text, borders and controls stay black, white and grey. Dark `#3a3a40` marks "on" or "selected". Red appears only for errors and destructive hovers. Every other colour on the page encodes a value or an identity (see Colour).
 - **Titles say what the reader sees.** Charts carry a title, a subtitle naming what is pooled or filtered, and "mean ± 95% CI (t), n = 12 per point".
 
 ## Hover
@@ -90,6 +90,34 @@ Any page with more than one chart or table is a set of **cards**. Any tool with 
 - **Small caps for field names** in expanded records, with a coloured left rule per field.
 - Red is for errors and failures only.
 
+## Colour
+
+Colour is a data channel, not decoration. Before colouring anything, name what the colour encodes. If you can't, leave it black, white or grey. Pick the kind of map from what the values are:
+
+| Values | Map | Choices (d3 interpolators) |
+|---|---|---|
+| Identities, unordered, at most 8 | Categorical | Okabe–Ito (default), `tol-bright`, `tol-vibrant`, `tol-muted` |
+| An ordered quantity: time spent, count, rank, recency, size | Sequential | `inferno`, `magma`, `viridis`, `cividis`, `plasma` |
+| A quantity with a meaningful middle: change from yesterday, above or below a baseline, a score around its midpoint | Diverging | `red-blue` (`RdBu`), `brown-teal` (`BrBG`), `purple-orange` (`PuOr`), `green-purple` (`PRGn`) |
+
+**Use a gradient wherever a quantity is ranked or compared.** For example, in a table of apps by time spent, give each row a colour from a sequential map by its time. Heavy use gets the strong end and light use the faint end. Apply the colour as an underline under the value and the name, not as a fill:
+
+```html
+<span class="q" style="--q:#420a68">5h 32m Twitter</span>   <!-- heavy: inferno at 0.2 -->
+<span class="q" style="--q:#f98e09">2m 30s WhatsApp</span>  <!-- light: inferno at 0.75 -->
+```
+```css
+.q { text-decoration:underline 2.5px var(--q); text-underline-offset:4px; text-decoration-skip-ink:none; }
+```
+
+- **Clip the ends.** On white, keep `t` in about [0.1, 0.85] for inferno and magma, and [0, 0.9] for viridis. The palest end vanishes against white, and the darkest end looks like text.
+- **Scale it the way the data spreads.** Durations and counts are heavy-tailed, so map them on a log scale or by rank. Otherwise one large value makes every other row the same colour.
+- **The strong end means "more"** (more time, more change, a higher score). Reverse the map when needed; the explorer names the reversed form `<map>-reversed`.
+- **Diverging maps sit their midpoint on the real middle**: zero change, the baseline or the score's midpoint. Never the data's mean.
+- **Every gradient gets a key.** Put a small ramp (`.sw .ramp`, 11px high) with its end values in the card subtitle: "underline: time spent, 2m ▭▭▭ 5h 32m".
+- **One encoding per colour per view.** If the timeline colours apps by identity (categorical), the same colours mean the same apps in the tables. In that case, a time gradient goes on a different element, such as the underline, never on the swatch.
+- **No gradient where nothing is compared.** A single number, a label, a button or a header stays black.
+
 ## Tokens
 
 ```css
@@ -142,7 +170,7 @@ Copy these from `index.html` and do not reinvent them:
 ## Charts
 
 - Observable Plot 0.6.16 and d3 7.9.0 from jsdelivr. Charts use the page font at 15px, `color:#111`, white background.
-- Categorical colours: Okabe–Ito by default (`#0072B2 #D55E00 #009E73 #CC79A7 #E69F00 #56B4E9 #F0E442 #000000`), and the Paul Tol sets as alternatives. Sequential: viridis (stop at 0.9 so the last colour is not too pale). Diverging: red-blue or green-purple.
+- Colours follow the Colour section. Okabe–Ito is `#0072B2 #D55E00 #009E73 #CC79A7 #E69F00 #56B4E9 #F0E442 #000000`. A numeric colour dimension defaults to viridis. Offer every map as a clickable swatch with its ramp (`#cmaps`), and let a second click reverse it.
 - Means are dots with radius 2.8 and a white 0.9px outline. Intervals are 1px rules at 0.75 opacity, and bands are filled at 0.13 opacity. Individual observations are dots with radius 1.8–1.9 at about 0.33 opacity, jittered within their colour's lane.
 - No gridlines by default. Fixed y range from the metric's theoretical minimum to maximum. Same metric means same range on every panel.
 - Label lines at the line's end, not with a legend, when there are six or fewer.
@@ -165,6 +193,8 @@ These are the mistakes a model makes when it copies the look but not the behavio
 - **Views are not linked.** Hovering a table row leaves the chart unchanged, so the user must click (pin) to find where it is. Hover should already show it.
 - **Thin slivers stay unreadable.** A dense timeline needs the zoom inset in the data card.
 - **Cards are fixed.** No grip, no rename, no minimise, no resize, no delete with undo, and no tabs. Every card needs the full header.
+- **Ranked lists have no gradient.** A table sorted by time spent shows every row in the same black. Underline each row in a sequential colour by its value, with a key.
+- **Gradients are splattered.** Colour that encodes nothing, or a categorical map used for an ordered quantity.
 
 ## Checklist before showing it
 
@@ -175,5 +205,6 @@ These are the mistakes a model makes when it copies the look but not the behavio
 - Hover a view-changing control: the result previews, and leaving reverts it.
 - Drag a card by its grip, double-click its title, click its header, drag its resize handle, delete it and undo. Do the same for a tab.
 - Every number column uses tabular numbers, and every chart states n and the interval kind.
+- Every colour on the page encodes something you can name. Every ranked list and comparison uses a sequential or diverging gradient with a key.
 - Reload the page: the view and layout come back.
 - It works at phone width without sideways scrolling.
