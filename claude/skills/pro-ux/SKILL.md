@@ -9,15 +9,86 @@ The style of the Plot Explorer (`/Users/brk/projects/mats/plotting/explore/index
 In one line: **Tufte-style, keyboard-first, information-dense, details on demand.**
 When in doubt, open that file and copy what it does. Its `<style>` block (lines 11–224) is the source of truth for every value below.
 
+**The interactions matter more than the look.** A page can copy every colour and font here and still feel wrong. That happens when hovering does nothing, the tooltip chases the cursor, and the cards can't be moved or renamed. Read the Hover, Click and Cards sections before writing any code.
+
 ## Principles
 
 - **Show the data, not the chrome.** No gradients, no rounded cards, no icons where a word fits, no decorative colour. Every pixel carries information.
 - **Dense by default.** Put everything a power user needs on screen at once: counts, n, interval kind, filters in force, ids. Do not hide information behind clicks if it fits.
-- **More on hover.** Anything that needs explaining gets a `data-hint` tooltip. Charts get a rich hover card (zoomed inset plus a table of values). Small `(?)` marks explain controls.
+- **Hover reveals, click commits.** Hovering anything shows more about it at once, highlights it everywhere it appears, and dims the rest. Clicking makes that state stick.
 - **Every action has a key.** Show the key beside the control (`<kbd>c</kbd>colour`), so the interface teaches its own shortcuts.
 - **Nothing is lost.** Deletes give an undo toast. `z`/`Z` undo and redo. State lives in the address bar, so every view is a shareable link.
+- **The user owns the layout.** Cards and tabs can be dragged, renamed, minimised, resized, duplicated and deleted, and the layout persists.
 - **Quiet, then one strong accent.** Greys do the work. Dark `#3a3a40` marks "on" or "selected". Red appears only for errors and destructive hovers.
 - **Titles say what the reader sees.** Charts carry a title, a subtitle naming what is pooled or filtered, and "mean ± 95% CI (t), n = 12 per point".
+
+## Hover
+
+There are two kinds of hover popup. Never mix them.
+
+| | Control hint (`#hint`) | Data card (`#tip`) |
+|---|---|---|
+| For | Explaining a button, header, `(?)` | Anything that is data: a mark, a bar, a table row, a log row |
+| Look | Dark `--dark` box, white 14px plain sentence | White card, 380px wide, `0 6px 24px rgba(0,0,0,0.12)` shadow |
+| Delay | 350ms; 120ms for icons; 0ms for `(?)` | **None.** It appears and updates on every mouse move |
+| Position | Just below the element, flipped above near the bottom edge | **Static**: see below |
+
+**The data card does not follow the cursor.** Like the item tooltip in Factorio, it sits at a fixed place. It is `position:fixed; top:60px` (below the sticky bar), against the side of the screen away from what is hovered. If the hovered chart's centre is on the right half of the window, the card goes at `left:16px`, otherwise at `right:16px` (`placeTip` in the explorer). It never covers the thing being looked at, never jitters, and the eye always knows where to find it. Its contents update in place as the cursor moves.
+
+**What goes in the data card**, top to bottom:
+1. **Zoom inset** (charts and timelines). A live 3× magnified view of the neighbourhood under the cursor, 378 by 240, redrawn on every mouse move, with the hovered item highlighted in it. ⌥-scroll or pinch changes the zoom from 1× to 40×. The caption reads "3.0× zoom · pinch or ⌥ scroll to change". It is what makes thin slivers and crowded points readable.
+2. **Heading.** The entity's colour swatch (11px square) and its name in weight 600.
+3. **Subtitle** (optional). One muted line of context, such as a window title or a description.
+4. **Table.** Muted labels on the left, values on the right, right-aligned in tabular numbers. Group rows with a `--soft` rule between groups. Include everything known about the item: value, interval, n, start and end, duration, ids, the filter or reduction that produced it.
+5. **Note.** A 13px muted line saying what a click will do: "click to see the 12 rows behind this point".
+
+**Highlight on hover, dim the rest.** The hovered entity is promoted: redrawn on top with a thicker stroke (2.4px lines, 3.6px dots with a white outline), or outlined in `--dark`. Everything else in that view drops to `opacity:0.2` with an 80ms transition. In a table, the hovered row gets the `--tint` background. In a timeline or bar chart, every other bar that is not this entity dims.
+
+**Linked highlighting across views.** An entity is the same thing everywhere it appears, so hovering it in any view highlights it in all of them. Hovering a row in a summary table promotes that entity's marks in the chart or timeline and dims everything else there. Hovering a mark in the chart tints its row in every table and log, scrolling it into view only if the user asked. Legends work the same way: hovering a legend entry is hovering that entity.
+
+**Hover previews, click commits.** Any control that changes the view previews its result when hovered: after 400ms, or 250ms if a preview is already showing. Leaving the control reverts the preview, and clicking keeps it (`preview` and `endPreview` in the explorer). For entities, hover is a temporary highlight. Click pins it: the pin persists, goes in the address bar and shows in the scope line. `Esc` unpins.
+
+## Click
+
+- **Click a data mark to drill down.** Open the side panel (`#rows`) with the raw records behind it. Put a header in bold with what was clicked, the value, its interval and n. Add a histogram of the records' values, where clicking a bar filters to that bar. Records list highest first, each with a score badge, ids and a one-line preview. Clicking a record expands its fields. `j`/`k` step, `o` opens, `Esc` closes.
+- **Click a card to select it.** It gets the dark outline, and the keyboard acts on the selected card.
+- **Click empty space in a card header to minimise it** (see Cards).
+- **Mousedown cancels hover.** It hides hints and popovers so they never sit under a drag or a click.
+
+## Cards and tabs
+
+Any page with more than one chart or table is a set of **cards**. Any tool with more than one set is a row of **tabs** (pages). Both belong to the user. Save every change as it happens: PATCH to the server, or `localStorage` if the page has no server.
+
+**Card header** (`.ch`), left to right:
+- **Grip** `⠿` in `#b0b0b8`. Dragging starts only from the grip, so text in the card stays selectable. While dragging, the card is at `opacity:0.35`. It drops before or after the card under the cursor, split by that card's vertical midpoint, and the new order is saved.
+- **Title**, 19–20px at weight 500. Double-click opens an inline input over it (`inlineEdit`): `Enter` or blur saves, `Esc` cancels. Clearing it brings back the automatic title, shown in `#9a9aa2` when empty.
+- **Subtitle**: muted counts and scope ("18 distinct · share of active time").
+- A spacer, then small buttons: **copy** (copies the card's view as text, then says "copied" for 900ms), **duplicate** (inserted right after), and **×** (delete).
+- Clicking anywhere else in the header **minimises** the card to one line: title plus a strip of miniature charts. Clicking again restores it.
+
+**Card body:**
+- A **resize handle** in the bottom-right corner of each chart (`.rz`, a two-line diagonal glyph, `ns-resize`). Dragging sets the height from 140 to 1400px. Double-click resets it.
+- Double-click an **axis label** to rename it, just like a title.
+- A dashed `+ new card` button closes the list.
+
+**Delete** never asks. The card goes, and the toast says `deleted "Apps"` with an undo button for 10 seconds. `u` also undoes it.
+
+**Tabs** (sticky white bar at the top):
+- The active tab is dark.
+- Drag to reorder. Dropping on `+` puts the tab last.
+- Double-click to rename in place.
+- A faint `×` turns red on hover, and deleting gives an undo toast.
+- `+` adds a page.
+- **Hovering a tab for 160ms opens an outline**: a popover just under the tab listing that page's cards, numbered, each with a thumbnail and a title. Clicking an entry switches page, scrolls to the card and flashes its outline for 1.2s. The outline closes the moment the mouse leaves both the tab and the list, and mousedown on the tab closes it.
+
+## Emphasis in text
+
+- **Labels muted, values bold.** "app: **Firefox** · device: **Mac**". Labels are `--mute`; values are `--fg` at weight 600.
+- **Entities carry their colour.** Wherever an entity's name appears (table, tooltip, legend, log, side panel), put its colour swatch before it: a 9–11px square in the same colour as its chart marks.
+- **Scores get coloured badges.** A value on a known scale gets a small bordered badge with its background from a diverging map (PRGn), and white text when the background is dark. Show it as "7/10", not a bare 7.
+- **Underline what differs.** When sibling panels share most of a title, underline the words that differ (`text-decoration:underline 1.5px; text-underline-offset:3px`).
+- **Small caps for field names** in expanded records, with a coloured left rule per field.
+- Red is for errors and failures only.
 
 ## Tokens
 
@@ -44,16 +115,13 @@ button, input, select { font:inherit; color:inherit; }
 Copy these from `index.html` and do not reinvent them:
 
 - **Buttons** (`.btn`): white, 1px border, 1px by 10px padding, tint on hover.
-- **Tabs**: a sticky white top bar. The active tab is dark. Tabs can be dragged to reorder. A faint `×` turns red on hover.
 - **Chips** (`.chip`): small toggles for filter values. Click toggles, shift-click keeps only this one, double-click selects all.
 - **Segmented control** (`.seg`): a key, a label, then options separated by `--soft` rules, with the chosen one dark.
 - **Action button with key** (`.act`): `<kbd>` in faint grey, then the label. When on, it is dark with a light grey key.
-- **Hint tooltip** (`#hint`, `data-hint`): dark background, white 14px text, max 360px wide. Delay 350ms, 120ms for icons, 0ms for `(?)`. Place it below the element and flip it above near the bottom edge. Hide it on mousedown.
-- **Hover card** (`#tip`): white, 380px wide. A zoomed inset sits on top and a two-column table below, with muted labels and right-aligned tabular numbers.
 - **Toast** (`#toast`): dark, bottom left, with an undo button, gone after 10s.
-- **Side panel** (`#rows`): slides in from the right, `min(680px, 48vw)` wide. `j`/`k` step through rows, `o` opens one, `Esc` closes. Expandable fields use small-caps labels and a coloured left rule.
+- **Side panel** (`#rows`): slides in from the right, `min(680px, 48vw)` wide. See Click.
 - **Refresh banner** (`#refresh`): dark, bottom centre, appears when data changes elsewhere.
-- **Popover list** (`#outline`): white, shadowed, rows with a thumbnail. It opens on hover and closes as soon as the mouse leaves.
+- **Inline editor** (`.inl`): a fixed-position input placed over the text being renamed, with a shadow.
 
 ## Keyboard conventions
 
@@ -78,7 +146,7 @@ Copy these from `index.html` and do not reinvent them:
 - Means are dots with radius 2.8 and a white 0.9px outline. Intervals are 1px rules at 0.75 opacity, and bands are filled at 0.13 opacity. Individual observations are dots with radius 1.8–1.9 at about 0.33 opacity, jittered within their colour's lane.
 - No gridlines by default. Fixed y range from the metric's theoretical minimum to maximum. Same metric means same range on every panel.
 - Label lines at the line's end, not with a legend, when there are six or fewer.
-- Hovering a series dims the others to 0.2 opacity.
+- Hover follows the Hover section: a pointer ring on the nearest point, the series promoted, the rest at 0.2, and the static data card with a zoom inset.
 
 ## Do not
 
@@ -87,11 +155,25 @@ Copy these from `index.html` and do not reinvent them:
 - Add a confirmation dialog when an undo would do.
 - Use emoji or icon fonts. Use small inline SVG icons at stroke width 1.3–1.5, only where a word will not fit.
 
+## Common misses
+
+These are the mistakes a model makes when it copies the look but not the behaviour:
+
+- **The data tooltip follows the cursor** and covers the bars next to it. Pin it to a fixed side of the screen.
+- **Data details go into the dark hint** as plain lines of text after a 600ms delay. Data goes in the white card, instantly, with a heading, swatch, bold values and a table.
+- **Hover highlights nothing.** Only a crosshair or a background tint moves, and the rest of the chart stays at full strength. Promote the hovered entity and dim the others.
+- **Views are not linked.** Hovering a table row leaves the chart unchanged, so the user must click (pin) to find where it is. Hover should already show it.
+- **Thin slivers stay unreadable.** A dense timeline needs the zoom inset in the data card.
+- **Cards are fixed.** No grip, no rename, no minimise, no resize, no delete with undo, and no tabs. Every card needs the full header.
+
 ## Checklist before showing it
 
 - Every control has a key, and the key is printed on the control.
 - Every non-obvious control has a `data-hint`.
+- Hover any data: the card appears at once, at a fixed side of the screen, with a swatch, bold name, table and click note.
+- Hover any entity in one view: it is highlighted and the rest dimmed in every view that shows it.
+- Hover a view-changing control: the result previews, and leaving reverts it.
+- Drag a card by its grip, double-click its title, click its header, drag its resize handle, delete it and undo. Do the same for a tab.
 - Every number column uses tabular numbers, and every chart states n and the interval kind.
-- Reload the page: the view comes back from the address bar.
-- Delete something: an undo toast appears.
+- Reload the page: the view and layout come back.
 - It works at phone width without sideways scrolling.
