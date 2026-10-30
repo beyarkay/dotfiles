@@ -11,9 +11,10 @@ playing the reader, scores effectiveness. Honesty is a hard gate: a draft with
 one fabricated or misleading claim is rejected, however good the rest is.
 
 Each round your prompt gives you a base draft, an output path and feedback.
-Write the complete revised document to the output path. Never modify the base
-draft, earlier drafts, the original document, the brief, `facts.yaml` or the
-rubric.
+Write the complete revised document to the output path. When the draft is a
+folder, copy the whole base folder to the output path first, then edit any
+files inside the copy. Never modify the base draft, earlier drafts, the
+original document, the brief, `facts.yaml` or the rubric.
 
 ## How to work
 

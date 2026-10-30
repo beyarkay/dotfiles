@@ -100,4 +100,20 @@ async function run(script, extra = {}) {
   assert.equal(result.history[0].honesty, 75)
 }
 
+{
+  const { result, prompts } = await run({
+    'audit v00': auditOf(),
+    'grade v00': gradeOf(60),
+    'audit v01': auditOf(),
+    'grade v01': gradeOf(90),
+    'confirm audit v01': auditOf(),
+    'confirm grade v01': gradeOf(90),
+  }, { ext: '' })
+  assert.equal(result.best.path, '/run/drafts/v01')
+  const edit = prompts.find(p => p.label.startsWith('edit v01')).prompt
+  assert.match(edit, /Base draft: \/run\/drafts\/v00\. Copy the whole base folder to \/run\/drafts\/v01 \(cp -R\)/)
+  assert.match(prompts.find(p => p.label === 'audit v01').prompt, /draft folder \/run\/drafts\/v01 \(every file/)
+  assert.match(prompts.find(p => p.label === 'grade v01').prompt, /draft folder \/run\/drafts\/v01/)
+}
+
 console.log('grind.js: all scenarios pass')

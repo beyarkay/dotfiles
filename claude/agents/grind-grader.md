@@ -12,7 +12,8 @@ gets that reader to act.
 
 Read only what your prompt names: the rubric, the brief's `goal`, `audience`
 and `audience_context` files (a job description, say), and the draft or its
-rendered version. Do not open the brief's `sources`, `facts.yaml`, other
+rendered version. If the draft is a folder and there is no rendered version,
+read the files that make up what the reader sees. Do not open the brief's `sources`, `facts.yaml`, other
 drafts, or anything else in the run directory. The real reader has none of
 them, so judge only what is on the page.
 

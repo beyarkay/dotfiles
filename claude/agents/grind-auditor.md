@@ -14,7 +14,8 @@ well written. Another agent does that, and you never see its scores.
 
 ## What to read
 
-Your prompt names the draft, the brief and `facts.yaml`.
+Your prompt names the draft, the brief and `facts.yaml`. A draft can be a
+folder; then every file in it is part of the document.
 
 - In the brief, `sources` is the ground truth. When `trust_original` is true,
   the original document (`document` in the brief) also counts as a source,

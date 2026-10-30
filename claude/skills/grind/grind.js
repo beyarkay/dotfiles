@@ -11,7 +11,8 @@ export const meta = {
 }
 
 const RUN = args.run_dir
-const EXT = args.ext
+const EXT = args.ext ?? ''
+const FOLDER = EXT === ''
 const HONESTY_MIN = args.honesty_min ?? 90
 const TARGET = args.effectiveness_target ?? 85
 const MAX_ROUNDS = args.max_rounds ?? 6
@@ -26,6 +27,7 @@ const BLOCKING = ['fabrication', 'misleading', 'constraint']
 const tag = n => `v${String(n).padStart(2, '0')}`
 const draftPath = n => `${RUN}/drafts/${tag(n)}${EXT}`
 const renderedPath = n => (args.render_ext ? `${RUN}/rendered/${tag(n)}${args.render_ext}` : null)
+const draftNamed = n => (FOLDER ? `the draft folder ${draftPath(n)} (every file in it is part of the document)` : `the draft ${draftPath(n)}`)
 
 const AUDIT = {
   type: 'object',
@@ -108,7 +110,7 @@ const twice = async f => (await f()) ?? (await f())
 const audit = (n, ph, label) =>
   twice(() =>
     agent(
-      `Audit the draft at ${draftPath(n)} for honesty.\n` +
+      `Audit ${draftNamed(n)} for honesty.\n` +
         `Brief: ${BRIEF}\nFacts index: ${FACTS} (pointers only; open the cited sources).`,
       { agentType: 'grind-auditor', schema: AUDIT, phase: ph, label: label ?? `audit ${tag(n)}` },
     ),
@@ -116,10 +118,10 @@ const audit = (n, ph, label) =>
 
 const grade = (n, ph, label) => {
   const r = renderedPath(n)
-  const target = r ? `${r} (if that file is missing, read ${draftPath(n)})` : draftPath(n)
+  const target = r ? `the rendered draft ${r} (if that file is missing, read ${draftNamed(n)})` : draftNamed(n)
   return twice(() =>
     agent(
-      `Grade the draft at ${target} as its intended reader.\n` +
+      `Grade ${target} as its intended reader.\n` +
         `Rubric: ${RUBRIC}\nBrief: ${BRIEF} (read goal, audience and the audience_context files; never open its sources)`,
       { agentType: 'grind-grader', schema: GRADE, phase: ph, label: label ?? `grade ${tag(n)}` },
     ),
@@ -256,7 +258,10 @@ for (let r = 1; status === 'max rounds' && r <= MAX_ROUNDS; r++) {
 
   const edit = await twice(() =>
     agent(
-      `Round ${r} of at most ${MAX_ROUNDS}. Base draft: ${draftPath(base.n)}. Write the complete revised document to ${draftPath(r)}.\n` +
+      `Round ${r} of at most ${MAX_ROUNDS}. Base draft: ${draftPath(base.n)}. ` +
+        (FOLDER
+          ? `Copy the whole base folder to ${draftPath(r)} (cp -R), then edit any files inside the copy.\n`
+          : `Write the complete revised document to ${draftPath(r)}.\n`) +
         (args.render_ext
           ? `Then run the brief's render command with {draft} = ${draftPath(r)} and {out} = ${renderedPath(r)}, and fix any errors.\n`
           : '') +
