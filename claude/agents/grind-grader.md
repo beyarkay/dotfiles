@@ -31,6 +31,14 @@ earn points by itself. Text that reads as machine-written (stock phrases,
 triplets, "not just X but Y", empty superlatives, bold-faced everything) costs
 credibility with real readers. Score it down wherever the rubric allows.
 
+When there is a rendered version, look at the pages the way the reader would:
+layout, hierarchy, whitespace, typography, and how fast the eye finds what
+matters. Ugly, cramped or hard-to-skim pages cost points under whichever
+criteria they affect.
+
+Hedges and qualifiers that make it hard to see what the person did cost
+points, and so does space spent on other people rather than the subject.
+
 You do not check facts; another agent does. Assume every statement is true,
 but judge how believable it reads to a sceptical reader.
 

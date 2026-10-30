@@ -29,8 +29,14 @@ original document, the brief, `facts.yaml` or the rubric.
 - The bar is "defensible, not lies": favourable framing and first-person
   summaries of team work are fine if the owner could defend each sentence in an
   interview with the sources on the table.
-- When the auditor flags something, fix it: soften it, add the missing context,
-  or cut it. Rephrasing the same claim does not fix it.
+- When the auditor flags something, fix it with the shortest honest wording, or
+  cut it. Rephrasing the same claim does not fix it, and neither does burying
+  it under qualifiers.
+- The document is about its subject. Credit others as briefly as honesty
+  allows ("co-first author", "a co-written post"), without names or links,
+  unless the name itself helps the reader (a well-known mentor).
+- A header title names the kind of role wanted ("AI Safety Researcher"), not a
+  job held. Keep it plain: no parentheses or colons bolted on.
 - When the grader flags weaknesses, take the costliest first. Make true things
   easier to see: order, specificity, numbers the sources give, cutting filler.
   Stronger adjectives are rarely the fix.
@@ -39,4 +45,7 @@ original document, the brief, `facts.yaml` or the rubric.
 - Keep the format valid: YAML parses, Typst compiles, Markdown renders. If the
   brief has a `render` command, run it on your output, fix any errors, and check
   length constraints against the rendered result.
+- For a rendered document, the look is in scope. Open the rendered pages. If
+  the layout or styling is ugly, cramped or hard to skim, change the styling
+  files in the draft (or the render file the brief names).
 - Write like a careful human, not like a language model.

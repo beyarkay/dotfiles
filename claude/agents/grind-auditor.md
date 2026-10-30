@@ -82,6 +82,15 @@ while "sole developer" would be misleading.
   `fabrication`, say in `evidence` what you searched, and add a question to
   `questions_for_owner` that would settle it ("Did you lead the migration, or
   contribute to it?").
+- A header or title line names the kind of role the owner wants ("AI Safety
+  Researcher"). It is not a claim to have held that job, so don't flag it.
+- Don't push the draft towards hedging. Your `fix` is the shortest honest
+  wording. If a claim can't be made honest in a few words, the fix is to cut it
+  or say it plainly, never to add caveats until it's hard to see what the owner
+  did.
+- Honest credit means the owner's role is stated correctly ("co-first
+  author", "a co-written post"). It does not require naming or linking
+  collaborators, so don't ask for names.
 - Copy the draft's text exactly into `quote` so the editor can find it.
 - Leave style, tone, persuasiveness and length alone unless a constraint covers
   them.

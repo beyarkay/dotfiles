@@ -44,11 +44,25 @@ Each draft is either one text file or a folder of files:
 - A PDF: find its source (Typst, LaTeX, Markdown). If there is none, extract
   the text to Markdown and say so.
 
-Put the run directory with the work it belongs to: an existing application or
-campaign folder if there is one, otherwise `grind-<slug>/` next to the
-document. Create `drafts/` (and `rendered/` if there is a render command), copy
-in the original as above, render it to `rendered/v00<render_ext>` if needed,
-and write `brief.yaml`:
+For a rendered document, its look is in scope by default: copy the styling
+files (the template) into the folder draft too, so the editor can change them.
+
+When the document lives in a git repository, run in a worktree on its own
+branch, so the run never touches the user's checkout:
+
+```sh
+git -C <repo> worktree add <repo>-grind-<slug> -b grind/<slug>
+```
+
+Put the run directory inside the worktree, with the work it belongs to: an
+existing application or campaign folder if there is one, otherwise
+`grind-<slug>/` next to the document. Take the draft files from the worktree,
+but point `sources` at the main checkout, so facts the user fixes mid-run are
+seen. Outside git, put the run directory next to the document.
+
+Create `drafts/` (and `rendered/` if there is a render command), copy in the
+original as above, render it to `rendered/v00<render_ext>` if needed, and
+write `brief.yaml`:
 
 ```yaml
 document: /abs/path/to/original.yaml
@@ -73,8 +87,11 @@ from inside the copy (copy the template and anything else it imports too).
 
 If the user gives a rubric, save it as `rubric.yaml` in the run directory, with
 a `reader` persona and `criteria` items of `name`, `weight`, `measures` and
-`anchors`. Otherwise the workflow writes one. If the run directory is in a git
-repository, commit it before launching.
+`anchors`. Otherwise the workflow writes one. Write the user's answers and
+preferences (the title they want, how to credit collaborators, how much
+puffing is fine) to `owner-answers.md` in the run directory and list it first
+under `sources`; every agent treats it as first-hand and newest. Commit the
+run directory on the grind branch before launching.
 
 ## 2. Launch the workflow
 
@@ -144,7 +161,7 @@ When the workflow finishes:
    to the scratchpad, then convert it so multi-line strings use `|-`:
    `yq -P '(.. | select(tag == "!!str" and test("\n"))) style = "literal"' result.json > ledger.yaml`
 2. Copy the best draft to `best<ext>` in the run directory (`cp -R` for a
-   folder), and commit.
+   folder), and commit on the grind branch.
 3. Tell the user:
    - the status (`target met`, `plateau`, `max rounds` or `no honest draft`)
      and the best version with both scores;
@@ -156,9 +173,13 @@ When the workflow finishes:
      block. If the user answers, write the answers to `owner-answers.md` in the
      run directory, add it to `sources`, and run again with the same `rubric`
      and a fresh `facts.yaml`.
-4. Never overwrite the original document. Offer to copy the changed files back.
-   When a changed file is shared with other documents (a snippet other CVs also
-   use), ask whether to overwrite it or keep a separate copy for this one.
+4. Never touch the user's checkout. Offer to copy the winning files over the
+   originals in the worktree, commit that on the grind branch, and show
+   `git -C <repo> diff --word-diff <main branch>...grind/<slug>`; merging is the
+   user's call. When a changed file is shared with other documents (a snippet
+   other CVs also use), ask whether to overwrite it or keep a separate copy for
+   this one. Once the branch is merged or dropped, remove the worktree with
+   `git -C <repo> worktree remove <repo>-grind-<slug>`.
 
 With `no honest draft`, say so plainly and list the blocking findings that kept
 recurring.

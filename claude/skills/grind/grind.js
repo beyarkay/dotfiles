@@ -127,7 +127,9 @@ await parallel([
               `reader: |- a concrete persona of the reader: role, the decision in front of them, time they spend, what they have seen too often, what makes them act\n` +
               `criteria: 4 to 7 items, each {name, weight (weights sum to 100), measures (what it judges for this reader), anchors: {30, 50, 70, 90} (what a draft at that level looks like)}\n` +
               `Judge effectiveness with this reader only; leave out factual accuracy, because a separate auditor gates on it. ` +
-              `Include one criterion for credibility: specific, human and believable rather than generic or machine-written. Return the number of criteria.`,
+              `Include one criterion for credibility: specific, human and believable rather than generic or machine-written. ` +
+              (args.render_ext ? `The document is rendered, so include one criterion for its look: layout, hierarchy, whitespace, typography and how fast it skims. ` : '') +
+              `Return the number of criteria.`,
             { schema: COUNT, phase: 'Prepare', label: 'rubric' },
           ).then(r => r && log(`rubric.yaml: ${r.entries} criteria`)),
       ]),
