@@ -65,9 +65,12 @@ repository, commit it before launching.
 
 ## 2. Launch the workflow
 
-Call the Workflow tool with `scriptPath` set to the absolute path of `grind.js`
-in this skill's directory (`~/.claude/skills/grind/grind.js`, with `~`
-expanded), and these `args` as a JSON object:
+Copy `grind.js` from this skill's directory into the run directory, then call
+the Workflow tool with `scriptPath` set to that copy. The tool only loads
+scripts from the working directory, and the copy records which version of the
+loop produced the run. If the run directory is outside the working directory,
+read `grind.js` and pass its contents as `script` instead. Pass these `args` as
+a JSON object:
 
 | Argument               | Default | Meaning                                                          |
 | ---------------------- | ------- | ---------------------------------------------------------------- |
