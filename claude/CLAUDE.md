@@ -6,6 +6,9 @@ random sequence of numbers and then use that to decide the random rule)
 
 Don't pipe to tail! It's forbidden!
 
+The shell is zsh: `echo ======` fails there (a leading `=` gets expanded) and
+takes the rest of the command with it. Use `echo ---` as a separator.
+
 ## Preferred tools
 
 Preferred tools: Rust, ruff, uv (**NOT `python`!**), ty, zsh, tmux, neovim, fd,
