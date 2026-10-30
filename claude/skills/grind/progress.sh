@@ -67,7 +67,7 @@ jq -s --argjson min "${HONESTY_MIN:-90}" '
 
 {
     printf 'version\tfrom\thonesty\tpassed\teffectiveness\tdecision\n'
-    yq -o=tsv '.[] | [.version, .from // "-", .honesty // "-", (.passed | tostring), .effectiveness // "-", .decision // "-"]' "$run/progress.yaml"
+    yq -o=tsv '.[] | [.version, .from // "-", .honesty // "-", (.passed | tostring | sub("null"; "-")), .effectiveness // "-", .decision // "-"]' "$run/progress.yaml"
 } | column -t -s $'\t'
 best=$(yq '[.[] | select(.passed == true and .effectiveness != null)] | sort_by(.effectiveness) | reverse | .[0].version // ""' "$run/progress.yaml")
 echo "best passing so far: ${best:-none yet}${best:+ ($(echo "$run"/drafts/"$best"*))}"
