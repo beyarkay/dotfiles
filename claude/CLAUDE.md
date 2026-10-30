@@ -31,12 +31,6 @@ as a markdown link with a short name, e.g.
 `[Mood boards](file:///absolute/path/to/index.html)`, not a bare path. Prefer a
 local HTML file over publishing an artifact unless I ask for a shareable link.
 
-## Precommit hooks
-
-In any project with javascript/python/rust/shell scripts/tests, you should
-install comprehensive pre-commit hooks that run _all_ tests and do a full lint
-and format over the code (auto-fixing if possible).
-
 ## Commit early and often
 
 Many small incremental commits please, with nice descriptions. You should
