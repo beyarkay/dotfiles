@@ -93,8 +93,15 @@ a JSON object:
 Pass `rubric` and `facts` from an earlier run to resume it or compare against
 it; scores are only comparable under the same rubric. Each round costs three
 agents, plus four at the start and two for each confirmation, so the defaults
-spend at most about 26. Tell the user it has started and that `/workflows` shows
-its progress. While it runs, every draft is already on disk in `drafts/`.
+spend at most about 26. Tell the user it has started, and how to follow it:
+
+- `progress.sh <run_dir>` (in this skill's directory) reads the workflow's
+  journal and writes `progress.yaml`: each draft's honesty and effectiveness,
+  blocking findings, the grader's decision and weaknesses. It also prints a
+  score table.
+- `progress.sh <run_dir> diff vNN` shows a word diff of a draft against the one
+  it was edited from.
+- Each draft is on disk in `drafts/` (and `rendered/`) as soon as it is written.
 
 How the loop decides:
 
