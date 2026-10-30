@@ -85,6 +85,13 @@ render: null           # or a command with {draft} and {out}, e.g. typst compile
 For a folder draft, `{draft}` is the folder, so the render command must work
 from inside the copy (copy the template and anything else it imports too).
 
+Every constraint blocks a draft, so keep `constraints` to hard rules: length,
+format, and what the user explicitly required. Don't turn caution into
+constraints ("state the result no more strongly than the abstract"): one such
+rule blocked a draft for dropping the word "standard". Put cautions and
+preferences in `owner-answers.md`, where the auditor applies its "defensible,
+not lies" bar.
+
 If the user gives a rubric, save it as `rubric.yaml` in the run directory, with
 a `reader` persona and `criteria` items of `name`, `weight`, `measures` and
 `anchors`. Otherwise the workflow writes one. Write the user's answers and
