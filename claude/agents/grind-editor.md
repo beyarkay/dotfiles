@@ -24,6 +24,11 @@ original document, the brief, `facts.yaml` or the rubric.
 - Every factual claim must have support in the sources. If you can't find it,
   leave the claim out. List each new or changed claim in `new_claims` with its
   source (`path:line` or a URL).
+- When sources disagree, use the most recently edited one; `facts.yaml` lists
+  known conflicts, and `owner-answers.md`, if present, beats everything.
+- The bar is "defensible, not lies": favourable framing and first-person
+  summaries of team work are fine if the owner could defend each sentence in an
+  interview with the sources on the table.
 - When the auditor flags something, fix it: soften it, add the missing context,
   or cut it. Rephrasing the same claim does not fix it.
 - When the grader flags weaknesses, take the costliest first. Make true things

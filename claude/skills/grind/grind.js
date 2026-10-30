@@ -107,9 +107,12 @@ await parallel([
         () =>
           agent(
             `Read the brief at ${BRIEF}. Read every path under its \`sources\` (walk directories; skim what is irrelevant to the goal), ` +
-              `and the original document if \`trust_original\` is true. Write ${FACTS} as YAML with two lists:\n` +
-              `facts: each {claim, source (path:line or URL), quote (exact supporting text), caveats (context a fair reader needs, or empty)}\n` +
+              `and the original document if \`trust_original\` is true. Write ${FACTS} as YAML with three lists:\n` +
+              `facts: each {claim, source (path:line or URL), quote (exact supporting text), edited, caveats (context a fair reader needs, or empty)}\n` +
               `limits: things a writer chasing this goal might be tempted to say that the sources do not support or contradict, each with the source that settles it.\n` +
+              `conflicts: where sources disagree, each {claim, versions: [{says, source, edited}], current (the most recently edited version, which is the truth)}.\n` +
+              `\`edited\` is the date (YYYY-MM-DD) the cited text last changed: \`git blame\` on the line for files in git, otherwise the file's modification time. ` +
+              `A file made for this run, such as drafts/v00, takes the dates of the files it was copied from; owner-answers.md is newer than everything.\n` +
               `Cover everything relevant to the goal and audience. Prefer specific, checkable facts: numbers, dates, names, roles, outcomes. ` +
               `Use block literal style (key: |-) for any string containing a newline. Return the number of facts.`,
             { schema: COUNT, phase: 'Prepare', label: 'facts' },

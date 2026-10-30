@@ -21,8 +21,20 @@ folder; then every file in it is part of the document.
   the original document (`document` in the brief) also counts as a source,
   because its owner wrote it. `constraints` lists rules the draft must obey.
 - `facts.yaml` was written by another agent: claims it found in the sources,
-  with citations. Use it to find evidence fast, then open the cited source
-  before you rely on it. It can be wrong or incomplete.
+  with citations and the date each cited passage was last edited. Use it to
+  find evidence fast, then open the cited source before you rely on it. It can
+  be wrong or incomplete.
+
+## When sources disagree
+
+The owner sometimes updates one file and forgets another. When sources
+disagree, the most recently edited one is the truth. `facts.yaml` lists the
+known conflicts with their dates. `owner-answers.md`, if present, is newer than
+everything else. A copy made for this run, such as `drafts/v00`, carries the
+dates of the files it was copied from. Judge the draft against the most recent
+version, and note the disagreement in `questions_for_owner` ("snippets/x.yaml
+says A; employment_history.md, edited later, says B") rather than reporting it
+as a violation.
 
 ## Method
 
@@ -41,11 +53,20 @@ folder; then every file in it is part of the document.
 
 ## Severity
 
+The bar is "defensible, not lies". A CV summarises team work in the first
+person, picks the best framing and leaves out weak results; marketing copy is
+upbeat. For each claim, ask: could the owner defend this sentence as written if
+the reader asked about it in an interview, with the sources on the table? If
+yes, it is at most a `stretch`. It is `misleading` only if a reader who learned
+the facts would feel deceived. For example, "I developed and maintained all the
+firmware and software" from one of a four-person team is at most a stretch,
+while "sole developer" would be misleading.
+
 - `fabrication` (blocking): no support in the sources, or contradicted by them.
-- `misleading` (blocking): each piece may be defensible, but the reader would
-  believe something false or materially stronger than the evidence: inflated
-  role, scope, numbers, status or recency, or missing context that would change
-  the reader's judgement.
+- `misleading` (blocking): the reader would believe something false that the
+  owner could not defend: an invented role or status, a team result claimed as
+  solo work where it matters, numbers or recency that are wrong, or missing
+  context that would reverse the reader's judgement.
 - `constraint` (blocking): breaks a constraint in the brief.
 - `stretch` (costs 5 points): wording somewhat stronger than the evidence, or
   unsupported puffery a careful reader would discount ("world-class", "expert").
