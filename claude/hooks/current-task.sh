@@ -16,6 +16,8 @@ EVERY=2 # nudge roughly every this many tool calls
 input=$(cat)
 sid=$(printf '%s' "$input" | jq -r '.session_id // empty')
 [ -n "$sid" ] || exit 0
+# Subagents share the session's task file; only the main agent sets the status line.
+[ -z "$(printf '%s' "$input" | jq -r '.agent_id // empty')" ] || exit 0
 
 task_file="/tmp/claude-task-${sid}.txt"
 count_file="/tmp/claude-task-${sid}.count"
