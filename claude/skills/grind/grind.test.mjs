@@ -50,6 +50,13 @@ async function run(script, extra = {}) {
   assert.match(firstEdit, /blocked v00/)
   assert.doesNotMatch(firstEdit, /Reader's first impression/)
   assert.match(prompts.find(p => p.label.startsWith('edit v02')).prompt, /Base draft: \/run\/drafts\/v01\.md/)
+  assert.match(firstEdit, /git diff --no-index --word-diff=plain \/run\/drafts\/v00\.md \/run\/drafts\/v01\.md > \/run\/diffs\/v01\.diff/)
+  const auditPrompt = label => prompts.find(p => p.label === label).prompt
+  assert.doesNotMatch(auditPrompt('audit v00'), /already been audited/)
+  assert.match(auditPrompt('audit v01'), /edited from v00, which has already been audited\. The changes are in \/run\/diffs\/v01\.diff/)
+  assert.match(auditPrompt('audit v01'), /"severity": "fabrication"/)
+  assert.match(auditPrompt('audit v02'), /edited from v01/)
+  assert.doesNotMatch(auditPrompt('confirm audit v02'), /already been audited/)
 }
 
 {

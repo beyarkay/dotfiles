@@ -144,13 +144,17 @@ How the loop decides:
   passes with no fabrication, misleading claim or broken constraint, and
   honesty at or above `honesty_min`.
 - Effectiveness is the weighted mean of the grader's per-criterion scores.
+- The baseline audit checks every claim. After that, each round's audit is
+  incremental: the editor writes `diffs/vNN.diff` against its base, and the
+  auditor checks only changed claims (and unchanged ones the edit puts in a new
+  light), carrying over the base's findings that still apply.
 - The auditor and grader score every draft in parallel, so every draft lands on
   the frontier. The editor only sees the grade of a draft that passed the
   audit; a blocked draft goes back with its audit alone.
 - The editor repairs a blocked draft, but after two blocked drafts in a row it
   starts again from the best passing one.
-- A draft that hits the target is checked again by a fresh auditor and a fresh
-  grader. The run ends only if it still passes and the mean of the two grades
+- A draft that hits the target is checked again by a fresh auditor, auditing
+  every claim from scratch, and a fresh grader. The run ends only if it still passes and the mean of the two grades
   still reaches the target.
 
 ## 3. Report

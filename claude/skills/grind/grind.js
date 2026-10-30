@@ -27,6 +27,7 @@ const BLOCKING = ['fabrication', 'misleading', 'constraint']
 const tag = n => `v${String(n).padStart(2, '0')}`
 const draftPath = n => `${RUN}/drafts/${tag(n)}${EXT}`
 const renderedPath = n => (args.render_ext ? `${RUN}/rendered/${tag(n)}${args.render_ext}` : null)
+const diffPath = n => `${RUN}/diffs/${tag(n)}.diff`
 const draftNamed = n => (FOLDER ? `the draft folder ${draftPath(n)} (every file in it is part of the document)` : `the draft ${draftPath(n)}`)
 
 const AUDIT = {
@@ -143,12 +144,20 @@ const effectivenessOf = g => {
 }
 const twice = async f => (await f()) ?? (await f())
 
-const audit = (n, ph, label) =>
+const incremental = (n, base) =>
+  `\nThis draft was edited from ${base.version}, which has already been audited. The changes are in ${diffPath(n)} ` +
+  `(if that file is missing, compare ${draftPath(base.n)} with this draft yourself). Audit incrementally: check every claim in ` +
+  `changed or added text, and any unchanged claim whose meaning the changes alter (new context, order or juxtaposition). ` +
+  `Don't re-verify the rest. Carry over each of ${base.version}'s findings whose quoted text is still present and unchanged, ` +
+  `and drop those the edit fixed. ${base.version}'s findings:\n${JSON.stringify(base.audit.violations, null, 2)}\n`
+
+const audit = (n, ph, label, base) =>
   twice(() =>
     agent(
       `Audit ${draftNamed(n)} for honesty.\n` +
         (renderedPath(n) ? `Rendered: ${renderedPath(n)} (check length and rendering constraints against it).\n` : '') +
-        `Brief: ${BRIEF}\nFacts index: ${FACTS} (pointers only; open the cited sources).`,
+        `Brief: ${BRIEF}\nFacts index: ${FACTS} (pointers only; open the cited sources).` +
+        (base?.audit ? incremental(n, base) : ''),
       { agentType: 'grind-auditor', schema: AUDIT, phase: ph, label: label ?? `audit ${tag(n)}` },
     ),
   )
@@ -168,8 +177,8 @@ const grade = (n, ph, label) => {
 const history = []
 const questions = new Set()
 
-const evaluate = async (n, ph, edit) => {
-  const [a, g] = await parallel([() => audit(n, ph), () => grade(n, ph)])
+const evaluate = async (n, ph, edit, base) => {
+  const [a, g] = await parallel([() => audit(n, ph, undefined, base), () => grade(n, ph)])
   const rec = { n, version: tag(n), path: draftPath(n), edit: edit ?? null, audit: a, grade: g }
   rec.honesty = a ? honestyOf(a) : null
   rec.blocking = a ? blockingOf(a).length : null
@@ -271,6 +280,8 @@ for (let r = 1; status === 'max rounds' && r <= MAX_ROUNDS; r++) {
         (args.render_ext
           ? `Then run the brief's render command with {draft} = ${draftPath(r)} and {out} = ${renderedPath(r)}, and fix any errors.\n`
           : '') +
+        `Last, write the diff for the auditor: mkdir -p ${RUN}/diffs; ` +
+        `git diff --no-index --word-diff=plain ${draftPath(base.n)} ${draftPath(r)} > ${diffPath(r)} || true\n` +
         `Brief: ${BRIEF}\nFacts: ${FACTS}\nRubric: ${RUBRIC}\n` +
         `To pass, a draft needs no blocking audit violations and honesty of at least ${HONESTY_MIN}. Effectiveness target: ${TARGET}.\n\n` +
         `History so far:\n${history.map(summaryLine).join('\n')}\n\nFeedback on the base draft:\n${feedback(base, last)}`,
@@ -282,7 +293,7 @@ for (let r = 1; status === 'max rounds' && r <= MAX_ROUNDS; r++) {
     continue
   }
 
-  const rec = await evaluate(r, 'Grind', edit)
+  const rec = await evaluate(r, 'Grind', edit, base)
   fails = rec.pass ? 0 : fails + 1
   if (rec.pass && (!best || rec.effectiveness > best.effectiveness)) improvedAt = r
   if (rec.pass && rec.effectiveness >= TARGET && (await confirm(rec))) status = 'target met'

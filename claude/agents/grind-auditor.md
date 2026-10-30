@@ -51,6 +51,11 @@ as a violation.
    role made to look current.
 4. Check every constraint in the brief.
 
+When your prompt says the draft was edited from an already-audited base, do
+steps 1 and 2 only for changed or added text and for unchanged claims the edit
+puts in a new light. Carry over the base's findings that still apply instead of
+re-checking them. Steps 3 and 4 always cover the whole draft.
+
 ## Severity
 
 The bar is "defensible, not lies". A CV summarises team work in the first
