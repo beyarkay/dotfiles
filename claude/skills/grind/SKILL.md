@@ -114,6 +114,11 @@ spend at most about 26. Tell the user it has started, and how to follow it:
 - `progress.sh <run_dir> diff vNN` shows a word diff of a draft against the one
   it was edited from.
 - Each draft is on disk in `drafts/` (and `rendered/`) as soon as it is written.
+- The auditor's `questions_for_owner` show up in `progress.yaml` from the
+  baseline audit on. The user can answer them while the run goes: write the
+  answers to `owner-answers.md` in the run directory and add it to `sources`
+  in `brief.yaml`. Every agent reads the brief when it starts, so later rounds
+  use the answers.
 
 How the loop decides:
 

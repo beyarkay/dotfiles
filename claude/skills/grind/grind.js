@@ -142,6 +142,7 @@ const audit = (n, ph, label) =>
   twice(() =>
     agent(
       `Audit ${draftNamed(n)} for honesty.\n` +
+        (renderedPath(n) ? `Rendered: ${renderedPath(n)} (check length and rendering constraints against it).\n` : '') +
         `Brief: ${BRIEF}\nFacts index: ${FACTS} (pointers only; open the cited sources).`,
       { agentType: 'grind-auditor', schema: AUDIT, phase: ph, label: label ?? `audit ${tag(n)}` },
     ),
