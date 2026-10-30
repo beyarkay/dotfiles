@@ -22,9 +22,16 @@ the setup before it and the report after it.
 ## 1. Set up the run
 
 Fill in the brief from the user's request. Ask only when the document, the goal
-or the sources are missing. Infer the rest: a job description implies a hiring
-manager for that role at that company; a product brief implies its target
-customer.
+or the sources are missing. If the user says they will paste something (a job
+description, a brief), wait for it rather than searching for it. Infer the
+rest: a job description implies a hiring manager for that role at that
+company; a product brief implies its target customer.
+
+Your setup job is to find where the truth lives, not to check claims: other
+repositories, paper folders, reviews, earlier applications, notes. List them
+all under `sources`; the facts agent reads them and the auditor checks every
+claim. Check a claim yourself only when the answer changes the brief, for
+example a constraint on how an authorship or a result may be described.
 
 Each draft is either one text file or a folder of files:
 
@@ -75,8 +82,10 @@ Copy `grind.js` from this skill's directory into the run directory, then call
 the Workflow tool with `scriptPath` set to that copy. The tool only loads
 scripts from the working directory, and the copy records which version of the
 loop produced the run. If the run directory is outside the working directory,
-read `grind.js` and pass its contents as `script` instead. Pass these `args` as
-a JSON object:
+read `grind.js` and pass its contents as `script` instead. Otherwise there is
+no need to read it: the table below is its whole interface. Just before the
+call, tell the user to approve the "Run a dynamic workflow?" prompt, since the
+run waits on it. Pass these `args` as a JSON object:
 
 | Argument               | Default | Meaning                                                          |
 | ---------------------- | ------- | ---------------------------------------------------------------- |
@@ -91,14 +100,17 @@ a JSON object:
 | `facts`                | none    | path to an existing `facts.yaml`; skips collecting facts         |
 
 Pass `rubric` and `facts` from an earlier run to resume it or compare against
-it; scores are only comparable under the same rubric. Each round costs three
+it; scores are only comparable under the same rubric. When the user is short
+of time (a deadline today), use `max_rounds: 2` and `patience: 1`; a full run
+can take most of an hour. Each round costs three
 agents, plus four at the start and two for each confirmation, so the defaults
 spend at most about 26. Tell the user it has started, and how to follow it:
 
 - `progress.sh <run_dir>` (in this skill's directory) reads the workflow's
   journal and writes `progress.yaml`: each draft's honesty and effectiveness,
   blocking findings, the grader's decision and weaknesses. It also prints a
-  score table.
+  score table and the best passing draft so far, which is the one to send if
+  the user has to stop early.
 - `progress.sh <run_dir> diff vNN` shows a word diff of a draft against the one
   it was edited from.
 - Each draft is on disk in `drafts/` (and `rendered/`) as soon as it is written.

@@ -99,6 +99,37 @@ const COUNT = {
   required: ['entries'],
 }
 
+phase('Prepare')
+await parallel([
+  ...(args.facts
+    ? []
+    : [
+        () =>
+          agent(
+            `Read the brief at ${BRIEF}. Read every path under its \`sources\` (walk directories; skim what is irrelevant to the goal), ` +
+              `and the original document if \`trust_original\` is true. Write ${FACTS} as YAML with two lists:\n` +
+              `facts: each {claim, source (path:line or URL), quote (exact supporting text), caveats (context a fair reader needs, or empty)}\n` +
+              `limits: things a writer chasing this goal might be tempted to say that the sources do not support or contradict, each with the source that settles it.\n` +
+              `Cover everything relevant to the goal and audience. Prefer specific, checkable facts: numbers, dates, names, roles, outcomes. ` +
+              `Use block literal style (key: |-) for any string containing a newline. Return the number of facts.`,
+            { schema: COUNT, phase: 'Prepare', label: 'facts' },
+          ).then(r => r && log(`facts.yaml: ${r.entries} facts`)),
+      ]),
+  ...(args.rubric
+    ? []
+    : [
+        () =>
+          agent(
+            `Read the brief at ${BRIEF}: its goal, audience and audience_context files. Do not read its sources. Write ${RUBRIC} as YAML:\n` +
+              `reader: |- a concrete persona of the reader: role, the decision in front of them, time they spend, what they have seen too often, what makes them act\n` +
+              `criteria: 4 to 7 items, each {name, weight (weights sum to 100), measures (what it judges for this reader), anchors: {30, 50, 70, 90} (what a draft at that level looks like)}\n` +
+              `Judge effectiveness with this reader only; leave out factual accuracy, because a separate auditor gates on it. ` +
+              `Include one criterion for credibility: specific, human and believable rather than generic or machine-written. Return the number of criteria.`,
+            { schema: COUNT, phase: 'Prepare', label: 'rubric' },
+          ).then(r => r && log(`rubric.yaml: ${r.entries} criteria`)),
+      ]),
+])
+
 const honestyOf = a => Math.max(0, 100 - a.violations.reduce((s, v) => s + PENALTY[v.severity], 0))
 const blockingOf = a => a.violations.filter(v => BLOCKING.includes(v.severity))
 const effectivenessOf = g => {
@@ -210,37 +241,6 @@ const feedback = (base, last) => {
     )
   return parts.join('\n\n')
 }
-
-phase('Prepare')
-await parallel([
-  ...(args.facts
-    ? []
-    : [
-        () =>
-          agent(
-            `Read the brief at ${BRIEF}. Read every path under its \`sources\` (walk directories; skim what is irrelevant to the goal), ` +
-              `and the original document if \`trust_original\` is true. Write ${FACTS} as YAML with two lists:\n` +
-              `facts: each {claim, source (path:line or URL), quote (exact supporting text), caveats (context a fair reader needs, or empty)}\n` +
-              `limits: things a writer chasing this goal might be tempted to say that the sources do not support or contradict, each with the source that settles it.\n` +
-              `Cover everything relevant to the goal and audience. Prefer specific, checkable facts: numbers, dates, names, roles, outcomes. ` +
-              `Use block literal style (key: |-) for any string containing a newline. Return the number of facts.`,
-            { schema: COUNT, phase: 'Prepare', label: 'facts' },
-          ).then(r => r && log(`facts.yaml: ${r.entries} facts`)),
-      ]),
-  ...(args.rubric
-    ? []
-    : [
-        () =>
-          agent(
-            `Read the brief at ${BRIEF}: its goal, audience and audience_context files. Do not read its sources. Write ${RUBRIC} as YAML:\n` +
-              `reader: |- a concrete persona of the reader: role, the decision in front of them, time they spend, what they have seen too often, what makes them act\n` +
-              `criteria: 4 to 7 items, each {name, weight (weights sum to 100), measures (what it judges for this reader), anchors: {30, 50, 70, 90} (what a draft at that level looks like)}\n` +
-              `Judge effectiveness with this reader only; leave out factual accuracy, because a separate auditor gates on it. ` +
-              `Include one criterion for credibility: specific, human and believable rather than generic or machine-written. Return the number of criteria.`,
-            { schema: COUNT, phase: 'Prepare', label: 'rubric' },
-          ).then(r => r && log(`rubric.yaml: ${r.entries} criteria`)),
-      ]),
-])
 
 let status = 'max rounds'
 let improvedAt = 0
