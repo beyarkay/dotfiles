@@ -16,6 +16,11 @@ folder, copy the whole base folder to the output path first, then edit any
 files inside the copy. Never modify the base draft, earlier drafts, the
 original document, the brief, `facts.yaml` or the rubric.
 
+A folder draft mirrors the repository: the winning draft is copied over the
+real files and committed. So edit each file where it is, in its own format.
+Don't merge, flatten or convert files, and put any new file where the
+repository would keep it.
+
 ## How to work
 
 - Read the brief, the rubric and `facts.yaml` first. `facts.yaml` lists what the

@@ -19,6 +19,12 @@ Three roles take turns on one document:
 The workflow script `grind.js`, next to this file, runs the loop. Your part is
 the setup before it and the report after it.
 
+When the document lives in git, a run's output is commits on a branch
+`grind/<slug>` that change the document's real source files, ready for the user
+to merge. A rendered PDF is only a build of those files. So every draft is a
+copy of the real files, at their real paths and in their real formats, and the
+winner is copied straight back over them.
+
 ## 1. Set up the run
 
 Fill in the brief from the user's request. Ask only when the document, the goal
@@ -33,32 +39,46 @@ all under `sources`; the facts agent reads them and the auditor checks every
 claim. Check a claim yourself only when the answer changes the brief, for
 example a constraint on how an authorship or a result may be described.
 
-Each draft is either one text file or a folder of files:
-
-- One file: copy it to `drafts/v00<ext>`.
-- Built from several files (a Typst CV that pulls in snippet YAML files, say):
-  copy every file the document is built from into `drafts/v00/`, keeping their
-  paths relative to the project root, and set `ext` to `""`. Each round the
-  editor copies the whole folder and may change any file in it. Don't flatten
-  it into one file.
-- A PDF: find its source (Typst, LaTeX, Markdown). If there is none, extract
-  the text to Markdown and say so.
-
-For a rendered document, its look is in scope by default: copy the styling
-files (the template) into the folder draft too, so the editor can change them.
-
 When the document lives in a git repository, run in a worktree on its own
-branch, so the run never touches the user's checkout:
+branch, so the run never touches the user's checkout. Branch from `HEAD`, so
+unpushed commits come along:
 
 ```sh
-git -C <repo> worktree add <repo>-grind-<slug> -b grind/<slug>
+git -C <repo> worktree add -b grind/<slug> <repo>-grind-<slug> HEAD
 ```
+
+Then call `EnterWorktree` with that `path`. The session now works inside the
+worktree, so the Workflow tool can load the script from the run directory and
+the editor can write drafts without permission prompts. The user's checkout
+and its uncommitted changes stay as they are.
 
 Put the run directory inside the worktree, with the work it belongs to: an
 existing application or campaign folder if there is one, otherwise
 `grind-<slug>/` next to the document. Take the draft files from the worktree,
 but point `sources` at the main checkout, so facts the user fixes mid-run are
 seen. Outside git, put the run directory next to the document.
+
+Each draft is either one text file or a folder of files:
+
+- One file: copy it to `drafts/v00<ext>`.
+- Built from several files (a Typst CV that pulls in snippet YAML files and a
+  template, say): copy every file the document is built from into
+  `drafts/v00/`, at its path relative to the repository root, and set `ext` to
+  `""`. Each round the editor copies the whole folder and may change any file
+  in it. Never flatten or convert the files into one: the winner then has to
+  be ported back by hand, and the port is where errors creep in.
+- A PDF: find its source (Typst, LaTeX, Markdown). If there is none, extract
+  the text to Markdown and say so.
+
+For a rendered document, its look is in scope by default: copy the styling
+files (the template) into the folder draft too, so the editor can change them.
+
+Other documents may be built from some of the same files (snippets that several
+CVs share). By default the run must leave those files alone: add a constraint
+that names them and tells the editor to copy one to a path of this document's
+own (`snippets/<document>/<name>.yaml`) and point the document at the copy
+before changing it. If the user wants their changes to reach the other
+documents too, leave that constraint out.
 
 Create `drafts/` (and `rendered/` if there is a render command), copy in the
 original as above, render it to `rendered/v00<render_ext>` if needed, and
@@ -79,7 +99,7 @@ trust_original: true   # the original document's own claims count as a source
 constraints:           # breaking any of these blocks a draft
   - Fits on two pages when rendered.
   - Keep every {{...}} redaction marker exactly as written.
-render: null           # or a command with {draft} and {out}, e.g. typst compile --root={draft} {draft}/resumes/ai-safety.typ {out}
+render: null           # or a command with {draft} and {out}, e.g. typst compile --root={draft} {draft}/resume/resumes/ai-safety.typ {out}
 ```
 
 For a folder draft, `{draft}` is the folder, so the render command must work
@@ -171,26 +191,31 @@ When the workflow finishes:
 1. Save its return value as `ledger.yaml` in the run directory. Write the JSON
    to the scratchpad, then convert it so multi-line strings use `|-`:
    `yq -P '(.. | select(tag == "!!str" and test("\n"))) style = "literal"' result.json > ledger.yaml`
-2. Copy the best draft to `best<ext>` in the run directory (`cp -R` for a
-   folder), and commit on the grind branch.
+   Commit the run directory (drafts, rendered output, ledger) on the grind
+   branch.
+2. Apply the best draft to the real files in the worktree:
+   `cp -R drafts/vNN/. <worktree>/` for a folder, or copy the file over the
+   original. Rebuild any output the repository tracks, and commit with a
+   message naming the version and its two scores. Then delete the run
+   directory in a commit of its own, so a merge brings only the real changes;
+   the run stays in the branch's history.
 3. Tell the user:
    - the status (`target met`, `plateau`, `max rounds` or `no honest draft`)
      and the best version with both scores;
    - the frontier as a table of version, honesty, effectiveness and passed;
    - the main changes from the original, from
-     `git diff --no-index --word-diff <original> <best>`;
+     `git -C <repo> diff --word-diff <main branch>...grind/<slug>`;
    - the non-blocking audit findings left in the best draft;
    - `questions_for_owner`. Each answer can unlock a claim the auditor had to
      block. If the user answers, write the answers to `owner-answers.md` in the
      run directory, add it to `sources`, and run again with the same `rubric`
      and a fresh `facts.yaml`.
-4. Never touch the user's checkout. Offer to copy the winning files over the
-   originals in the worktree, commit that on the grind branch, and show
-   `git -C <repo> diff --word-diff <main branch>...grind/<slug>`; merging is the
-   user's call. When a changed file is shared with other documents (a snippet
-   other CVs also use), ask whether to overwrite it or keep a separate copy for
-   this one. Once the branch is merged or dropped, remove the worktree with
-   `git -C <repo> worktree remove <repo>-grind-<slug>`.
+4. Merging is the user's call; never touch their checkout before they say so.
+   When they do, `git -C <repo> merge grind/<slug>` (it leaves their
+   uncommitted changes alone unless the same files are involved, in which case
+   stop and ask). Once the branch is merged or dropped, call `ExitWorktree`
+   with `keep`, then `git -C <repo> worktree remove <repo>-grind-<slug>` and
+   `git -C <repo> branch -d grind/<slug>`.
 
 With `no honest draft`, say so plainly and list the blocking findings that kept
 recurring.
