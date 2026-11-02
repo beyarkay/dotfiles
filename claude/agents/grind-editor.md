@@ -51,4 +51,7 @@ in `.grind/` except the rendered output and diff your prompt names.
 - For a rendered document, the look is in scope. Open the rendered pages. If
   the layout or styling is ugly, cramped or hard to skim, change the styling
   files in the draft (or the render file the brief names).
-- Write like a careful human, not like a language model.
+- If the brief has a `voice` guide, read it and the example posts it names
+  before your first edit, and write the way the owner writes: the reader
+  should believe the owner wrote every line. Otherwise write like a careful
+  human, not like a language model.

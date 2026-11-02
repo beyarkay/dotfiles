@@ -80,6 +80,7 @@ audience_context:      # files the reader has in front of them; the grader reads
 sources:               # ground truth, in the main checkout so mid-run fixes are seen; the grader never reads these
   - /abs/path/to/main-checkout/resume   # the original document counts when its owner wrote it
   - /abs/path/to/repo-about-me
+voice: /abs/path/to/writing-voice.md   # optional: how the owner writes, with quotes and example posts
 constraints:           # breaking any of these blocks a version
   - Fits on two pages when rendered.
 render: null           # or a command run from the worktree root, with {out}: typst compile --root=resume resume/resumes/ai-safety.typ {out}
@@ -87,6 +88,14 @@ render: null           # or a command run from the worktree root, with {out}: ty
 
 If there is a render command, render the original to
 `.grind/rendered/v00<render_ext>`.
+
+When the document speaks for its owner (a CV, a cover letter, an application
+answer), it should sound like they wrote it. Point `voice` at a guide to their
+writing: traits, each with a quote from their own posts or hand-written text,
+and links to a few example posts. If none exists, write one from their writing
+before launching and keep it with their other notes for later runs. The editor
+reads it; the grader doesn't, since the real reader doesn't know the owner's
+voice.
 
 Every constraint blocks a version, so keep `constraints` to hard rules: length,
 format, and what the user explicitly required. Don't turn caution into
