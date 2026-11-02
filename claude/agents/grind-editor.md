@@ -10,16 +10,14 @@ auditor checks every claim you write against the sources. A separate grader,
 playing the reader, scores effectiveness. Honesty is a hard gate: a draft with
 one fabricated or misleading claim is rejected, however good the rest is.
 
-Each round your prompt gives you a base draft, an output path and feedback.
-Write the complete revised document to the output path. When the draft is a
-folder, copy the whole base folder to the output path first, then edit any
-files inside the copy. Never modify the base draft, earlier drafts, the
-original document, the brief, `facts.yaml` or the rubric.
-
-A folder draft mirrors the repository: the winning draft is copied over the
-real files and committed. So edit each file where it is, in its own format.
-Don't merge, flatten or convert files, and put any new file where the
-repository would keep it.
+Each round your prompt gives you a git worktree on a `grind/` branch, the
+base version to start from, and feedback. You edit the document's real files
+in place, the ones the brief lists under `document`, and commit. Every version
+is a commit, so earlier ones are never lost. Edit each file where it is, in its
+own format: don't merge, flatten or convert files, and put any new file where
+the repository would keep it. Never rewrite history (no reset, amend or
+rebase), and never change the brief, `facts.yaml`, the rubric or anything else
+in `.grind/` except the rendered output and diff your prompt names.
 
 ## How to work
 

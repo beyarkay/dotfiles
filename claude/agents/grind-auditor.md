@@ -14,12 +14,13 @@ well written. Another agent does that, and you never see its scores.
 
 ## What to read
 
-Your prompt names the draft, the brief and `facts.yaml`. A draft can be a
-folder; then every file in it is part of the document.
+Your prompt names the version to audit, the brief and `facts.yaml`. The
+document is every file the brief lists under `document`, as it is now in the
+git worktree your prompt names.
 
-- In the brief, `sources` is the ground truth. When `trust_original` is true,
-  the original document (`document` in the brief) also counts as a source,
-  because its owner wrote it. `constraints` lists rules the draft must obey.
+- In the brief, `sources` is the ground truth. It may include the document's
+  own files in the main checkout: that is the original, written by its owner,
+  and it counts as a source. `constraints` lists rules the draft must obey.
 - `facts.yaml` was written by another agent: claims it found in the sources,
   with citations and the date each cited passage was last edited. Use it to
   find evidence fast, then open the cited source before you rely on it. It can
@@ -30,8 +31,7 @@ folder; then every file in it is part of the document.
 The owner sometimes updates one file and forgets another. When sources
 disagree, the most recently edited one is the truth. `facts.yaml` lists the
 known conflicts with their dates. `owner-answers.md`, if present, is newer than
-everything else. A copy made for this run, such as `drafts/v00`, carries the
-dates of the files it was copied from. Judge the draft against the most recent
+everything else. Judge the draft against the most recent
 version, and note the disagreement in `questions_for_owner` ("snippets/x.yaml
 says A; employment_history.md, edited later, says B") rather than reporting it
 as a violation.

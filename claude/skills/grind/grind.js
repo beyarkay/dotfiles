@@ -1,7 +1,7 @@
 export const meta = {
   name: 'grind',
   description: 'Rewrite a document until it is both honest and effective: editor, read-only honesty auditor, reader-persona grader',
-  whenToUse: 'Launched by the grind skill once it has prepared a run directory with brief.yaml and drafts/v00',
+  whenToUse: 'Launched by the grind skill once it has set up a grind/ worktree with .grind/brief.yaml',
   phases: [
     { title: 'Prepare', detail: 'collect supported facts and write the reader rubric' },
     { title: 'Baseline', detail: 'audit and grade the original' },
@@ -10,25 +10,24 @@ export const meta = {
   ],
 }
 
-const RUN = args.run_dir
-const EXT = args.ext ?? ''
-const FOLDER = EXT === ''
+if (!args.repo || !args.start) throw new Error('grind needs args.repo (the worktree) and args.start (the commit of v00)')
+const REPO = args.repo
+const NOTES = `${REPO}/.grind`
 const HONESTY_MIN = args.honesty_min ?? 90
 const TARGET = args.effectiveness_target ?? 85
 const MAX_ROUNDS = args.max_rounds ?? 6
 const PATIENCE = args.patience ?? 3
-const BRIEF = `${RUN}/brief.yaml`
-const FACTS = args.facts ?? `${RUN}/facts.yaml`
-const RUBRIC = args.rubric ?? `${RUN}/rubric.yaml`
+const BRIEF = `${NOTES}/brief.yaml`
+const FACTS = args.facts ?? `${NOTES}/facts.yaml`
+const RUBRIC = args.rubric ?? `${NOTES}/rubric.yaml`
 
 const PENALTY = { fabrication: 25, misleading: 15, constraint: 15, stretch: 5, nit: 1 }
 const BLOCKING = ['fabrication', 'misleading', 'constraint']
 
 const tag = n => `v${String(n).padStart(2, '0')}`
-const draftPath = n => `${RUN}/drafts/${tag(n)}${EXT}`
-const renderedPath = n => (args.render_ext ? `${RUN}/rendered/${tag(n)}${args.render_ext}` : null)
-const diffPath = n => `${RUN}/diffs/${tag(n)}.diff`
-const draftNamed = n => (FOLDER ? `the draft folder ${draftPath(n)} (every file in it is part of the document)` : `the draft ${draftPath(n)}`)
+const renderedPath = n => (args.render_ext ? `${NOTES}/rendered/${tag(n)}${args.render_ext}` : null)
+const diffPath = n => `${NOTES}/diffs/${tag(n)}.diff`
+const versionNamed = n => `${tag(n)} of the document: the files the brief lists under \`document\`, as they are now in ${REPO}`
 
 const AUDIT = {
   type: 'object',
@@ -81,6 +80,7 @@ const GRADE = {
 const EDIT = {
   type: 'object',
   properties: {
+    commit: { type: 'string' },
     changelog: { type: 'array', items: { type: 'string' } },
     new_claims: {
       type: 'array',
@@ -91,7 +91,7 @@ const EDIT = {
       },
     },
   },
-  required: ['changelog', 'new_claims'],
+  required: ['commit', 'changelog', 'new_claims'],
 }
 
 const COUNT = {
@@ -107,13 +107,12 @@ await parallel([
     : [
         () =>
           agent(
-            `Read the brief at ${BRIEF}. Read every path under its \`sources\` (walk directories; skim what is irrelevant to the goal), ` +
-              `and the original document if \`trust_original\` is true. Write ${FACTS} as YAML with three lists:\n` +
+            `Read the brief at ${BRIEF}. Read every path under its \`sources\` (walk directories; skim what is irrelevant to the goal). Write ${FACTS} as YAML with three lists:\n` +
               `facts: each {claim, source (path:line or URL), quote (exact supporting text), edited, caveats (context a fair reader needs, or empty)}\n` +
               `limits: things a writer chasing this goal might be tempted to say that the sources do not support or contradict, each with the source that settles it.\n` +
               `conflicts: where sources disagree, each {claim, versions: [{says, source, edited}], current (the most recently edited version, which is the truth)}.\n` +
               `\`edited\` is the date (YYYY-MM-DD) the cited text last changed: \`git blame\` on the line for files in git, otherwise the file's modification time. ` +
-              `A file made for this run, such as drafts/v00, takes the dates of the files it was copied from; owner-answers.md is newer than everything.\n` +
+              `owner-answers.md is newer than everything.\n` +
               `Cover everything relevant to the goal and audience. Prefer specific, checkable facts: numbers, dates, names, roles, outcomes. ` +
               `Use block literal style (key: |-) for any string containing a newline. Return the number of facts.`,
             { schema: COUNT, phase: 'Prepare', label: 'facts' },
@@ -146,7 +145,7 @@ const twice = async f => (await f()) ?? (await f())
 
 const incremental = (n, base) =>
   `\nThis draft was edited from ${base.version}, which has already been audited. The changes are in ${diffPath(n)} ` +
-  `(if that file is missing, compare ${draftPath(base.n)} with this draft yourself). Audit incrementally: check every claim in ` +
+  `(if that file is missing, audit every claim). Audit incrementally: check every claim in ` +
   `changed or added text, and any unchanged claim whose meaning the changes alter (new context, order or juxtaposition). ` +
   `Don't re-verify the rest. Carry over each of ${base.version}'s findings whose quoted text is still present and unchanged, ` +
   `and drop those the edit fixed. ${base.version}'s findings:\n${JSON.stringify(base.audit.violations, null, 2)}\n`
@@ -154,7 +153,7 @@ const incremental = (n, base) =>
 const audit = (n, ph, label, base) =>
   twice(() =>
     agent(
-      `Audit ${draftNamed(n)} for honesty.\n` +
+      `Audit ${versionNamed(n)}, for honesty.\n` +
         (renderedPath(n) ? `Rendered: ${renderedPath(n)} (check length and rendering constraints against it).\n` : '') +
         `Brief: ${BRIEF}\nFacts index: ${FACTS} (pointers only; open the cited sources).` +
         (base?.audit ? incremental(n, base) : ''),
@@ -164,7 +163,7 @@ const audit = (n, ph, label, base) =>
 
 const grade = (n, ph, label) => {
   const r = renderedPath(n)
-  const target = r ? `the rendered draft ${r} (if that file is missing, read ${draftNamed(n)})` : draftNamed(n)
+  const target = r ? `the rendered document ${r} (if that file is missing, read ${versionNamed(n)})` : versionNamed(n)
   return twice(() =>
     agent(
       `Grade ${target} as its intended reader.\n` +
@@ -176,15 +175,16 @@ const grade = (n, ph, label) => {
 
 const history = []
 const questions = new Set()
+const ask = a => a?.questions_for_owner.forEach(q => questions.has(q) || (questions.add(q), log(`Question for the owner: ${q}`)))
 
 const evaluate = async (n, ph, edit, base) => {
   const [a, g] = await parallel([() => audit(n, ph, undefined, base), () => grade(n, ph)])
-  const rec = { n, version: tag(n), path: draftPath(n), edit: edit ?? null, audit: a, grade: g }
+  const rec = { n, version: tag(n), commit: n === 0 ? args.start : edit.commit, edit: edit ?? null, audit: a, grade: g }
   rec.honesty = a ? honestyOf(a) : null
   rec.blocking = a ? blockingOf(a).length : null
   rec.pass = !!a && rec.blocking === 0 && rec.honesty >= HONESTY_MIN
   rec.effectiveness = g ? effectivenessOf(g) : null
-  a?.questions_for_owner.forEach(q => questions.add(q))
+  ask(a)
   history.push(rec)
   log(
     `${rec.version}: honesty ${rec.honesty ?? '?'}` +
@@ -203,7 +203,7 @@ const confirm = async rec => {
     () => grade(rec.n, 'Confirm', `confirm grade ${rec.version}`),
   ])
   rec.confirm = { audit: a, grade: g }
-  a?.questions_for_owner.forEach(q => questions.add(q))
+  ask(a)
   if (a && blockingOf(a).length) {
     rec.pass = false
     rec.audit.violations.push(...blockingOf(a))
@@ -273,15 +273,14 @@ for (let r = 1; status === 'max rounds' && r <= MAX_ROUNDS; r++) {
 
   const edit = await twice(() =>
     agent(
-      `Round ${r} of at most ${MAX_ROUNDS}. Base draft: ${draftPath(base.n)}. ` +
-        (FOLDER
-          ? `Copy the whole base folder to ${draftPath(r)} (cp -R), then edit any files inside the copy.\n`
-          : `Write the complete revised document to ${draftPath(r)}.\n`) +
-        (args.render_ext
-          ? `Then run the brief's render command with {draft} = ${draftPath(r)} and {out} = ${renderedPath(r)}, and fix any errors.\n`
-          : '') +
-        `Last, write the diff for the auditor: mkdir -p ${RUN}/diffs; ` +
-        `git diff --no-index --word-diff=plain ${draftPath(base.n)} ${draftPath(r)} > ${diffPath(r)} || true\n` +
+      `Round ${r} of at most ${MAX_ROUNDS}. Edit the document in place in the git worktree ${REPO}: the files the brief lists under \`document\`.\n` +
+        `First check that \`git -C ${REPO} branch --show-current\` starts with grind/, and stop if it doesn't. ` +
+        `Start from the base version, ${base.version} (commit ${base.commit}): stash any uncommitted changes (git -C ${REPO} stash -u), and if HEAD ` +
+        `is not ${base.commit}, revert back to it in one commit: git -C ${REPO} revert --no-commit ${base.commit}..HEAD && ` +
+        `git -C ${REPO} commit -m "grind: back to ${base.version}"\n` +
+        (args.render_ext ? `After editing, run the brief's render command from ${REPO} with {out} = ${renderedPath(r)}, and fix any errors.\n` : '') +
+        `Then commit your edit and return its hash: git -C ${REPO} add -A && git -C ${REPO} commit --allow-empty -m "grind ${tag(r)}: <what changed>"\n` +
+        `Last, write the diff for the auditor: mkdir -p ${NOTES}/diffs; git -C ${REPO} diff --word-diff=plain ${base.commit} HEAD > ${diffPath(r)}\n` +
         `Brief: ${BRIEF}\nFacts: ${FACTS}\nRubric: ${RUBRIC}\n` +
         `To pass, a draft needs no blocking audit violations and honesty of at least ${HONESTY_MIN}. Effectiveness target: ${TARGET}.\n\n` +
         `History so far:\n${history.map(summaryLine).join('\n')}\n\nFeedback on the base draft:\n${feedback(base, last)}`,
@@ -310,7 +309,7 @@ const dominated = p =>
       (q.honesty > p.honesty || q.effectiveness > p.effectiveness),
   )
 const best = bestOf()
-const point = r => ({ version: r.version, path: r.path, honesty: r.honesty, effectiveness: r.effectiveness, pass: r.pass })
+const point = r => ({ version: r.version, commit: r.commit, honesty: r.honesty, effectiveness: r.effectiveness, pass: r.pass })
 
 return {
   status: best ? status : 'no honest draft',

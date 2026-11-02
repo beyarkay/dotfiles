@@ -21,13 +21,13 @@ async function run(script, extra = {}) {
   const agent = async (prompt, opts) => {
     prompts.push({ label: opts.label, prompt })
     if (opts.label === 'facts' || opts.label === 'rubric') return { entries: 3 }
-    if (opts.agentType === 'grind-editor') return { changelog: [opts.label], new_claims: [] }
+    if (opts.agentType === 'grind-editor') return { commit: `h-${opts.label.slice(5, 8)}`, changelog: [opts.label], new_claims: [] }
     const reply = script[opts.label]
     assert.ok(reply !== undefined, `no scripted reply for ${opts.label}`)
     return reply
   }
   const parallel = thunks => Promise.all(thunks.map(t => t().catch(() => null)))
-  const result = await workflow({ run_dir: '/run', ext: '.md', max_rounds: 4, patience: 2, ...extra }, agent, parallel, () => {}, () => {})
+  const result = await workflow({ repo: '/wt', start: 'c0', max_rounds: 4, patience: 2, ...extra }, agent, parallel, () => {}, () => {})
   return { result, prompts }
 }
 
@@ -49,11 +49,12 @@ async function run(script, extra = {}) {
   const firstEdit = prompts.find(p => p.label.startsWith('edit v01')).prompt
   assert.match(firstEdit, /blocked v00/)
   assert.doesNotMatch(firstEdit, /Reader's first impression/)
-  assert.match(prompts.find(p => p.label.startsWith('edit v02')).prompt, /Base draft: \/run\/drafts\/v01\.md/)
-  assert.match(firstEdit, /git diff --no-index --word-diff=plain \/run\/drafts\/v00\.md \/run\/drafts\/v01\.md > \/run\/diffs\/v01\.diff/)
+  assert.match(firstEdit, /base version, v00 \(commit c0\)/)
+  assert.match(prompts.find(p => p.label.startsWith('edit v02')).prompt, /base version, v01 \(commit h-v01\)/)
+  assert.match(firstEdit, /git -C \/wt diff --word-diff=plain c0 HEAD > \/wt\/\.grind\/diffs\/v01\.diff/)
   const auditPrompt = label => prompts.find(p => p.label === label).prompt
   assert.doesNotMatch(auditPrompt('audit v00'), /already been audited/)
-  assert.match(auditPrompt('audit v01'), /edited from v00, which has already been audited\. The changes are in \/run\/diffs\/v01\.diff/)
+  assert.match(auditPrompt('audit v01'), /edited from v00, which has already been audited\. The changes are in \/wt\/\.grind\/diffs\/v01\.diff/)
   assert.match(auditPrompt('audit v01'), /"severity": "fabrication"/)
   assert.match(auditPrompt('audit v02'), /edited from v01/)
   assert.doesNotMatch(auditPrompt('confirm audit v02'), /already been audited/)
@@ -85,8 +86,10 @@ async function run(script, extra = {}) {
     'audit v04': auditOf(),
     'grade v04': gradeOf(71),
   }, { patience: 9 })
-  const bases = prompts.filter(p => p.label.startsWith('edit')).map(p => p.label)
-  assert.deepEqual(bases, ['edit v01 from v00', 'edit v02 from v01', 'edit v03 from v00', 'edit v04 from v03'])
+  const edits = prompts.filter(p => p.label.startsWith('edit'))
+  assert.deepEqual(edits.map(p => p.label), ['edit v01 from v00', 'edit v02 from v01', 'edit v03 from v00', 'edit v04 from v03'])
+  assert.match(edits[2].prompt, /git -C \/wt revert --no-commit c0\.\.HEAD && git -C \/wt commit -m "grind: back to v00"/)
+  assert.match(edits[3].prompt, /base version, v03 \(commit h-v03\)/)
 }
 
 {
@@ -105,6 +108,7 @@ async function run(script, extra = {}) {
   assert.equal(result.best.honesty, 99)
   assert.equal(result.history[0].pass, false)
   assert.equal(result.history[0].honesty, 75)
+  assert.equal(result.history[0].commit, 'c0')
 }
 
 {
@@ -115,12 +119,14 @@ async function run(script, extra = {}) {
     'grade v01': gradeOf(90),
     'confirm audit v01': auditOf(),
     'confirm grade v01': gradeOf(90),
-  }, { ext: '' })
-  assert.equal(result.best.path, '/run/drafts/v01')
+  }, { render_ext: '.pdf' })
+  assert.equal(result.best.commit, 'h-v01')
   const edit = prompts.find(p => p.label.startsWith('edit v01')).prompt
-  assert.match(edit, /Base draft: \/run\/drafts\/v00\. Copy the whole base folder to \/run\/drafts\/v01 \(cp -R\)/)
-  assert.match(prompts.find(p => p.label === 'audit v01').prompt, /draft folder \/run\/drafts\/v01 \(every file/)
-  assert.match(prompts.find(p => p.label === 'grade v01').prompt, /draft folder \/run\/drafts\/v01/)
+  assert.match(edit, /git -C \/wt branch --show-current/)
+  assert.match(edit, /\{out\} = \/wt\/\.grind\/rendered\/v01\.pdf/)
+  assert.match(prompts.find(p => p.label === 'audit v01').prompt, /Rendered: \/wt\/\.grind\/rendered\/v01\.pdf/)
+  assert.match(prompts.find(p => p.label === 'grade v01').prompt, /rendered document \/wt\/\.grind\/rendered\/v01\.pdf/)
+  assert.match(prompts.find(p => p.label === 'audit v00').prompt, /v00 of the document: the files the brief lists under `document`, as they are now in \/wt/)
 }
 
 console.log('grind.js: all scenarios pass')

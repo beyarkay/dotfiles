@@ -8,24 +8,24 @@ argument-hint: "<document> for <goal and reader>, using <sources>"
 
 Three roles take turns on one document:
 
-1. **Editor** (`grind-editor` agent) writes a new draft each round.
+1. **Editor** (`grind-editor` agent) edits the document each round.
 2. **Honesty auditor** (`grind-auditor` agent, read-only) checks every claim
    against the sources. One fabricated, misleading or constraint-breaking claim
-   blocks the draft.
+   blocks the version.
 3. **Grader** (`grind-grader` agent, read-only) plays the reader and scores the
-   draft against a rubric. It sees what the reader would see (the draft, the job
-   description) and never the sources or earlier scores.
+   version against a rubric. It sees what the reader would see (the document,
+   the job description) and never the sources or earlier scores.
 
 The workflow script `grind.js`, next to this file, runs the loop. Your part is
 the setup before it and the report after it.
 
-When the document lives in git, a run's output is commits on a branch
-`grind/<slug>` that change the document's real source files, ready for the user
-to merge. A rendered PDF is only a build of those files. So every draft is a
-copy of the real files, at their real paths and in their real formats, and the
-winner is copied straight back over them.
+A run is ordinary work on a branch. The editor edits the document's real files
+in a git worktree and commits once per round, so each version is a commit and
+git keeps every earlier one. The only other files are the notes the agents hand
+each other (brief, facts, rubric, diffs, rendered pages), in a `.grind/` folder
+that git ignores.
 
-## 1. Set up the run
+## 1. Set up
 
 Fill in the brief from the user's request. Ask only when the document, the goal
 or the sources are missing. If the user says they will paste something (a job
@@ -39,53 +39,37 @@ all under `sources`; the facts agent reads them and the auditor checks every
 claim. Check a claim yourself only when the answer changes the brief, for
 example a constraint on how an authorship or a result may be described.
 
-When the document lives in a git repository, run in a worktree on its own
-branch, so the run never touches the user's checkout. Branch from `HEAD`, so
-unpushed commits come along:
+Make a worktree on a new branch from `HEAD`, so unpushed commits come along:
 
 ```sh
 git -C <repo> worktree add -b grind/<slug> <repo>-grind-<slug> HEAD
+mkdir <repo>-grind-<slug>/.grind && echo '*' > <repo>-grind-<slug>/.grind/.gitignore
 ```
 
-Then call `EnterWorktree` with that `path`. The session now works inside the
-worktree, so the Workflow tool can load the script from the run directory and
-the editor can write drafts without permission prompts. The user's checkout
-and its uncommitted changes stay as they are.
+Then call `EnterWorktree` with that `path`, so the Workflow tool can load its
+script from `.grind/` and the agents can write without permission prompts. The
+user's checkout and its uncommitted changes stay as they are. If the document
+isn't in git, copy it into a new folder, `git init` and commit there, and copy
+the winner back at the end.
 
-Put the run directory inside the worktree, with the work it belongs to: an
-existing application or campaign folder if there is one, otherwise
-`grind-<slug>/` next to the document. Take the draft files from the worktree,
-but point `sources` at the main checkout, so facts the user fixes mid-run are
-seen. Outside git, put the run directory next to the document.
+The document is every file it is built from: for a Typst CV, the `.typ` file,
+the template and each snippet it pulls in. A rendered document's look is in
+scope, so include its styling files. For a PDF with no source (Typst, LaTeX,
+Markdown), extract the text to Markdown, commit it, and say so.
 
-Each draft is either one text file or a folder of files:
+Other documents may share some of these files (snippets that several CVs use).
+Unless the user wants the edits to reach those documents too, add a constraint
+naming the shared files: to change one, the editor first copies it to a path of
+this document's own (`snippets/<document>/<name>.yaml`) and points the document
+at the copy.
 
-- One file: copy it to `drafts/v00<ext>`.
-- Built from several files (a Typst CV that pulls in snippet YAML files and a
-  template, say): copy every file the document is built from into
-  `drafts/v00/`, at its path relative to the repository root, and set `ext` to
-  `""`. Each round the editor copies the whole folder and may change any file
-  in it. Never flatten or convert the files into one: the winner then has to
-  be ported back by hand, and the port is where errors creep in.
-- A PDF: find its source (Typst, LaTeX, Markdown). If there is none, extract
-  the text to Markdown and say so.
-
-For a rendered document, its look is in scope by default: copy the styling
-files (the template) into the folder draft too, so the editor can change them.
-
-Other documents may be built from some of the same files (snippets that several
-CVs share). By default the run must leave those files alone: add a constraint
-that names them and tells the editor to copy one to a path of this document's
-own (`snippets/<document>/<name>.yaml`) and point the document at the copy
-before changing it. If the user wants their changes to reach the other
-documents too, leave that constraint out.
-
-Create `drafts/` (and `rendered/` if there is a render command), copy in the
-original as above, render it to `rendered/v00<render_ext>` if needed, and
-write `brief.yaml`:
+Write `.grind/brief.yaml`:
 
 ```yaml
-document: /abs/path/to/original.yaml
+document:              # every file the document is built from, relative to the worktree, entry file first
+  - resume/resumes/ai-safety.typ
+  - resume/template.typ
+  - resume/snippets/2026-mats.yaml
 goal: |-
   Get an interview for the role below.
 audience: |-
@@ -93,52 +77,48 @@ audience: |-
   seconds against the job description, reads fully if it looks relevant.
 audience_context:      # files the reader has in front of them; the grader reads these
   - /abs/path/job-description.md
-sources:               # ground truth about the subject; the editor and auditor read these, the grader never does
+sources:               # ground truth, in the main checkout so mid-run fixes are seen; the grader never reads these
+  - /abs/path/to/main-checkout/resume   # the original document counts when its owner wrote it
   - /abs/path/to/repo-about-me
-trust_original: true   # the original document's own claims count as a source
-constraints:           # breaking any of these blocks a draft
+constraints:           # breaking any of these blocks a version
   - Fits on two pages when rendered.
-  - Keep every {{...}} redaction marker exactly as written.
-render: null           # or a command with {draft} and {out}, e.g. typst compile --root={draft} {draft}/resume/resumes/ai-safety.typ {out}
+render: null           # or a command run from the worktree root, with {out}: typst compile --root=resume resume/resumes/ai-safety.typ {out}
 ```
 
-For a folder draft, `{draft}` is the folder, so the render command must work
-from inside the copy (copy the template and anything else it imports too).
+If there is a render command, render the original to
+`.grind/rendered/v00<render_ext>`.
 
-Every constraint blocks a draft, so keep `constraints` to hard rules: length,
+Every constraint blocks a version, so keep `constraints` to hard rules: length,
 format, and what the user explicitly required. Don't turn caution into
 constraints ("state the result no more strongly than the abstract"): one such
 rule blocked a draft for dropping the word "standard". Put cautions and
-preferences in `owner-answers.md`, where the auditor applies its "defensible,
-not lies" bar.
+preferences in `.grind/owner-answers.md`, where the auditor applies its
+"defensible, not lies" bar.
 
-If the user gives a rubric, save it as `rubric.yaml` in the run directory, with
-a `reader` persona and `criteria` items of `name`, `weight`, `measures` and
-`anchors`. Otherwise the workflow writes one. Write the user's answers and
-preferences (the title they want, how to credit collaborators, how much
-puffing is fine) to `owner-answers.md` in the run directory and list it first
-under `sources`; every agent treats it as first-hand and newest. Commit the
-run directory on the grind branch before launching.
+If the user gives a rubric, save it as `.grind/rubric.yaml`, with a `reader`
+persona and `criteria` items of `name`, `weight`, `measures` and `anchors`.
+Otherwise the workflow writes one. Write the user's answers and preferences
+(the title they want, how to credit collaborators, how much puffing is fine) to
+`.grind/owner-answers.md` and list it first under `sources`; every agent treats
+it as first-hand and newest.
 
-## 2. Launch the workflow
+## 2. Launch
 
-Copy `grind.js` from this skill's directory into the run directory, then call
-the Workflow tool with `scriptPath` set to that copy. The tool only loads
-scripts from the working directory, and the copy records which version of the
-loop produced the run. If the run directory is outside the working directory,
-read `grind.js` and pass its contents as `script` instead. Otherwise there is
-no need to read it: the table below is its whole interface. Just before the
-call, tell the user to approve the "Run a dynamic workflow?" prompt, since the
-run waits on it. Pass these `args` as a JSON object:
+Copy `grind.js` from this skill's directory into `.grind/` and call the
+Workflow tool with `scriptPath` set to that copy; the tool only loads scripts
+from the working directory. There is no need to read it: the table below is
+its whole interface. Just before the call, tell the user to approve the "Run a
+dynamic workflow?" prompt, since the run waits on it. Pass these `args` as a
+JSON object:
 
 | Argument               | Default | Meaning                                                          |
 | ---------------------- | ------- | ---------------------------------------------------------------- |
-| `run_dir`              |         | absolute path of the run directory                               |
-| `ext`                  | `""`    | the document's extension, with the dot; `""` for a folder draft  |
+| `repo`                 |         | absolute path of the worktree                                    |
+| `start`                |         | the original's commit (`git rev-parse HEAD` in the worktree): v00 |
 | `honesty_min`          | 90      | lowest honesty score that passes, on top of no blocking findings |
 | `effectiveness_target` | 85      | grader score that ends the run                                   |
 | `max_rounds`           | 6       | editing rounds after the baseline                                |
-| `patience`             | 3       | stop after this many rounds without a better passing draft       |
+| `patience`             | 3       | stop after this many rounds without a better passing version     |
 | `render_ext`           | none    | output extension of the render command, e.g. `.pdf`              |
 | `rubric`               | none    | path to an existing rubric; skips writing one                    |
 | `facts`                | none    | path to an existing `facts.yaml`; skips collecting facts         |
@@ -146,76 +126,60 @@ run waits on it. Pass these `args` as a JSON object:
 Pass `rubric` and `facts` from an earlier run to resume it or compare against
 it; scores are only comparable under the same rubric. When the user is short
 of time (a deadline today), use `max_rounds: 2` and `patience: 1`; a full run
-can take most of an hour. Each round costs three
-agents, plus four at the start and two for each confirmation, so the defaults
-spend at most about 26. Tell the user it has started, and how to follow it:
+can take most of an hour. Each round costs three agents, plus four at the start
+and two for each confirmation, so the defaults spend at most about 26.
 
-- `progress.sh <run_dir>` (in this skill's directory) reads the workflow's
-  journal and writes `progress.yaml`: each draft's honesty and effectiveness,
-  blocking findings, the grader's decision and weaknesses. It also prints a
-  score table and the best passing draft so far, which is the one to send if
-  the user has to stop early.
-- `progress.sh <run_dir> diff vNN` shows a word diff of a draft against the one
-  it was edited from.
-- Each draft is on disk in `drafts/` (and `rendered/`) as soon as it is written.
-- The auditor's `questions_for_owner` show up in `progress.yaml` from the
-  baseline audit on. The user can answer them while the run goes: write the
-  answers to `owner-answers.md` in the run directory and add it to `sources`
-  in `brief.yaml`. Every agent reads the brief when it starts, so later rounds
-  use the answers.
+Tell the user it has started. They can follow it in `/workflows`, which shows
+each version's scores and the auditor's questions for them as they come up, and
+with `git log` on the branch, where each version is a commit `grind vNN: ...`.
+They can answer questions while the run goes: write the answers to
+`.grind/owner-answers.md`; later rounds read them.
 
 How the loop decides:
 
 - Honesty is computed from the audit: 100, minus 25 per fabrication, 15 per
-  misleading claim or broken constraint, 5 per stretch and 1 per nit. A draft
+  misleading claim or broken constraint, 5 per stretch and 1 per nit. A version
   passes with no fabrication, misleading claim or broken constraint, and
   honesty at or above `honesty_min`.
 - Effectiveness is the weighted mean of the grader's per-criterion scores.
 - The baseline audit checks every claim. After that, each round's audit is
-  incremental: the editor writes `diffs/vNN.diff` against its base, and the
-  auditor checks only changed claims (and unchanged ones the edit puts in a new
-  light), carrying over the base's findings that still apply.
-- The auditor and grader score every draft in parallel, so every draft lands on
-  the frontier. The editor only sees the grade of a draft that passed the
-  audit; a blocked draft goes back with its audit alone.
-- The editor repairs a blocked draft, but after two blocked drafts in a row it
-  starts again from the best passing one.
-- A draft that hits the target is checked again by a fresh auditor, auditing
-  every claim from scratch, and a fresh grader. The run ends only if it still passes and the mean of the two grades
-  still reaches the target.
+  incremental: the auditor checks only changed claims (and unchanged ones the
+  edit puts in a new light), from the editor's diff in `.grind/diffs/`, and
+  carries over the base version's findings that still apply.
+- The auditor and grader score every version in parallel. The editor only sees
+  the grade of a version that passed the audit; a blocked version goes back
+  with its audit alone.
+- The editor repairs a blocked version, but after two blocked versions in a
+  row it goes back to the best passing one with `git revert`, in a commit of
+  its own, and edits from there.
+- A version that hits the target is checked again by a fresh auditor, auditing
+  every claim from scratch, and a fresh grader. The run ends only if it still
+  passes and the mean of the two grades still reaches the target.
 
 ## 3. Report
 
 When the workflow finishes:
 
-1. Save its return value as `ledger.yaml` in the run directory. Write the JSON
-   to the scratchpad, then convert it so multi-line strings use `|-`:
-   `yq -P '(.. | select(tag == "!!str" and test("\n"))) style = "literal"' result.json > ledger.yaml`
-   Commit the run directory (drafts, rendered output, ledger) on the grind
-   branch.
-2. Apply the best draft to the real files in the worktree:
-   `cp -R drafts/vNN/. <worktree>/` for a folder, or copy the file over the
-   original. Rebuild any output the repository tracks, and commit with a
-   message naming the version and its two scores. Then delete the run
-   directory in a commit of its own, so a merge brings only the real changes;
-   the run stays in the branch's history.
-3. Tell the user:
+1. If the best version isn't the last commit, go back to it:
+   `git -C <worktree> revert --no-commit <best commit>..HEAD`, then commit
+   `grind: back to vNN`.
+2. Tell the user:
    - the status (`target met`, `plateau`, `max rounds` or `no honest draft`)
      and the best version with both scores;
-   - the frontier as a table of version, honesty, effectiveness and passed;
-   - the main changes from the original, from
+   - the frontier as a table of version, commit, honesty, effectiveness and
+     passed;
+   - the main changes, from
      `git -C <repo> diff --word-diff <main branch>...grind/<slug>`;
-   - the non-blocking audit findings left in the best draft;
+   - the non-blocking audit findings left in the best version;
    - `questions_for_owner`. Each answer can unlock a claim the auditor had to
-     block. If the user answers, write the answers to `owner-answers.md` in the
-     run directory, add it to `sources`, and run again with the same `rubric`
-     and a fresh `facts.yaml`.
-4. Merging is the user's call; never touch their checkout before they say so.
-   When they do, `git -C <repo> merge grind/<slug>` (it leaves their
-   uncommitted changes alone unless the same files are involved, in which case
-   stop and ask). Once the branch is merged or dropped, call `ExitWorktree`
-   with `keep`, then `git -C <repo> worktree remove <repo>-grind-<slug>` and
-   `git -C <repo> branch -d grind/<slug>`.
+     block. If the user answers, add them to `.grind/owner-answers.md` and run
+     again from the branch's current commit, with the same `rubric` and a fresh
+     `facts.yaml`.
+3. Merging is the user's call. Run it from the main checkout when they say so:
+   `git -C <repo> merge grind/<slug>`. If their uncommitted changes touch the
+   same files, stop and ask. Then call `ExitWorktree` with `keep`, and run
+   `git -C <repo> worktree remove <repo>-grind-<slug>` (the `.grind/` notes go
+   with it) and `git -C <repo> branch -d grind/<slug>`.
 
 With `no honest draft`, say so plainly and list the blocking findings that kept
 recurring.
@@ -223,8 +187,8 @@ recurring.
 ## Without the Workflow tool
 
 Run the same loop by hand with the Agent tool. Use the three agent types, the
-prompts and scoring rules in `grind.js`, and the same rule that a blocked draft
-goes back to the editor with its audit alone.
+prompts and scoring rules in `grind.js`, and the same rule that a blocked
+version goes back to the editor with its audit alone.
 
 `bun grind.test.mjs` checks the loop's control flow against scripted agents.
 Run it after changing `grind.js`.
