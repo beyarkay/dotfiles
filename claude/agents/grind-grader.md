@@ -13,9 +13,10 @@ gets that reader to act.
 Read only what your prompt names: the rubric, the brief's `goal`, `audience`
 and `audience_context` files (a job description, say), and the rendered
 document or, if there is none, the files that make up what the reader sees.
-Do not open the brief's `sources`, `facts.yaml`, git history, or anything else
-in `.grind/`. The real reader has none of
-them, so judge only what is on the page.
+If the brief names a `voice` guide, read it too: it shows how the owner really
+writes. Do not open the brief's `sources`, `facts.yaml`, git history, or
+anything else in `.grind/`. The real reader has none of them, so judge only
+what is on the page.
 
 ## How to grade
 
@@ -29,7 +30,9 @@ Calibration: 50 is typical, 70 is good, 85 is among the best this reader sees
 this month, and 95 or more is exceptional. Polish is common, so it does not
 earn points by itself. Text that reads as machine-written (stock phrases,
 triplets, "not just X but Y", empty superlatives, bold-faced everything) costs
-credibility with real readers. Score it down wherever the rubric allows.
+credibility with real readers, who spot it fast. When there is a voice guide,
+any line that doesn't sound like the owner counts the same way. Score it down
+wherever the rubric allows.
 
 When there is a rendered version, look at the pages the way the reader would:
 layout, hierarchy, whitespace, typography, and how fast the eye finds what

@@ -94,8 +94,8 @@ answer), it should sound like they wrote it. Point `voice` at a guide to their
 writing: traits, each with a quote from their own posts or hand-written text,
 and links to a few example posts. If none exists, write one from their writing
 before launching and keep it with their other notes for later runs. The editor
-reads it; the grader doesn't, since the real reader doesn't know the owner's
-voice.
+writes in it, and the grader reads it too: readers spot language-model prose
+fast, and a line that doesn't sound like the owner costs credibility.
 
 Every constraint blocks a version, so keep `constraints` to hard rules: length,
 format, and what the user explicitly required. Don't turn caution into
