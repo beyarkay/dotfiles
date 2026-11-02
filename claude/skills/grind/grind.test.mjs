@@ -9,7 +9,7 @@ const workflow = new AsyncFunction('args', 'agent', 'parallel', 'log', 'phase', 
 const violation = severity => ({ severity, quote: 'q', problem: 'p', evidence: 'e', fix: 'f' })
 const auditOf = (...severities) => ({ claims_checked: 5, violations: severities.map(violation), questions_for_owner: [], summary: '' })
 const gradeOf = score => ({
-  criteria: [{ name: 'fit', weight: 100, score, reason: '' }],
+  criteria: [{ name: 'fit', score, reason: '' }],
   first_impression: '',
   decision: '',
   weaknesses: [],
@@ -21,6 +21,7 @@ async function run(script, extra = {}) {
   const agent = async (prompt, opts) => {
     prompts.push({ label: opts.label, prompt })
     if (opts.label === 'facts' || opts.label === 'rubric') return { entries: 3 }
+    if (opts.label === 'weights') return script.weights ?? { criteria: [{ name: 'fit', weight: 100 }] }
     if (opts.agentType === 'grind-editor') return { commit: `h-${opts.label.slice(5, 8)}`, changelog: [opts.label], new_claims: [] }
     const reply = script[opts.label]
     assert.ok(reply !== undefined, `no scripted reply for ${opts.label}`)
@@ -127,6 +128,21 @@ async function run(script, extra = {}) {
   assert.match(prompts.find(p => p.label === 'audit v01').prompt, /Rendered: \/wt\/\.grind\/rendered\/v01\.pdf/)
   assert.match(prompts.find(p => p.label === 'grade v01').prompt, /rendered document \/wt\/\.grind\/rendered\/v01\.pdf/)
   assert.match(prompts.find(p => p.label === 'audit v00').prompt, /v00 of the document: the files the brief lists under `document`, as they are now in \/wt/)
+}
+
+{
+  const { result } = await run({
+    weights: { criteria: [{ name: 'fit', weight: 90 }, { name: 'candour', weight: 10 }] },
+    'audit v00': auditOf(),
+    'grade v00': {
+      ...gradeOf(60),
+      criteria: [
+        { name: 'fit', score: 60, reason: '' },
+        { name: 'candour', weight: 82, score: 82, reason: '' },
+      ],
+    },
+  }, { max_rounds: 0 })
+  assert.equal(result.history[0].effectiveness, 62)
 }
 
 console.log('grind.js: all scenarios pass')

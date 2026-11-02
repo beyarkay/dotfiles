@@ -62,11 +62,10 @@ const GRADE = {
         type: 'object',
         properties: {
           name: { type: 'string' },
-          weight: { type: 'number' },
           score: { type: 'integer', minimum: 0, maximum: 100 },
           reason: { type: 'string' },
         },
-        required: ['name', 'weight', 'score', 'reason'],
+        required: ['name', 'score', 'reason'],
       },
     },
     first_impression: { type: 'string' },
@@ -98,6 +97,21 @@ const COUNT = {
   type: 'object',
   properties: { entries: { type: 'integer' } },
   required: ['entries'],
+}
+
+const WEIGHTS = {
+  type: 'object',
+  properties: {
+    criteria: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: { name: { type: 'string' }, weight: { type: 'number' } },
+        required: ['name', 'weight'],
+      },
+    },
+  },
+  required: ['criteria'],
 }
 
 phase('Prepare')
@@ -137,11 +151,22 @@ await parallel([
 
 const honestyOf = a => Math.max(0, 100 - a.violations.reduce((s, v) => s + PENALTY[v.severity], 0))
 const blockingOf = a => a.violations.filter(v => BLOCKING.includes(v.severity))
-const effectivenessOf = g => {
-  const w = g.criteria.reduce((s, c) => s + c.weight, 0)
-  return w ? Math.round(g.criteria.reduce((s, c) => s + c.weight * c.score, 0) / w) : 0
-}
 const twice = async f => (await f()) ?? (await f())
+
+const rubricWeights = await twice(() =>
+  agent(`Read ${RUBRIC} and return the name and weight of each criterion, exactly as written.`, {
+    schema: WEIGHTS,
+    phase: 'Prepare',
+    label: 'weights',
+    effort: 'low',
+  }),
+)
+if (!rubricWeights) throw new Error(`could not read the weights in ${RUBRIC}`)
+const weightOf = c => rubricWeights.criteria.find(w => w.name === c.name)?.weight ?? 0
+const effectivenessOf = g => {
+  const w = g.criteria.reduce((s, c) => s + weightOf(c), 0)
+  return w ? Math.round(g.criteria.reduce((s, c) => s + weightOf(c) * c.score, 0) / w) : 0
+}
 
 const incremental = (n, base) =>
   `\nThis draft was edited from ${base.version}, which has already been audited. The changes are in ${diffPath(n)} ` +

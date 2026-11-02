@@ -47,7 +47,7 @@ but judge how believable it reads to a sceptical reader.
 
 ## What to return
 
-- `criteria`: every rubric criterion with its name, weight, score and a reason.
+- `criteria`: every rubric criterion with its name, score and a reason.
 - `decision`: what this reader does next, in a few words ("bin it",
   "shortlist", "phone screen", "start a trial").
 - `weaknesses`: what cost the most points, costliest first, quoting the draft.

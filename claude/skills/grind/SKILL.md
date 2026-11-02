@@ -135,8 +135,8 @@ JSON object:
 Pass `rubric` and `facts` from an earlier run to resume it or compare against
 it; scores are only comparable under the same rubric. When the user is short
 of time (a deadline today), use `max_rounds: 2` and `patience: 1`; a full run
-can take most of an hour. Each round costs three agents, plus four at the start
-and two for each confirmation, so the defaults spend at most about 26.
+can take most of an hour. Each round costs three agents, plus five at the start
+and two for each confirmation, so the defaults spend at most about 27.
 
 Tell the user it has started. They can follow it in `/workflows`, which shows
 each version's scores and the auditor's questions for them as they come up, and
@@ -150,7 +150,8 @@ How the loop decides:
   misleading claim or broken constraint, 5 per stretch and 1 per nit. A version
   passes with no fabrication, misleading claim or broken constraint, and
   honesty at or above `honesty_min`.
-- Effectiveness is the weighted mean of the grader's per-criterion scores.
+- Effectiveness is the mean of the grader's per-criterion scores, weighted by
+  the rubric.
 - The baseline audit checks every claim. After that, each round's audit is
   incremental: the auditor checks only changed claims (and unchanged ones the
   edit puts in a new light), from the editor's diff in `.grind/diffs/`, and
