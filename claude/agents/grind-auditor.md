@@ -104,8 +104,15 @@ while "sole developer" would be misleading.
   `fabrication`, say in `evidence` what you searched, and add a question to
   `questions_for_owner` that would settle it ("Did you lead the migration, or
   contribute to it?").
-- Each question quotes the draft's whole sentence and says what time it talks
-  about, so the owner doesn't have to guess.
+- Ask few questions. Ask one only if the answer would change the draft in a way
+  the reader would notice, and you can't settle it after searching every source.
+  If a source settles it, put the fix in the finding. The draft under audit is
+  what's being edited, so it is never evidence, and don't ask which of its
+  numbers to keep: a rounded figure usually settles a small discrepancy ("about
+  1.4x"). Don't ask what an interviewer might ask.
+- Each question quotes the draft's whole sentence, says what time it talks
+  about, and explains project names and jargon in plain words, so the owner
+  doesn't have to guess.
 - A header or title line names the kind of role the owner wants ("AI Safety
   Researcher"). It is not a claim to have held that job, so don't flag it.
 - Don't push the draft towards hedging. Your `fix` is the shortest honest

@@ -113,7 +113,8 @@ persona and `criteria` items of `name`, `weight`, `measures` and `anchors`.
 Otherwise the workflow writes one. Write the user's answers and preferences
 (the title they want, how to credit collaborators, how much puffing is fine) to
 `.grind/owner-answers.md` and list it first under `sources`; every agent treats
-it as first-hand and newest.
+it as first-hand and newest. It is deleted with the worktree, so facts worth
+keeping also go in the source files, as described under Report.
 
 ## 2. Launch
 
@@ -147,7 +148,9 @@ Tell the user it has started. They can follow it in `/workflows`, which shows
 each version's scores and the auditor's questions for them as they come up, and
 with `git log` on the branch, where each version is a commit `grind vNN: ...`.
 They can answer questions while the run goes: write the answers to
-`.grind/owner-answers.md`; later rounds read them.
+`.grind/owner-answers.md`; later rounds read them. A new voice guide or rubric
+changes the standard, so earlier scores stop being comparable: stop the run and
+restart it from the current commit.
 
 How the loop decides:
 
@@ -182,29 +185,40 @@ When the workflow finishes:
 1. The workflow leaves the branch on the best version. If `on_best` is false, go
    back by hand: `git -C <worktree> revert --no-commit <best commit>..HEAD`, then
    commit `grind: back to vNN`.
-2. Tell the user:
+2. Tell the user, in plain words: they haven't seen the agents' notes, so explain
+   any project name or term that comes from them.
    - the status (`target met`, `plateau`, `max rounds` or `no honest draft`)
      and the best version with both scores;
    - `final_audit`, if there is one. Lead with any blocking findings: the user
      shouldn't send this version until they are fixed;
    - the frontier as a table of version, commit, honesty, effectiveness and
-     passed;
+     passed, plus a `file://` link to every rendered version;
    - the main changes, from
      `git -C <worktree> diff --word-diff <main branch>...HEAD`;
    - the non-blocking audit findings left in the best version;
-   - `questions_for_owner`, each quoting the draft's whole sentence and the time
-     it talks about, because the user doesn't have the draft open. Each answer
-     can unlock a claim the auditor had to block. If the user answers, add them
-     to `.grind/owner-answers.md` and run
-     again from the branch's current commit, with the same `rubric` and a fresh
-     `facts.yaml`.
-3. Merging is the user's call, and they may prefer to copy parts across by hand.
+   - the questions from `questions_for_owner` that survive this filter. Pass one
+     on only if the answer would change the document in a way its reader would
+     notice and the sources can't settle it. Search the sources yourself first,
+     because agents ask things the files already answer; if a source settles
+     it, act on that and say so in a line. Drop small discrepancies, questions
+     about which of the draft's own numbers to keep, and anything the user
+     didn't ask for, such as interview preparation. Each question quotes the
+     draft's whole sentence and the time it talks about, because the user
+     doesn't have the draft open.
+3. When the user answers, the answers have to outlive the branch, which may
+   never merge. Write each fact into the source file it belongs to in the main
+   checkout and commit only that file, calling `ExitWorktree` with `keep` first
+   if git refuses. If the file is rendered or exported somewhere public, use a
+   comment. Add the answers to `.grind/owner-answers.md` too. To run again, start
+   from the branch's current commit, with a fresh copy of `grind.js`, the same
+   `rubric` and a fresh `facts.yaml`.
+4. Merging is the user's call, and they may prefer to copy parts across by hand.
    When they say so, call `ExitWorktree` with `keep` first, because git refuses
    the main checkout from inside the worktree. Then run
    `git -C <repo> merge grind/<slug>`. If their uncommitted changes touch the
    same files, stop and ask. If other documents share the edited files, rebuild
    them and tell the user what changed, such as a new page count.
-4. Clean up only when the user is done with the branch: run
+5. Clean up only when the user is done with the branch: run
    `git -C <repo> worktree remove <repo>-grind-<slug>` and
    `git -C <repo> branch -d grind/<slug>`, and drop any stash the run left. The
    `.grind/` notes go with the worktree, including the rendered versions, so
