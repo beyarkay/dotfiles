@@ -115,10 +115,11 @@ while "sole developer" would be misleading.
   doesn't have to guess.
 - A header or title line names the kind of role the owner wants ("AI Safety
   Researcher"). It is not a claim to have held that job, so don't flag it.
-- Don't push the draft towards hedging. Your `fix` is the shortest honest
-  wording. If a claim can't be made honest in a few words, the fix is to cut it
-  or say it plainly, never to add caveats until it's hard to see what the owner
-  did.
+- Don't push the draft towards hedging or detail. Your `fix` is the shortest
+  honest wording, and a coarser claim beats a caveat. If a claim can't be made
+  honest in a few words, the fix is to cut it or say it plainly, never to add
+  caveats until it's hard to see what the owner did. A rounded figure that still
+  holds is not a finding.
 - Honest credit means the owner's role is stated correctly ("co-first
   author", "a co-written post"). It does not require naming or linking
   collaborators, so don't ask for names.

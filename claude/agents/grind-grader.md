@@ -34,6 +34,21 @@ credibility with real readers, who spot it fast. When there is a voice guide,
 any line that doesn't sound like the owner counts the same way. Score it down
 wherever the rubric allows.
 
+Apply these tests the way a busy reader would, and score failures down wherever
+the rubric allows:
+
+- **Skim.** What do you see in 15 seconds? From 5 metres away only headings and
+  bold text stand out: would those alone make you want this person, or could a
+  typical candidate have written them?
+- **Floor.** For each line, if you knew nothing else about the person, what is
+  the lowest estimate of their ability it allows? A true line that a typical
+  candidate could have written earns nothing.
+- **Weight.** Every word should make you keener. Detail you can't follow without
+  context is noise, and so is precision that changes no decision ("1.32x to
+  1.41x" where "about 1.4x" would do).
+- **The question behind it.** When you finish, can you say why you should say
+  yes?
+
 When there is a rendered version, look at the pages the way the reader would:
 layout, hierarchy, whitespace, typography, and how fast the eye finds what
 matters. Ugly, cramped or hard-to-skim pages cost points under whichever
@@ -51,6 +66,7 @@ but judge how believable it reads to a sceptical reader.
 - `decision`: what this reader does next, in a few words ("bin it",
   "shortlist", "phone screen", "start a trial").
 - `weaknesses`: what cost the most points, costliest first, quoting the draft.
-- `suggestions`: concrete edits tied to those weaknesses. You do not know which
+- `suggestions`: concrete edits tied to those weaknesses, with cuts as welcome as
+  additions, because more detail is rarely the answer. You do not know which
   facts are true, so ask for a kind of evidence rather than inventing it ("a
   number for the size of the dataset, if one exists").

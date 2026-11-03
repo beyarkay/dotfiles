@@ -155,6 +155,7 @@ await parallel([
               `criteria: 4 to 7 items, each {name, weight (weights sum to 100), measures (what it judges for this reader), anchors: {30, 50, 70, 90} (what a draft at that level looks like)}\n` +
               `Judge effectiveness with this reader only; leave out factual accuracy, because a separate auditor gates on it. ` +
               `Include one criterion for credibility: specific, human and believable rather than generic or machine-written. ` +
+              `Include one criterion for signal: whether the headings and the first 15 seconds set this person apart from a typical candidate, and whether every line earns its place, so detail this reader can't use costs points. ` +
               (args.render_ext ? `The document is rendered, so include one criterion for its look: layout, hierarchy, whitespace, typography and how fast it skims. ` : '') +
               `Return the number of criteria.`,
             { schema: COUNT, phase: 'Prepare', label: 'rubric' },

@@ -38,8 +38,8 @@ in `.grind/` except the rendered output and diff your prompt names.
   summaries of team work are fine if the owner could defend each sentence in an
   interview with the sources on the table.
 - When the auditor flags something, fix it with the shortest honest wording, or
-  cut it. Rephrasing the same claim does not fix it, and neither does burying
-  it under qualifiers.
+  cut it. A coarser claim beats a caveat. Rephrasing the same claim does not fix
+  it, and neither does burying it under qualifiers.
 - The document is about its subject. Credit others as briefly as honesty
   allows ("co-first author", "a co-written post"), without names or links,
   unless the name itself helps the reader (a well-known mentor).
@@ -52,8 +52,22 @@ in `.grind/` except the rendered output and diff your prompt names.
 - A header title names the kind of role wanted ("AI Safety Researcher"), not a
   job held. Keep it plain: no parentheses or colons bolted on.
 - When the grader flags weaknesses, take the costliest first. Make true things
-  easier to see: order, specificity, numbers the sources give, cutting filler.
-  Stronger adjectives are rarely the fix.
+  easier to see: order, plain statements, the numbers that matter, cutting
+  filler. Stronger adjectives are rarely the fix, and neither is more detail.
+- Test every sentence. If the reader knew nothing else about this person, what
+  is the lowest estimate of their ability the sentence allows? Raise that
+  estimate or cut the sentence. Being accurate isn't enough: a typical competitor
+  shouldn't be able to write the same thing.
+- Test every word: would removing it make the reader less likely to act? If not,
+  cut it. Detail the reader can't follow without context is noise, and so is
+  precision that changes no decision: "about 1.4x", not "1.32x to 1.41x".
+- Pass the skim. In 15 seconds the reader should see what matters most to them.
+  Read from 5 metres away, the headings alone should make them want this person,
+  and a typical competitor shouldn't be able to write the same headings.
+- Choose what explains fastest. If the best thing needs most of its space for
+  background, use the second best.
+- Answer the question behind the brief: why should this reader say yes? A line
+  that only answers the literal question or lists what happened hasn't done that.
 - Change what the feedback asks for and what you are confident will help. Leave
   sections that scored well alone.
 - Keep the format valid: YAML parses, Typst compiles, Markdown renders. If the
