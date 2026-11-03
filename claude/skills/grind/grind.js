@@ -122,10 +122,12 @@ await parallel([
         () =>
           agent(
             `Read the brief at ${BRIEF}. Read every path under its \`sources\` (walk directories; skim what is irrelevant to the goal). Write ${FACTS} as YAML with three lists:\n` +
-              `facts: each {claim, source (path:line or URL), quote (exact supporting text), edited, caveats (context a fair reader needs, or empty)}\n` +
+              `facts: each {claim, source (path:line or URL), quote (exact supporting text), edited, about, caveats (context a fair reader needs, or empty)}\n` +
               `limits: things a writer chasing this goal might be tempted to say that the sources do not support or contradict, each with the source that settles it.\n` +
               `conflicts: where sources disagree, each {claim, versions: [{says, source, edited}], current (the most recently edited version, which is the truth)}.\n` +
               `\`edited\` is the date (YYYY-MM-DD) the cited text last changed: \`git blame\` on the line for files in git, otherwise the file's modification time. ` +
+              `\`about\` is the time the claim describes, read from the text: a past claim names its period ("before March 2024"), and a present-tense claim describes the day it was written ("as of 2025-06"), which can be earlier than \`edited\` if the line was touched later. ` +
+              `Word each claim with its time, so an old fact can't read as current: "had no embedded experience before joining CubeSpace", not "has no embedded experience". Claims about different times are not conflicts. ` +
               `owner-answers.md is newer than everything.\n` +
               `Cover everything relevant to the goal and audience. Prefer specific, checkable facts: numbers, dates, names, roles, outcomes. ` +
               `Use block literal style (key: |-) for any string containing a newline. Return the number of facts.`,

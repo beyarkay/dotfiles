@@ -181,8 +181,10 @@ When the workflow finishes:
    - the main changes, from
      `git -C <repo> diff --word-diff <main branch>...grind/<slug>`;
    - the non-blocking audit findings left in the best version;
-   - `questions_for_owner`. Each answer can unlock a claim the auditor had to
-     block. If the user answers, add them to `.grind/owner-answers.md` and run
+   - `questions_for_owner`, each quoting the draft's whole sentence and the time
+     it talks about, because the user doesn't have the draft open. Each answer
+     can unlock a claim the auditor had to block. If the user answers, add them
+     to `.grind/owner-answers.md` and run
      again from the branch's current commit, with the same `rubric` and a fresh
      `facts.yaml`.
 3. Merging is the user's call. Run it from the main checkout when they say so:

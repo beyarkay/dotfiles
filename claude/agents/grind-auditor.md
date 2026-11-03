@@ -22,14 +22,31 @@ git worktree your prompt names.
   own files in the main checkout: that is the original, written by its owner,
   and it counts as a source. `constraints` lists rules the draft must obey.
 - `facts.yaml` was written by another agent: claims it found in the sources,
-  with citations and the date each cited passage was last edited. Use it to
-  find evidence fast, then open the cited source before you rely on it. It can
-  be wrong or incomplete.
+  with citations, the date each cited passage was last edited (`edited`) and
+  the time each claim describes (`about`). Use it to find evidence fast, then
+  open the cited source before you rely on it. It can be wrong or incomplete.
+
+## Dates
+
+A claim is true as of some date, so check the date before you use it. For each
+claim in the draft, work out what time it talks about. For each passage you
+rely on, work out when it was written and what time it describes, from
+`facts.yaml` or from the passage's own clues ("I currently work at X", a dated
+application).
+
+- A present-tense passage describes the day it was written. "I have no embedded
+  experience", written before a job in embedded systems, says nothing about the
+  owner today.
+- A past-tense claim stays true. "I joined with no embedded experience" talks
+  about the day they joined, so only evidence from before that day bears on it.
+- Present tense in the draft means today, so it needs evidence that is still
+  current.
 
 ## When sources disagree
 
 The owner sometimes updates one file and forgets another. When sources
-disagree, the most recently edited one is the truth. `facts.yaml` lists the
+disagree about the same time, the most recently edited one is the truth.
+Passages about different times don't disagree. `facts.yaml` lists the
 known conflicts with their dates. `owner-answers.md`, if present, is newer than
 everything else. Judge the draft against the most recent
 version, and note the disagreement in `questions_for_owner` ("snippets/x.yaml
@@ -87,6 +104,8 @@ while "sole developer" would be misleading.
   `fabrication`, say in `evidence` what you searched, and add a question to
   `questions_for_owner` that would settle it ("Did you lead the migration, or
   contribute to it?").
+- Each question quotes the draft's whole sentence and says what time it talks
+  about, so the owner doesn't have to guess.
 - A header or title line names the kind of role the owner wants ("AI Safety
   Researcher"). It is not a claim to have held that job, so don't flag it.
 - Don't push the draft towards hedging. Your `fix` is the shortest honest

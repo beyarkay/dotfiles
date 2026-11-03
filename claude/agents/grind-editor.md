@@ -27,8 +27,13 @@ in `.grind/` except the rendered output and diff your prompt names.
 - Every factual claim must have support in the sources. If you can't find it,
   leave the claim out. List each new or changed claim in `new_claims` with its
   source (`path:line` or a URL).
-- When sources disagree, use the most recently edited one; `facts.yaml` lists
-  known conflicts, and `owner-answers.md`, if present, beats everything.
+- Check the date of every claim you use: `about` in `facts.yaml` gives the time
+  it describes. A passage is true as of when it was written, so "I have no
+  embedded experience" from before a job in embedded systems can't support
+  anything about today, and present tense in the draft needs current evidence.
+- When sources disagree about the same time, use the most recently edited one;
+  `facts.yaml` lists known conflicts, and `owner-answers.md`, if present, beats
+  everything.
 - The bar is "defensible, not lies": favourable framing and first-person
   summaries of team work are fine if the owner could defend each sentence in an
   interview with the sources on the table.
