@@ -139,8 +139,9 @@ JSON object:
 Pass `rubric` and `facts` from an earlier run to resume it or compare against
 it; scores are only comparable under the same rubric. When the user is short
 of time (a deadline today), use `max_rounds: 2` and `patience: 1`; a full run
-can take most of an hour. Each round costs three agents, plus five at the start
-and two for each confirmation, so the defaults spend at most about 27.
+can take most of an hour. Each round costs three agents, plus five at the start,
+two for each confirmation and up to two at the end, so the defaults spend at
+most about 29.
 
 Tell the user it has started. They can follow it in `/workflows`, which shows
 each version's scores and the auditor's questions for them as they come up, and
@@ -169,17 +170,23 @@ How the loop decides:
 - A version that hits the target is checked again by a fresh auditor, auditing
   every claim from scratch, and a fresh grader. The run ends only if it still
   passes and the mean of the two grades still reaches the target.
+- However the run ends, the branch finishes on the best version. If that version
+  has only had incremental audits, it gets one full audit at the end, because
+  incremental audits miss things. The result is in `final_audit`, and it lowers
+  the reported honesty but doesn't change the winner.
 
 ## 3. Report
 
 When the workflow finishes:
 
-1. If the best version isn't the last commit, go back to it:
-   `git -C <worktree> revert --no-commit <best commit>..HEAD`, then commit
-   `grind: back to vNN`.
+1. The workflow leaves the branch on the best version. If `on_best` is false, go
+   back by hand: `git -C <worktree> revert --no-commit <best commit>..HEAD`, then
+   commit `grind: back to vNN`.
 2. Tell the user:
    - the status (`target met`, `plateau`, `max rounds` or `no honest draft`)
      and the best version with both scores;
+   - `final_audit`, if there is one. Lead with any blocking findings: the user
+     shouldn't send this version until they are fixed;
    - the frontier as a table of version, commit, honesty, effectiveness and
      passed;
    - the main changes, from

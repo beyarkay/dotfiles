@@ -6,7 +6,7 @@ export const meta = {
     { title: 'Prepare', detail: 'collect supported facts and write the reader rubric' },
     { title: 'Baseline', detail: 'audit and grade the original' },
     { title: 'Grind', detail: 'edit, then audit and grade, until the targets pass' },
-    { title: 'Confirm', detail: 'fresh audit and grade of a draft that hit the target' },
+    { title: 'Confirm', detail: 'fresh audit of the winner, plus a fresh grade if it hit the target' },
   ],
 }
 
@@ -101,6 +101,12 @@ const COUNT = {
   type: 'object',
   properties: { entries: { type: 'integer' } },
   required: ['entries'],
+}
+
+const COMMIT = {
+  type: 'object',
+  properties: { commit: { type: 'string' } },
+  required: ['commit'],
 }
 
 const WEIGHTS = {
@@ -330,6 +336,32 @@ for (let r = 1; status === 'max rounds' && r <= MAX_ROUNDS; r++) {
   else if (bestOf() && r - improvedAt >= PATIENCE) status = 'plateau'
 }
 
+const best = bestOf()
+let onBest = false
+if (best) {
+  onBest =
+    best === history[history.length - 1] ||
+    !!(await twice(() =>
+      agent(`In the git worktree ${REPO}, leave the branch on the best version, ${best.version}. ${ONE_AT_A_TIME}\n${backTo(best)}\nReturn the hash of HEAD.`, {
+        agentType: 'grind-editor',
+        schema: COMMIT,
+        phase: 'Confirm',
+        label: `back to ${best.version}`,
+        effort: 'low',
+      }),
+    ))
+  if (!onBest) log(`Could not go back to ${best.version}: the branch is still on a later commit`)
+}
+if (onBest && best.n > 0 && !best.confirm) {
+  const a = await audit(best.n, 'Confirm', `final audit ${best.version}`)
+  ask(a)
+  if (a) {
+    best.honesty = Math.min(best.honesty, honestyOf(a))
+    best.finalAudit = { honesty: honestyOf(a), blocking: blockingOf(a).length, violations: a.violations, summary: a.summary }
+    log(`${best.version}: the final full audit gives honesty ${honestyOf(a)}, with ${blockingOf(a).length} blocking`)
+  }
+}
+
 const scored = history.filter(r => r.honesty != null && r.effectiveness != null)
 const dominated = p =>
   scored.some(
@@ -339,13 +371,14 @@ const dominated = p =>
       q.effectiveness >= p.effectiveness &&
       (q.honesty > p.honesty || q.effectiveness > p.effectiveness),
   )
-const best = bestOf()
 const point = r => ({ version: r.version, commit: r.commit, honesty: r.honesty, effectiveness: r.effectiveness, pass: r.pass })
 
 return {
   status: best ? status : 'no honest draft',
   targets: { honesty_min: HONESTY_MIN, effectiveness_target: TARGET },
   best: best ? point(best) : null,
+  on_best: onBest,
+  final_audit: best?.finalAudit ?? null,
   frontier: scored.filter(p => !dominated(p)).map(point),
   questions_for_owner: [...questions],
   history,

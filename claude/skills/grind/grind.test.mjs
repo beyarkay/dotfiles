@@ -64,7 +64,7 @@ async function run(script, extra = {}) {
 }
 
 {
-  const { result } = await run({
+  const { result, prompts } = await run({
     'audit v00': auditOf(),
     'grade v00': gradeOf(60),
     'audit v01': auditOf(),
@@ -74,6 +74,30 @@ async function run(script, extra = {}) {
   })
   assert.equal(result.status, 'plateau')
   assert.equal(result.best.version, 'v00')
+  assert.equal(result.on_best, true)
+  assert.equal(result.final_audit, null)
+  assert.match(prompts.find(p => p.label === 'back to v00').prompt, /revert --no-commit c0\.\.HEAD/)
+}
+
+{
+  const { result, prompts } = await run({
+    'audit v00': auditOf('fabrication'),
+    'grade v00': gradeOf(50),
+    'audit v01': auditOf(),
+    'grade v01': gradeOf(70),
+    'audit v02': auditOf(),
+    'grade v02': gradeOf(60),
+    'audit v03': auditOf(),
+    'grade v03': gradeOf(60),
+    'final audit v01': auditOf('misleading', 'stretch'),
+  })
+  assert.equal(result.best.version, 'v01')
+  assert.equal(result.best.pass, true)
+  assert.equal(result.best.honesty, 80)
+  assert.equal(result.final_audit.blocking, 1)
+  const labels = prompts.map(p => p.label)
+  assert.ok(labels.indexOf('back to v01') < labels.indexOf('final audit v01'))
+  assert.doesNotMatch(prompts.find(p => p.label === 'final audit v01').prompt, /already been audited/)
 }
 
 {
@@ -88,6 +112,7 @@ async function run(script, extra = {}) {
     'grade v03': gradeOf(70),
     'audit v04': auditOf(),
     'grade v04': gradeOf(71),
+    'final audit v04': auditOf(),
   }, { patience: 9 })
   const edits = prompts.filter(p => p.label.startsWith('edit'))
   assert.deepEqual(edits.map(p => p.label), ['edit v01 from v00', 'edit v02 from v01', 'edit v03 from v00', 'edit v04 from v03'])
