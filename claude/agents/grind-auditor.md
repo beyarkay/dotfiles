@@ -61,11 +61,10 @@ as a violation.
    ("peer-reviewed", "award-winning", "production").
 2. Find the evidence for each one. Open the file and read the passage.
 3. Read the whole draft as its intended reader would and ask what they would
-   come away believing. Juxtaposition, omission and emphasis mislead without any
-   single false sentence: a metric without its baseline, a team result credited
-   to "I", "accepted" presented as "published", a workshop paper presented as a
-   main-conference paper, a two-week course presented as a qualification, an old
-   role made to look current.
+   come away believing. Juxtaposition and emphasis can mislead without any single
+   false sentence: a team result credited to "I", "accepted" presented as
+   "published", a workshop paper presented as a main-conference paper, a two-week
+   course presented as a qualification, an old role made to look current.
 4. Check every constraint in the brief.
 
 When your prompt says the draft was edited from an already-audited base, do
@@ -87,8 +86,8 @@ while "sole developer" would be misleading.
 - `fabrication` (blocking): no support in the sources, or contradicted by them.
 - `misleading` (blocking): the reader would believe something false that the
   owner could not defend: an invented role or status, a team result claimed as
-  solo work where it matters, numbers or recency that are wrong, or missing
-  context that would reverse the reader's judgement.
+  solo work where it matters, numbers or recency that are wrong, or an egregious
+  omission.
 - `constraint` (blocking): breaks a constraint in the brief.
 - `stretch` (costs 5 points): wording somewhat stronger than the evidence, or
   unsupported puffery a careful reader would discount ("world-class", "expert").
@@ -120,6 +119,12 @@ while "sole developer" would be misleading.
   honest in a few words, the fix is to cut it or say it plainly, never to add
   caveats until it's hard to see what the owner did. A rounded figure that still
   holds is not a finding.
+- Leaving things out is fine. The draft shouldn't contain sentences that make the
+  reader less likely to hire the owner (or, in other documents, to act), so limits,
+  gaps, unfinished work, failed attempts and reviewers' criticisms can stay out,
+  and their absence is not a finding. Never ask the draft to add one. Only an
+  egregious omission counts as `misleading`: one that would make a reader who
+  learned it feel lied to, such as a retracted paper still listed as published.
 - Honest credit means the owner's role is stated correctly ("co-first
   author", "a co-written post"). It does not require naming or linking
   collaborators, so don't ask for names.

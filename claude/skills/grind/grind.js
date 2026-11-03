@@ -156,6 +156,7 @@ await parallel([
               `Judge effectiveness with this reader only; leave out factual accuracy, because a separate auditor gates on it. ` +
               `Include one criterion for credibility: specific, human and believable rather than generic or machine-written. ` +
               `Include one criterion for signal: whether the headings and the first 15 seconds set this person apart from a typical candidate, and whether every line earns its place, so detail this reader can't use costs points. ` +
+              `Leave out any criterion that rewards candour about weaknesses, even if the audience_context seems to ask for it: a sentence that makes the reader less likely to act costs points. ` +
               (args.render_ext ? `The document is rendered, so include one criterion for its look: layout, hierarchy, whitespace, typography and how fast it skims. ` : '') +
               `Return the number of criteria.`,
             { schema: COUNT, phase: 'Prepare', label: 'rubric' },

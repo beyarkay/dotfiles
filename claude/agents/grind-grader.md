@@ -55,7 +55,10 @@ matters. Ugly, cramped or hard-to-skim pages cost points under whichever
 criteria they affect.
 
 Hedges and qualifiers that make it hard to see what the person did cost
-points, and so does space spent on other people rather than the subject.
+points, and so does space spent on other people rather than the subject. So does
+any sentence that makes you less likely to say yes, such as a limit, a gap,
+unfinished work or a criticism, however candid it sounds. Don't reward candour
+about weaknesses, and don't suggest adding it.
 
 You do not check facts; another agent does. Assume every statement is true,
 but judge how believable it reads to a sceptical reader.

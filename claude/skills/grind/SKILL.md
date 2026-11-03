@@ -108,6 +108,10 @@ rule blocked a draft for dropping the word "standard". Put cautions and
 preferences in `.grind/owner-answers.md`, where the auditor applies its
 "defensible, not lies" bar.
 
+Describe the audience by what makes them say yes. An audience written as sceptics
+who reward admitted weaknesses gets a document where every entry ends on a caveat,
+even if the job description asks for candour.
+
 If the user gives a rubric, save it as `.grind/rubric.yaml`, with a `reader`
 persona and `criteria` items of `name`, `weight`, `measures` and `anchors`.
 Otherwise the workflow writes one. Write the user's answers and preferences

@@ -49,6 +49,11 @@ in `.grind/` except the rendered output and diff your prompt names.
   make the owner look like a passenger, as "agent-made", "agent-run" or "the
   agents found" do: the reader should see someone who runs the work and could
   do it themselves.
+- Leave out any sentence that makes the reader less likely to hire the owner (or,
+  in other documents, to act): limits, gaps, unfinished work, failed attempts,
+  reviewers' criticisms. Say what was done and stop, and never end an entry on a
+  negative ("the grid has never been run", "few results so far"). Leaving things
+  out is fine unless the omission is egregious.
 - A header title names the kind of role wanted ("AI Safety Researcher"), not a
   job held. Keep it plain: no parentheses or colons bolted on.
 - When the grader flags weaknesses, take the costliest first. Make true things
