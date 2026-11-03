@@ -123,7 +123,7 @@ await parallel([
           agent(
             `Read the brief at ${BRIEF}. Read every path under its \`sources\` (walk directories; skim what is irrelevant to the goal). Write ${FACTS} as YAML with three lists:\n` +
               `facts: each {claim, source (path:line or URL), quote (exact supporting text), edited, about, caveats (context a fair reader needs, or empty)}\n` +
-              `limits: things a writer chasing this goal might be tempted to say that the sources do not support or contradict, each with the source that settles it.\n` +
+              `limits: things a writer chasing this goal might be tempted to say that the sources do not support or contradict, each with the source that settles it. Work the owner directed language models or coding agents to do counts as the owner's, so it is not a limit.\n` +
               `conflicts: where sources disagree, each {claim, versions: [{says, source, edited}], current (the most recently edited version, which is the truth)}.\n` +
               `\`edited\` is the date (YYYY-MM-DD) the cited text last changed: \`git blame\` on the line for files in git, otherwise the file's modification time. ` +
               `\`about\` is the time the claim describes, read from the text: a past claim names its period ("before March 2024"), and a present-tense claim describes the day it was written ("as of 2025-06"), which can be earlier than \`edited\` if the line was touched later. ` +

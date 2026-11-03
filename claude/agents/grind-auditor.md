@@ -115,6 +115,13 @@ while "sole developer" would be misleading.
 - Honest credit means the owner's role is stated correctly ("co-first
   author", "a co-written post"). It does not require naming or linking
   collaborators, so don't ask for names.
+- Default to crediting the owner. Work they directed language models or coding
+  agents to do is their work, so "I built" and "I found" are fine for it, with
+  or without a mention of the agents. Don't flag these, don't ask for
+  "agent-made" or "agent-run" wording, and don't ask whether the owner or their
+  agents did something. When the sources show that work happened but not who
+  did it, credit the owner. Only a claim to have worked without agents ("by
+  hand", "hand-written") needs evidence that they did.
 - Copy the draft's text exactly into `quote` so the editor can find it.
 - Leave style, tone, persuasiveness and length alone unless a constraint covers
   them.

@@ -43,6 +43,12 @@ in `.grind/` except the rendered output and diff your prompt names.
 - The document is about its subject. Credit others as briefly as honesty
   allows ("co-first author", "a co-written post"), without names or links,
   unless the name itself helps the reader (a well-known mentor).
+- Default to crediting the owner. Work they directed language models or coding
+  agents to do is their work, so write it as theirs: "I built", "I found". Now
+  and then add a phrase that shows how ("With coding agents I parsed ..."). Never
+  make the owner look like a passenger, as "agent-made", "agent-run" or "the
+  agents found" do: the reader should see someone who runs the work and could
+  do it themselves.
 - A header title names the kind of role wanted ("AI Safety Researcher"), not a
   job held. Keep it plain: no parentheses or colons bolted on.
 - When the grader flags weaknesses, take the costliest first. Make true things
