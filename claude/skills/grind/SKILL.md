@@ -63,9 +63,10 @@ Markdown), extract the text to Markdown, commit it, and say so.
 
 Other documents may share some of these files (snippets that several CVs use).
 Unless the user wants the edits to reach those documents too, add a constraint
-naming the shared files: to change one, the editor first copies it to a path of
-this document's own (`snippets/<document>/<name>.yaml`) and points the document
-at the copy.
+naming the shared files. If the files can hold per-document text (a CV's snippets
+may have `variants.<cv-name>`), the editor edits only this document's variant.
+Otherwise it first copies the file to a path of this document's own
+(`snippets/<document>/<name>.yaml`) and points the document at the copy.
 
 Write `.grind/brief.yaml`:
 
