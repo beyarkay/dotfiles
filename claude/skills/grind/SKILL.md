@@ -185,8 +185,8 @@ When the workflow finishes:
 1. The workflow leaves the branch on the best version. If `on_best` is false, go
    back by hand: `git -C <worktree> revert --no-commit <best commit>..HEAD`, then
    commit `grind: back to vNN`.
-2. Tell the user, in plain words: they haven't seen the agents' notes, so explain
-   any project name or term that comes from them.
+2. Tell the user the following, in plain words. They haven't seen the agents'
+   notes, so explain any project name or term that comes from them:
    - the status (`target met`, `plateau`, `max rounds` or `no honest draft`)
      and the best version with both scores;
    - `final_audit`, if there is one. Lead with any blocking findings: the user
@@ -207,9 +207,9 @@ When the workflow finishes:
      doesn't have the draft open.
 3. When the user answers, the answers have to outlive the branch, which may
    never merge. Write each fact into the source file it belongs to in the main
-   checkout and commit only that file, calling `ExitWorktree` with `keep` first
-   if git refuses. If the file is rendered or exported somewhere public, use a
-   comment. Add the answers to `.grind/owner-answers.md` too. To run again, start
+   checkout and commit only that file. If git refuses, call `ExitWorktree` with
+   `keep` first, and `EnterWorktree` with its `path` to come back. If the file is
+   rendered or exported somewhere public, use a comment. Add the answers to `.grind/owner-answers.md` too. To run again, start
    from the branch's current commit, with a fresh copy of `grind.js`, the same
    `rubric` and a fresh `facts.yaml`.
 4. Merging is the user's call, and they may prefer to copy parts across by hand.

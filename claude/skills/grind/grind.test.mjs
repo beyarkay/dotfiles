@@ -172,4 +172,11 @@ async function run(script, extra = {}) {
   assert.equal(result.history[0].effectiveness, 62)
 }
 
+{
+  const fabrications = Array(5).fill('fabrication')
+  const { result } = await run({ 'audit v00': auditOf(...fabrications), 'grade v00': gradeOf(60) }, { max_rounds: 0 })
+  assert.equal(result.history[0].honesty, -25)
+  assert.equal(result.status, 'no honest draft')
+}
+
 console.log('grind.js: all scenarios pass')

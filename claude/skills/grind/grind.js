@@ -163,7 +163,7 @@ await parallel([
       ]),
 ])
 
-const honestyOf = a => Math.max(0, 100 - a.violations.reduce((s, v) => s + PENALTY[v.severity], 0))
+const honestyOf = a => 100 - a.violations.reduce((s, v) => s + PENALTY[v.severity], 0)
 const blockingOf = a => a.violations.filter(v => BLOCKING.includes(v.severity))
 const twice = async f => (await f()) ?? (await f())
 
