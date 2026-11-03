@@ -52,7 +52,9 @@ async function run(script, extra = {}) {
   assert.doesNotMatch(firstEdit, /Reader's first impression/)
   assert.match(firstEdit, /base version, v00 \(commit c0\)/)
   assert.match(prompts.find(p => p.label.startsWith('edit v02')).prompt, /base version, v01 \(commit h-v01\)/)
-  assert.match(firstEdit, /git -C \/wt diff --word-diff=plain c0 HEAD > \/wt\/\.grind\/diffs\/v01\.diff/)
+  assert.match(firstEdit, /git -C \/wt diff --word-diff=plain --output=\/wt\/\.grind\/diffs\/v01\.diff c0 HEAD/)
+  assert.doesNotMatch(firstEdit, /&& git/)
+  assert.match(prompts.find(p => p.label === 'facts').prompt, /git -C \/wt blame/)
   const auditPrompt = label => prompts.find(p => p.label === label).prompt
   assert.doesNotMatch(auditPrompt('audit v00'), /already been audited/)
   assert.match(auditPrompt('audit v01'), /edited from v00, which has already been audited\. The changes are in \/wt\/\.grind\/diffs\/v01\.diff/)
@@ -89,7 +91,7 @@ async function run(script, extra = {}) {
   }, { patience: 9 })
   const edits = prompts.filter(p => p.label.startsWith('edit'))
   assert.deepEqual(edits.map(p => p.label), ['edit v01 from v00', 'edit v02 from v01', 'edit v03 from v00', 'edit v04 from v03'])
-  assert.match(edits[2].prompt, /git -C \/wt revert --no-commit c0\.\.HEAD && git -C \/wt commit -m "grind: back to v00"/)
+  assert.match(edits[2].prompt, /git -C \/wt revert --no-commit c0\.\.HEAD, then git -C \/wt commit --allow-empty -m "grind: back to v00"/)
   assert.match(edits[3].prompt, /base version, v03 \(commit h-v03\)/)
 }
 

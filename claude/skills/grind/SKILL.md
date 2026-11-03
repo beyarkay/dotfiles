@@ -52,6 +52,10 @@ user's checkout and its uncommitted changes stay as they are. If the document
 isn't in git, copy it into a new folder, `git init` and commit there, and copy
 the winner back at the end.
 
+Commit anything you add to the branch during setup (a new entry file, copied
+snippets) and take `start` after that. `start` is v00, and the first round
+stashes whatever isn't committed.
+
 The document is every file it is built from: for a Typst CV, the `.typ` file,
 the template and each snippet it pulls in. A rendered document's look is in
 scope, so include its styling files. For a PDF with no source (Typst, LaTeX,
@@ -123,7 +127,7 @@ JSON object:
 | Argument               | Default | Meaning                                                          |
 | ---------------------- | ------- | ---------------------------------------------------------------- |
 | `repo`                 |         | absolute path of the worktree                                    |
-| `start`                |         | the original's commit (`git rev-parse HEAD` in the worktree): v00 |
+| `start`                |         | v00: `git rev-parse HEAD` in the worktree, once setup is committed |
 | `honesty_min`          | 90      | lowest honesty score that passes, on top of no blocking findings |
 | `effectiveness_target` | 85      | grader score that ends the run                                   |
 | `max_rounds`           | 6       | editing rounds after the baseline                                |
@@ -179,7 +183,7 @@ When the workflow finishes:
    - the frontier as a table of version, commit, honesty, effectiveness and
      passed;
    - the main changes, from
-     `git -C <repo> diff --word-diff <main branch>...grind/<slug>`;
+     `git -C <worktree> diff --word-diff <main branch>...HEAD`;
    - the non-blocking audit findings left in the best version;
    - `questions_for_owner`, each quoting the draft's whole sentence and the time
      it talks about, because the user doesn't have the draft open. Each answer
@@ -187,11 +191,17 @@ When the workflow finishes:
      to `.grind/owner-answers.md` and run
      again from the branch's current commit, with the same `rubric` and a fresh
      `facts.yaml`.
-3. Merging is the user's call. Run it from the main checkout when they say so:
+3. Merging is the user's call, and they may prefer to copy parts across by hand.
+   When they say so, call `ExitWorktree` with `keep` first, because git refuses
+   the main checkout from inside the worktree. Then run
    `git -C <repo> merge grind/<slug>`. If their uncommitted changes touch the
-   same files, stop and ask. Then call `ExitWorktree` with `keep`, and run
-   `git -C <repo> worktree remove <repo>-grind-<slug>` (the `.grind/` notes go
-   with it) and `git -C <repo> branch -d grind/<slug>`.
+   same files, stop and ask. If other documents share the edited files, rebuild
+   them and tell the user what changed, such as a new page count.
+4. Clean up only when the user is done with the branch: run
+   `git -C <repo> worktree remove <repo>-grind-<slug>` and
+   `git -C <repo> branch -d grind/<slug>`, and drop any stash the run left. The
+   `.grind/` notes go with the worktree, including the rendered versions, so
+   copy out anything the user wants to keep.
 
 With `no honest draft`, say so plainly and list the blocking findings that kept
 recurring.

@@ -28,6 +28,10 @@ const tag = n => `v${String(n).padStart(2, '0')}`
 const renderedPath = n => (args.render_ext ? `${NOTES}/rendered/${tag(n)}${args.render_ext}` : null)
 const diffPath = n => `${NOTES}/diffs/${tag(n)}.diff`
 const versionNamed = n => `${tag(n)} of the document: the files the brief lists under \`document\`, as they are now in ${REPO}`
+const ONE_AT_A_TIME = `Run each git command as its own call, with absolute paths: the sandbox refuses &&, ;, cd and shell variables.`
+const backTo = rec =>
+  `stash any uncommitted changes (git -C ${REPO} stash -u), and if HEAD is not ${rec.commit}, revert back to it in one commit: ` +
+  `git -C ${REPO} revert --no-commit ${rec.commit}..HEAD, then git -C ${REPO} commit --allow-empty -m "grind: back to ${rec.version}"`
 
 const AUDIT = {
   type: 'object',
@@ -125,7 +129,8 @@ await parallel([
               `facts: each {claim, source (path:line or URL), quote (exact supporting text), edited, about, caveats (context a fair reader needs, or empty)}\n` +
               `limits: things a writer chasing this goal might be tempted to say that the sources do not support or contradict, each with the source that settles it. Work the owner directed language models or coding agents to do counts as the owner's, so it is not a limit.\n` +
               `conflicts: where sources disagree, each {claim, versions: [{says, source, edited}], current (the most recently edited version, which is the truth)}.\n` +
-              `\`edited\` is the date (YYYY-MM-DD) the cited text last changed: \`git blame\` on the line for files in git, otherwise the file's modification time. ` +
+              `\`edited\` is the date (YYYY-MM-DD) the cited text last changed, from one plain command per line: \`git -C <repo> blame --date=short -L <line>,<line> -- <path>\`, with no cd, &&, ; or shell variables. ` +
+              `For files in this repository, <repo> is the worktree (git -C ${REPO} blame ...), because the sandbox refuses git in the main checkout. For a file outside git, or if git refuses, use the file's modification time. ` +
               `\`about\` is the time the claim describes, read from the text: a past claim names its period ("before March 2024"), and a present-tense claim describes the day it was written ("as of 2025-06"), which can be earlier than \`edited\` if the line was touched later. ` +
               `Word each claim with its time, so an old fact can't read as current: "had no embedded experience before joining CubeSpace", not "has no embedded experience". Claims about different times are not conflicts. ` +
               `owner-answers.md is newer than everything.\n` +
@@ -301,13 +306,12 @@ for (let r = 1; status === 'max rounds' && r <= MAX_ROUNDS; r++) {
   const edit = await twice(() =>
     agent(
       `Round ${r} of at most ${MAX_ROUNDS}. Edit the document in place in the git worktree ${REPO}: the files the brief lists under \`document\`.\n` +
+        `${ONE_AT_A_TIME}\n` +
         `First check that \`git -C ${REPO} branch --show-current\` starts with grind/, and stop if it doesn't. ` +
-        `Start from the base version, ${base.version} (commit ${base.commit}): stash any uncommitted changes (git -C ${REPO} stash -u), and if HEAD ` +
-        `is not ${base.commit}, revert back to it in one commit: git -C ${REPO} revert --no-commit ${base.commit}..HEAD && ` +
-        `git -C ${REPO} commit -m "grind: back to ${base.version}"\n` +
+        `Start from the base version, ${base.version} (commit ${base.commit}): ${backTo(base)}\n` +
         (args.render_ext ? `After editing, run the brief's render command from ${REPO} with {out} = ${renderedPath(r)}, and fix any errors.\n` : '') +
-        `Then commit your edit and return its hash: git -C ${REPO} add -A && git -C ${REPO} commit --allow-empty -m "grind ${tag(r)}: <what changed>"\n` +
-        `Last, write the diff for the auditor: mkdir -p ${NOTES}/diffs; git -C ${REPO} diff --word-diff=plain ${base.commit} HEAD > ${diffPath(r)}\n` +
+        `Then commit your edit and return its hash: git -C ${REPO} add -A, then git -C ${REPO} commit --allow-empty -m "grind ${tag(r)}: <what changed>"\n` +
+        `Last, write the diff for the auditor: mkdir -p ${NOTES}/diffs, then git -C ${REPO} diff --word-diff=plain --output=${diffPath(r)} ${base.commit} HEAD\n` +
         `Brief: ${BRIEF}\nFacts: ${FACTS}\nRubric: ${RUBRIC}\n` +
         `To pass, a draft needs no blocking audit violations and honesty of at least ${HONESTY_MIN}. Effectiveness target: ${TARGET}.\n\n` +
         `History so far:\n${history.map(summaryLine).join('\n')}\n\nFeedback on the base draft:\n${feedback(base, last)}`,
