@@ -19,9 +19,11 @@
         }
       }
     },
-    "ruff-lsp": {
-      "command": "ruff-lsp",
-      "filetypes": ["python"]
+    "ruff": {
+      "command": "ruff",
+      "args": ["server"],
+      "filetypes": ["python"],
+      "rootPatterns": ["pyproject.toml", "ruff.toml", ".ruff.toml", ".git"]
     }
   },
   "diagnostic.virtualText": true,

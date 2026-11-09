@@ -338,4 +338,4 @@ cnoreabbrev <expr> date (getcmdtype() ==# ':' && getcmdline() ==# 'date') ? 'Dat
 " 'Automatically' load changes from disk
 set autoread
 " trigger the 'automatic' read-from-disk after every cursor move
-au CursorHold,CursorHoldI * checktime
+au CursorHold,CursorHoldI * if getcmdwintype() ==# '' | checktime | endif
