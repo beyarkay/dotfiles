@@ -58,14 +58,19 @@ numbers, answer from that printed summary.
 
 ## How to run
 
-Self-contained `uv` script (only dep: `numpy`) — nothing to install. Pass a
-file or pipe via stdin:
+Self-contained `uv` script (only dep: `numpy`) — nothing to install. It sits
+next to this file; `$SKILL_DIR` below is this skill's folder, which differs
+between a local install, a synced copy and the Claude app. Pass a file or pipe
+via stdin:
 
 ```bash
-~/.claude/skills/quickplot/plot.py data.json
-echo '{"Gemma":[...],"Olmo":[...],"Qwen":[...]}' | ~/.claude/skills/quickplot/plot.py --title coherence
-cat scores.csv | ~/.claude/skills/quickplot/plot.py
+$SKILL_DIR/plot.py data.json
+echo '{"Gemma":[...],"Olmo":[...],"Qwen":[...]}' | $SKILL_DIR/plot.py --title coherence
+cat scores.csv | $SKILL_DIR/plot.py
 ```
+
+Where `uv` isn't installed (the Claude app's sandbox), run it as
+`python3 $SKILL_DIR/plot.py`; the sandbox already has `numpy`.
 
 Typical flow: the data already exists (a list in the conversation, a column in
 a CSV/parquet, an array in a script). Get it into one of the input formats

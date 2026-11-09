@@ -1,0 +1,13 @@
+{
+  "name": "beyarkay-dotfiles",
+  "description": "Skills from beyarkay's dotfiles that work in the Claude app as well as Claude Code.",
+  "owner": {
+    "name": "beyarkay"
+  },
+  "plugins": [
+    {
+      "name": "boyd",
+      "source": "./claude/plugins/boyd"
+    }
+  ]
+}

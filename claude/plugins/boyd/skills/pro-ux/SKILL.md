@@ -7,7 +7,7 @@ description: Boyd's "pro-UX" house style for any interface, dashboard, report pa
 
 The style of the Plot Explorer (`/Users/brk/projects/mats/plotting/explore/index.html`).
 In one line: **Tufte-style, keyboard-first, information-dense, details on demand.**
-When in doubt, open that file and copy what it does. Its `<style>` block (lines 11–224) is the source of truth for every value below.
+When that file is reachable (on Boyd's Mac), open it when in doubt and copy what it does; its `<style>` block (lines 11–224) is the source of truth for every value below. Elsewhere, such as the Claude app, this document is the spec.
 
 **The interactions matter more than the look.** A page can copy every colour and font here and still feel wrong. That happens when hovering does nothing, a tooltip covers what the user is reading, a toggle jumps away after one click, and the cards can't be moved or renamed. Read the Hover, Click, Panels and Cards sections before writing any code.
 
@@ -184,7 +184,7 @@ button, input, select { font:inherit; color:inherit; }
 
 ## Components
 
-Copy these from `index.html` and do not reinvent them:
+Copy these from the explorer's `index.html` when it is reachable, and do not reinvent them; elsewhere, build them to these descriptions:
 
 - **Buttons** (`.btn`): white, 1px border, 1px by 10px padding, tint on hover.
 - **Chips** (`.chip`): small toggles for filter values. Click toggles, shift-click keeps only this one, double-click selects all.
