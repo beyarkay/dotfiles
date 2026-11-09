@@ -115,9 +115,14 @@ needs this machine (tmux, nvim, codex, local scripts) and stays local.
   account (v2.1.273 or later). Without the app:
   `/plugin install boyd --marketplace beyarkay/dotfiles`.
 
-`claude/skills/pro-ux` and `claude/skills/quickplot` are symlinks into the
-plugin, so `~/.claude/skills` still loads them locally. With the plugin synced
-as well, Claude Code lists both `pro-ux` and `boyd:pro-ux`.
+To publish another skill, move it into the plugin and symlink it back, so
+`~/.claude/skills` still loads it locally:
+
+    git mv claude/skills/<name> claude/plugins/boyd/skills/<name>
+    ln -s ../plugins/boyd/skills/<name> claude/skills/<name>
+
+With the plugin synced as well, Claude Code lists each of these skills twice,
+as `<name>` and `boyd:<name>`.
 
 ### OS-aware install script
 

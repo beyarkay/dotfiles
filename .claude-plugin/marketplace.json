@@ -7,8 +7,7 @@
   "plugins": [
     {
       "name": "boyd",
-      "source": "./claude/plugins/boyd",
-      "description": "pro-ux house style for interfaces and charts, and quickplot distribution plots."
+      "source": "./claude/plugins/boyd"
     }
   ]
 }
