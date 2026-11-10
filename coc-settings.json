@@ -24,6 +24,13 @@
       "args": ["server"],
       "filetypes": ["python"],
       "rootPatterns": ["pyproject.toml", "ruff.toml", ".ruff.toml", ".git"]
+    },
+    "ty": {
+      "command": "ty",
+      "args": ["server"],
+      "filetypes": ["python"],
+      "rootPatterns": ["ty.toml", "pyproject.toml", ".git"],
+      "disabledFeatures": ["pullDiagnostic"]
     }
   },
   "diagnostic.virtualText": true,
