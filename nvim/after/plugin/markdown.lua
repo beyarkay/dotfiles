@@ -83,6 +83,8 @@ end
 
 rm.setup({
   render_modes = true,
+  -- 2, not 3, so entities like &lt; show the character they stand for
+  win_options = { conceallevel = { rendered = 2 } },
   latex = { enabled = false },
   heading = {
     sign = false,
@@ -96,6 +98,7 @@ rm.setup({
     right_pad = 4,
     min_width = 60,
   },
+  bullet = { icons = { "–", "–", "–", "–" } },
   checkbox = {
     right_pad = 0,
     unchecked = { icon = "☐ " },
