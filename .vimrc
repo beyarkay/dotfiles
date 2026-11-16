@@ -108,6 +108,12 @@ if has('nvim')
     Plug 'NeogitOrg/neogit'
 endif
 
+" Draw markdown in place (headings, code blocks, checkboxes, tables); setup in
+" nvim/after/plugin/markdown.lua
+if has('nvim')
+    Plug 'MeanderingProgrammer/render-markdown.nvim'
+endif
+
 " default updatetime 4000ms is not good for async update
 set updatetime=100
 
