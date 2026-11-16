@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$pagetitle$</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root {
+  --fg: #2a2a2e; --mute: #77777f; --faint: #a0a0a8; --soft: #e2e2e6; --line: #d3d3d9;
+  --bg: #f4f4f6; --card: #ffffff; --tint: #eef1f6; --code: #f7f7f9; --bad: #b00020;
+  --font: "EB Garamond", Garamond, Georgia, serif;
+  --mono: "Fira Code", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #d9d9de; --mute: #8f8f98; --faint: #66666e; --soft: #26262b; --line: #33333a;
+    --bg: #141416; --card: #1b1b1e; --tint: #24262c; --code: #161618; --bad: #ff6b81;
+  }
+}
+* { box-sizing: border-box; border-radius: 2px; }
+body { margin: 0; font: 19px/1.5 var(--font); color: var(--fg); background: var(--bg); }
+#bar {
+  position: sticky; top: 0; z-index: 1; display: flex; gap: 12px; align-items: baseline;
+  padding: 6px 16px; font-size: 14px; color: var(--mute); background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+#bar .path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: rtl; text-align: left; flex: 1; }
+#live.off { color: var(--bad); }
+main {
+  max-width: 46rem; margin: 24px auto 64px; padding: 28px 48px 40px;
+  background: var(--card); border: 1px solid var(--line);
+}
+h1, h2, h3, h4, h5, h6 { font-weight: 500; line-height: 1.2; margin: 1.6em 0 0.5em; }
+h1 { font-size: 30px; }
+h2 { font-size: 24px; padding-bottom: 4px; border-bottom: 1px solid var(--soft); }
+h3 { font-size: 21px; font-weight: 600; }
+h4, h5, h6 { font-size: 19px; font-weight: 600; font-style: italic; }
+main > :first-child { margin-top: 0; }
+p, ul, ol, blockquote, table, pre, div.sourceCode { margin: 0 0 0.9em; }
+a { color: inherit; text-decoration: underline 1px; text-decoration-color: var(--faint); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--fg); background: var(--tint); }
+code { font: 0.8em var(--mono); background: var(--tint); padding: 1px 4px; }
+pre { font: 14px/1.45 var(--mono); background: var(--code); border: 1px solid var(--line); padding: 10px 14px; overflow-x: auto; }
+pre code { font: inherit; background: none; padding: 0; }
+div.sourceCode pre { margin: 0; }
+blockquote { margin-left: 0; padding: 0 0 0 16px; border-left: 2px solid var(--line); color: var(--mute); }
+div.note, div.tip, div.important, div.warning, div.caution {
+  margin: 0 0 0.9em; padding: 6px 16px 2px; border-left: 2px solid var(--fg); background: var(--tint);
+}
+div.caution, div.warning { border-left-color: var(--bad); }
+div.title p { margin: 0 0 2px; font-variant: small-caps; letter-spacing: 0.04em; font-weight: 600; color: var(--mute); }
+ul.task-list { list-style: none; padding-left: 1.1em; }
+ul.task-list input { margin: 0 0.45em 0 -1.1em; accent-color: var(--fg); }
+li > p { margin: 0; }
+table { border-collapse: collapse; display: block; overflow-x: auto; font-variant-numeric: tabular-nums; font-size: 17px; }
+th, td { padding: 3px 12px; border-bottom: 1px solid var(--soft); vertical-align: top; }
+th { font-weight: 600; text-align: left; border-bottom-color: var(--line); }
+img { max-width: 100%; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
+section.footnotes { font-size: 16px; color: var(--mute); }
+section.footnotes hr { margin: 2.4em 0 1em; }
+.katex { font-size: 1.05em; }
+@media (max-width: 700px) {
+  main { margin: 0; padding: 20px 16px 40px; border: 0; }
+}
+</style>
+<style>
+$highlighting-css$
+</style>
+$math$
+</head>
+<body>
+<div id="bar"><span class="path"><bdi>$sourcefile$</bdi></span><span id="live">live</span></div>
+<main>
+$body$
+</main>
+<script>
+(() => {
+  const seen = "$mtime$";
+  const key = "scroll:" + location.pathname;
+  const live = document.getElementById("live");
+  history.scrollRestoration = "manual";
+  try {
+    const y = sessionStorage.getItem(key);
+    if (y !== null) document.fonts.ready.then(() => scrollTo(0, +y));
+  } catch {}
+  const es = new EventSource(location.pathname + "?events");
+  es.onopen = () => { live.textContent = "live"; live.className = ""; };
+  es.onerror = () => { live.textContent = "not live: the preview server stopped with nvim"; live.className = "off"; };
+  es.onmessage = (e) => {
+    if (e.data === seen) return;
+    try { sessionStorage.setItem(key, String(scrollY)); } catch {}
+    location.reload();
+  };
+})();
+</script>
+</body>
+</html>
