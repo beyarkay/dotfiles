@@ -53,7 +53,8 @@ local heading_colours = {
 
 local function colours()
   local hl = vim.api.nvim_set_hl
-  hl(0, "@markup.link.label.markdown_inline", { fg = "#61afef", ctermfg = 75, underline = true })
+  hl(0, "@markup.link.label.markdown_inline", { fg = "#61afef", ctermfg = 75 })
+  hl(0, "MarkdownLinkUnderline", { underline = true, sp = "#61afef" })
   hl(0, "@markup.link.markdown_inline", { fg = "#5c6370", ctermfg = 241 })
   hl(0, "@markup.link.url.markdown_inline", { fg = "#5c6370", ctermfg = 241 })
   for i, c in ipairs(heading_colours) do
@@ -69,6 +70,62 @@ local function colours()
 end
 colours()
 vim.api.nvim_create_autocmd("ColorScheme", { callback = colours })
+
+-- With 'linebreak', a wrapped row is padded to the window edge with blanks
+-- that copy the highlight of the character it broke at. Underlining a whole
+-- link label would carry the underline to the edge, so underline only the
+-- characters a line cannot break at.
+local link_ns = vim.api.nvim_create_namespace("markdown_link_underline")
+local link_query = vim.treesitter.query.parse("markdown_inline", [[
+  (inline_link ["[" (link_text) "]"] @label)
+  (full_reference_link ["[" (link_text) "]"] @label)
+  (collapsed_reference_link (link_text) @label)
+  (image ["!" "[" (image_description) "]"] @label)
+]])
+local link_rows = {}
+
+vim.api.nvim_set_decoration_provider(link_ns, {
+  on_win = function(_, _, buf, top, bot)
+    if not vim.bo[buf].filetype:match("^markdown") or not vim.treesitter.highlighter.active[buf] then
+      return false
+    end
+    local parser = vim.treesitter.get_parser(buf, "markdown", { error = false })
+    local inline = parser and parser:children().markdown_inline
+    if not inline then return false end
+    parser:parse({ top, bot + 1 })
+    local rows = {}
+    for _, tree in ipairs(inline:trees()) do
+      for _, node in link_query:iter_captures(tree:root(), buf, top, bot + 1) do
+        local sr, sc, er, ec = node:range()
+        for r = math.max(sr, top), math.min(er, bot) do
+          rows[r] = rows[r] or {}
+          table.insert(rows[r], { r == sr and sc or 0, r == er and ec or -1 })
+        end
+      end
+    end
+    link_rows[buf] = rows
+  end,
+  on_line = function(_, _, buf, row)
+    local spans = link_rows[buf] and link_rows[buf][row]
+    if not spans then return end
+    local line = vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1] or ""
+    local breaks = vim.o.breakat
+    for _, span in ipairs(spans) do
+      local stop = span[2] == -1 and #line or span[2]
+      local col = span[1]
+      while col < stop do
+        while col < stop and breaks:find(line:sub(col + 1, col + 1), 1, true) do col = col + 1 end
+        local run = col
+        while col < stop and not breaks:find(line:sub(col + 1, col + 1), 1, true) do col = col + 1 end
+        if col > run then
+          vim.api.nvim_buf_set_extmark(buf, link_ns, row, run, {
+            end_col = col, hl_group = "MarkdownLinkUnderline", ephemeral = true,
+          })
+        end
+      end
+    end
+  end,
+})
 
 -- The terminal font has no Nerd Font glyphs, so every icon is plain Unicode.
 local no_icon = {}
