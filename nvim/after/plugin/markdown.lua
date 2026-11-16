@@ -6,11 +6,12 @@
 local ok, rm = pcall(require, "render-markdown")
 if not ok then return end
 
--- Neovim's markdown_inline query hides a link's brackets along with its URL,
--- and treats any [bracketed text] as a link. Keep the brackets of real links,
--- underlined with their text, and leave other bracketed text alone. If the
--- runtime query ever changes shape, it is left as it is.
-local function keep_link_brackets()
+-- Changes to Neovim's markdown_inline query:
+--   * keep the brackets of real links, coloured with their text
+--   * leave other [bracketed text] and entities like &lt; as typed
+--   * draw each * _ ~ marker as a space, so text keeps its column
+-- An edit that no longer matches the runtime query is skipped.
+local function patch_inline_query()
   local parts = {}
   for _, f in ipairs(vim.treesitter.query.get_files("markdown_inline", "highlights")) do
     parts[#parts + 1] = table.concat(vim.fn.readfile(f), "\n")
@@ -22,11 +23,15 @@ local function keep_link_brackets()
     { '(%(image%s*%[)%s*"!"%s*"%["%s*"%]"', "%1" },
     { '%(shortcut_link%s*%[%s*"%["%s*"%]"%s*%]%s*@markup%.link%s*%(#set! conceal ""%)%)', "" },
     { "\n  %(link_text%)\n", "\n" },
+    {
+      '%(%[%s*%(code_span_delimiter%)%s*%(emphasis_delimiter%)%s*%]%s*@conceal%s*%(#set! conceal ""%)%)',
+      '((code_span_delimiter) @conceal (#set! conceal ""))\n((emphasis_delimiter) @conceal (#set! conceal " "))',
+    },
+    { '(@character%.special [^\n]*%))%s*%(#set! conceal ".-"%)', "%1" },
   }
   for _, e in ipairs(edits) do
-    local n
-    src, n = src:gsub(e[1], e[2])
-    if n ~= 1 then return end
+    local patched, n = src:gsub(e[1], e[2])
+    if n > 0 then src = patched end
   end
   src = src .. [[
 
@@ -39,7 +44,7 @@ local function keep_link_brackets()
     vim.treesitter.query.set("markdown_inline", "highlights", src)
   end
 end
-keep_link_brackets()
+patch_inline_query()
 
 -- onehalfdark: { gui fg, cterm fg, gui background tinted 15% towards fg }
 local heading_colours = {
@@ -71,61 +76,104 @@ end
 colours()
 vim.api.nvim_create_autocmd("ColorScheme", { callback = colours })
 
+-- Underlines for links, and the strike through cancelled `[/]` tasks.
 -- With 'linebreak', a wrapped row is padded to the window edge with blanks
--- that copy the highlight of the character it broke at. Underlining a whole
--- link label would carry the underline to the edge, so underline only the
--- characters a line cannot break at.
-local link_ns = vim.api.nvim_create_namespace("markdown_link_underline")
+-- that copy the highlight of the character it broke at, so a link is
+-- underlined only under the characters a line cannot break at.
+-- render-markdown would strike a `[/]` task from the `[/]` itself, through
+-- the padding and the ☒, so the strike is drawn here from the text instead.
+local deco_ns = vim.api.nvim_create_namespace("markdown_decorations")
 local link_query = vim.treesitter.query.parse("markdown_inline", [[
   (inline_link ["[" (link_text) "]"] @label)
   (full_reference_link ["[" (link_text) "]"] @label)
   (collapsed_reference_link (link_text) @label)
   (image ["!" "[" (image_description) "]"] @label)
+  [(uri_autolink) (email_autolink)] @autolink
 ]])
-local link_rows = {}
+local cancelled_query = vim.treesitter.query.parse("markdown", [[
+  (list_item (paragraph) @cancelled (#lua-match? @cancelled "^%[/%]%s"))
+]])
+local deco_rows = {}
 
-vim.api.nvim_set_decoration_provider(link_ns, {
+-- Spans are { start, end, group }; end -1 runs to the end of the line, and
+-- start nil begins at the first non-blank character.
+local function add_span(rows, row, s, e, group)
+  rows[row] = rows[row] or {}
+  table.insert(rows[row], { s, e, group })
+end
+
+local function underline_runs(buf, row, line, col, stop)
+  local breaks = vim.o.breakat
+  while col < stop do
+    while col < stop and breaks:find(line:sub(col + 1, col + 1), 1, true) do col = col + 1 end
+    local run = col
+    while col < stop and not breaks:find(line:sub(col + 1, col + 1), 1, true) do col = col + 1 end
+    if col > run then
+      vim.api.nvim_buf_set_extmark(buf, deco_ns, row, run, {
+        end_col = col, hl_group = "MarkdownLinkUnderline", ephemeral = true,
+      })
+    end
+  end
+end
+
+vim.api.nvim_set_decoration_provider(deco_ns, {
   on_win = function(_, _, buf, top, bot)
     if not vim.bo[buf].filetype:match("^markdown") or not vim.treesitter.highlighter.active[buf] then
       return false
     end
     local parser = vim.treesitter.get_parser(buf, "markdown", { error = false })
-    local inline = parser and parser:children().markdown_inline
-    if not inline then return false end
+    if not parser then return false end
     parser:parse({ top, bot + 1 })
     local rows = {}
-    for _, tree in ipairs(inline:trees()) do
-      for _, node in link_query:iter_captures(tree:root(), buf, top, bot + 1) do
+    local inline = parser:children().markdown_inline
+    for _, tree in ipairs(inline and inline:trees() or {}) do
+      for id, node in link_query:iter_captures(tree:root(), buf, top, bot + 1) do
         local sr, sc, er, ec = node:range()
+        if link_query.captures[id] == "autolink" then sc, ec = sc + 1, ec - 1 end
         for r = math.max(sr, top), math.min(er, bot) do
-          rows[r] = rows[r] or {}
-          table.insert(rows[r], { r == sr and sc or 0, r == er and ec or -1 })
+          add_span(rows, r, r == sr and sc or 0, r == er and ec or -1, "MarkdownLinkUnderline")
         end
       end
     end
-    link_rows[buf] = rows
+    -- todo.nvim strikes its own cancelled tasks
+    if vim.bo[buf].filetype == "markdown" then
+      for _, tree in ipairs(parser:trees()) do
+        for _, node in cancelled_query:iter_captures(tree:root(), buf, top, bot + 1) do
+          local sr, sc, er, ec = node:range()
+          for r = math.max(sr, top), math.min(er, bot) do
+            if not (r == er and ec == 0) then
+              add_span(rows, r, r == sr and sc + #"[/] " or nil, r == er and ec or -1, "RenderMarkdownDone")
+            end
+          end
+        end
+      end
+    end
+    deco_rows[buf] = rows
   end,
   on_line = function(_, _, buf, row)
-    local spans = link_rows[buf] and link_rows[buf][row]
+    local spans = deco_rows[buf] and deco_rows[buf][row]
     if not spans then return end
     local line = vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1] or ""
-    local breaks = vim.o.breakat
     for _, span in ipairs(spans) do
-      local stop = span[2] == -1 and #line or span[2]
-      local col = span[1]
-      while col < stop do
-        while col < stop and breaks:find(line:sub(col + 1, col + 1), 1, true) do col = col + 1 end
-        local run = col
-        while col < stop and not breaks:find(line:sub(col + 1, col + 1), 1, true) do col = col + 1 end
-        if col > run then
-          vim.api.nvim_buf_set_extmark(buf, link_ns, row, run, {
-            end_col = col, hl_group = "MarkdownLinkUnderline", ephemeral = true,
-          })
-        end
+      local s, e, group = span[1], span[2], span[3]
+      if e == -1 then e = #line end
+      if s == nil then s = (line:find("%S") or #line + 1) - 1 end
+      if group == "MarkdownLinkUnderline" then
+        underline_runs(buf, row, line, s, e)
+      elseif e > s then
+        vim.api.nvim_buf_set_extmark(buf, deco_ns, row, s, { end_col = e, hl_group = group, ephemeral = true })
       end
     end
   end,
 })
+
+-- render-markdown hides an autolink's < and >; draw them as spaces instead
+local has_link_render, link_render = pcall(require, "render-markdown.render.inline.link")
+if has_link_render and type(link_render.hide) == "function" then
+  function link_render:hide(col, length)
+    self.marks:add(self.config, true, self.node.start_row, col, { end_col = col + length, conceal = " " })
+  end
+end
 
 -- The terminal font has no Nerd Font glyphs, so every icon is plain Unicode.
 local no_icon = {}
@@ -140,7 +188,7 @@ end
 
 rm.setup({
   render_modes = true,
-  -- 2, not 3, so entities like &lt; show the character they stand for
+  -- 2, not 3, so markers drawn as a space keep their width
   win_options = { conceallevel = { rendered = 2 } },
   latex = { enabled = false },
   heading = {
@@ -170,7 +218,7 @@ rm.setup({
     custom = {
       todo = { raw = "[-]", rendered = "◐ ", highlight = "RenderMarkdownTodo" },
       progress = { raw = "[~]", rendered = "◐ ", highlight = "RenderMarkdownTodo" },
-      cancelled = { raw = "[/]", rendered = "☒ ", highlight = "RenderMarkdownUnchecked", scope_highlight = "RenderMarkdownDone" },
+      cancelled = { raw = "[/]", rendered = "☒ ", highlight = "RenderMarkdownUnchecked" },
     },
   },
   link = {
