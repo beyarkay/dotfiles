@@ -14,6 +14,10 @@ while IFS= read -r ext; do
   [[ -n "$ext" ]] && EXTENSIONS+=("$ext")
 done <"$DOTFILES/open-in-nvim/extensions.txt"
 UTIS=(public.json public.yaml net.daringfireball.markdown)
+# Extensions no installed app declares a file type for, and that the app's
+# claim on the extension alone doesn't win, so the app declares a type.
+DECLARED=(typ)
+for ext in "${DECLARED[@]}"; do UTIS+=("$BUNDLE_ID.$ext"); done
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
   echo "open-in-nvim: macOS only, skipping" >&2
@@ -39,12 +43,29 @@ $PB -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes array" "$PLIST"
 for i in "${!UTIS[@]}"; do
   $PB -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:$i string ${UTIS[$i]}" "$PLIST"
 done
+$PB -c "Delete :UTImportedTypeDeclarations" "$PLIST" 2>/dev/null || true
+$PB -c "Add :UTImportedTypeDeclarations array" "$PLIST"
+for i in "${!DECLARED[@]}"; do
+  ext="${DECLARED[$i]}"
+  key=":UTImportedTypeDeclarations:$i"
+  $PB -c "Add $key dict" \
+    -c "Add $key:UTTypeIdentifier string $BUNDLE_ID.$ext" \
+    -c "Add $key:UTTypeDescription string .$ext file" \
+    -c "Add $key:UTTypeConformsTo array" \
+    -c "Add $key:UTTypeConformsTo:0 string public.plain-text" \
+    -c "Add $key:UTTypeTagSpecification:public.filename-extension array" \
+    -c "Add $key:UTTypeTagSpecification:public.filename-extension:0 string $ext" \
+    "$PLIST"
+done
 
 codesign --force --deep --sign - "$APP"
 "$LSREGISTER" -f "$APP"
 
+# duti can't set a default for an extension macOS has no file type for
+# (error -50); the app's claim on it usually wins anyway, and the check
+# below reports any that don't.
 for ext in "${EXTENSIONS[@]}"; do
-  duti -s "$BUNDLE_ID" ".$ext" all
+  duti -s "$BUNDLE_ID" ".$ext" all 2>/dev/null || true
 done
 for uti in "${UTIS[@]}"; do
   duti -s "$BUNDLE_ID" "$uti" all

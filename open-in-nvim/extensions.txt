@@ -160,6 +160,7 @@ ts
 tsv
 tsx
 txt
+typ
 v
 vb
 vim
