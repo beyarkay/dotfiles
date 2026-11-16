@@ -90,16 +90,23 @@ rm.setup({
     sign = false,
     icons = { "▌ ", "▌ ", "▌ ", "▌ ", "▌ ", "▌ " },
   },
+  -- Drawn text keeps the width of its raw source, so nothing jumps when the
+  -- cursor line switches to raw: fences stay as thin bars, the language name
+  -- sits where it does after ```, and a backtick becomes a padding space.
   code = {
     sign = false,
     language_icon = false,
+    language_pad = 3,
+    border = "thin",
     width = "block",
-    left_pad = 2,
     right_pad = 4,
     min_width = 60,
+    inline_pad = 1,
   },
   bullet = { icons = { "–", "–", "–", "–" } },
+  -- `- [ ] task` draws as `    ☐ task`, the task text in the same column
   checkbox = {
+    left_pad = 4,
     right_pad = 0,
     unchecked = { icon = "☐ " },
     checked = { icon = "☑ ", scope_highlight = "RenderMarkdownDone" },
