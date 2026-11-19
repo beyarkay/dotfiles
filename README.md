@@ -103,6 +103,27 @@ I started from a shell inherits a project directory.
 A launchd agent keeps it up; `scripts/install-localports.sh` installs or
 reinstalls it. It only scans while the page is actually open.
 
+### Claude skills in the app and in Claude Code
+
+Skills in `claude/plugins/boyd/` are published as the `boyd` plugin, so they
+work in the Claude app as well as Claude Code. The rest of `claude/skills/`
+needs this machine (tmux, nvim, codex, local scripts) and stays local.
+
+- Claude app: Customize → Plugins → Add → Add marketplace → `beyarkay/dotfiles`,
+  then install `boyd`. After pushing changes, click Update on the marketplace.
+- Claude Code: plugins added in the app sync down when signed in with the same
+  account (v2.1.273 or later). Without the app:
+  `/plugin install boyd --marketplace beyarkay/dotfiles`.
+
+To publish another skill, move it into the plugin and symlink it back, so
+`~/.claude/skills` still loads it locally:
+
+    git mv claude/skills/<name> claude/plugins/boyd/skills/<name>
+    ln -s ../plugins/boyd/skills/<name> claude/skills/<name>
+
+With the plugin synced as well, Claude Code lists each of these skills twice,
+as `<name>` and `boyd:<name>`.
+
 ### OS-aware install script
 
 I still need to describe this.

@@ -1,0 +1,8 @@
+{
+  "name": "boyd",
+  "description": "Boyd's skills that work in the Claude app as well as Claude Code.",
+  "author": {
+    "name": "beyarkay"
+  },
+  "repository": "https://github.com/beyarkay/dotfiles"
+}
